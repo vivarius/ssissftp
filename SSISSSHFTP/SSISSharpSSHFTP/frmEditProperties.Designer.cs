@@ -64,7 +64,7 @@
             "File Transfer"});
             this.lstBoxMenu.Location = new System.Drawing.Point(2, 12);
             this.lstBoxMenu.Name = "lstBoxMenu";
-            this.lstBoxMenu.Size = new System.Drawing.Size(137, 147);
+            this.lstBoxMenu.Size = new System.Drawing.Size(137, 108);
             this.lstBoxMenu.TabIndex = 0;
             this.lstBoxMenu.SelectedIndexChanged += new System.EventHandler(this.lstBoxMenu_SelectedIndexChanged);
             // 
@@ -78,7 +78,7 @@
             this.panelConnection.Controls.Add(this.lbServer);
             this.panelConnection.Location = new System.Drawing.Point(144, 12);
             this.panelConnection.Name = "panelConnection";
-            this.panelConnection.Size = new System.Drawing.Size(350, 147);
+            this.panelConnection.Size = new System.Drawing.Size(350, 107);
             this.panelConnection.TabIndex = 1;
             // 
             // cmbPassword
@@ -137,7 +137,7 @@
             // 
             // line
             // 
-            this.line.Location = new System.Drawing.Point(10, 167);
+            this.line.Location = new System.Drawing.Point(6, 118);
             this.line.Name = "line";
             this.line.Size = new System.Drawing.Size(477, 10);
             this.line.TabIndex = 2;
@@ -145,7 +145,7 @@
             // 
             // btOK
             // 
-            this.btOK.Location = new System.Drawing.Point(331, 178);
+            this.btOK.Location = new System.Drawing.Point(327, 129);
             this.btOK.Name = "btOK";
             this.btOK.Size = new System.Drawing.Size(75, 35);
             this.btOK.TabIndex = 3;
@@ -156,7 +156,7 @@
             // btCancel
             // 
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(412, 178);
+            this.btCancel.Location = new System.Drawing.Point(408, 129);
             this.btCancel.Name = "btCancel";
             this.btCancel.Size = new System.Drawing.Size(75, 35);
             this.btCancel.TabIndex = 4;
@@ -177,7 +177,7 @@
             this.panelFileHandling.Controls.Add(this.cmbAction);
             this.panelFileHandling.Location = new System.Drawing.Point(144, 12);
             this.panelFileHandling.Name = "panelFileHandling";
-            this.panelFileHandling.Size = new System.Drawing.Size(350, 147);
+            this.panelFileHandling.Size = new System.Drawing.Size(350, 107);
             this.panelFileHandling.TabIndex = 5;
             // 
             // label3
@@ -188,6 +188,7 @@
             this.label3.Size = new System.Drawing.Size(43, 13);
             this.label3.TabIndex = 35;
             this.label3.Text = "Files list";
+            this.label3.Visible = false;
             // 
             // cmbFilesList
             // 
@@ -197,6 +198,7 @@
             this.cmbFilesList.Name = "cmbFilesList";
             this.cmbFilesList.Size = new System.Drawing.Size(238, 21);
             this.cmbFilesList.TabIndex = 34;
+            this.cmbFilesList.Visible = false;
             // 
             // btDestinationFile
             // 
@@ -273,7 +275,7 @@
             // txtInfo
             // 
             this.txtInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtInfo.Location = new System.Drawing.Point(10, 189);
+            this.txtInfo.Location = new System.Drawing.Point(6, 140);
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
             this.txtInfo.Size = new System.Drawing.Size(256, 13);
@@ -286,7 +288,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btCancel;
-            this.ClientSize = new System.Drawing.Size(497, 217);
+            this.ClientSize = new System.Drawing.Size(497, 169);
             this.Controls.Add(this.txtInfo);
             this.Controls.Add(this.btCancel);
             this.Controls.Add(this.btOK);
