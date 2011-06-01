@@ -15,8 +15,8 @@ namespace SSISSFTPTask100.SSIS
                                   "Remove Remote Directory",
                                   "Remove Local Directory",
                                   "Delete Remote File",
-                                  "Delete Local File"//,
-                                  //"Get Files List From Folder" 
+                                  "Delete Local File",
+                                  "Get Files List From Folder" 
                              };
 
         public static bool SendFileBySFtp(string url, string login, string password, string sourceFileName, string outputFileName)
@@ -111,7 +111,7 @@ namespace SSISSFTPTask100.SSIS
             }
             catch (Exception exception)
             {
-                throw exception;
+                
             }
 
             return retVal;

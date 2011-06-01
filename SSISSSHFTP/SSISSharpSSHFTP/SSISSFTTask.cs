@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using Microsoft.SqlServer.Dts.Runtime.Wrapper;
-
 using DTSExecResult = Microsoft.SqlServer.Dts.Runtime.DTSExecResult;
 using DTSProductLevel = Microsoft.SqlServer.Dts.Runtime.DTSProductLevel;
 using VariableDispenser = Microsoft.SqlServer.Dts.Runtime.VariableDispenser;
@@ -187,14 +185,14 @@ namespace SSISSFTPTask100.SSIS
                 }
             }
 
-            //if (TaskAction == Communication.ActionTask[8])
-            //{
-            //    if (string.IsNullOrEmpty(FilesList))
-            //    {
-            //        componentEvents.FireError(0, "SSISSFTTask", string.Format("Please specify an Object Variable for action {0}.", TaskAction), "", 0);
-            //        isBaseValid = false;
-            //    }
-            //}
+            if (TaskAction == Communication.ActionTask[8])
+            {
+                if (string.IsNullOrEmpty(FilesList))
+                {
+                    componentEvents.FireError(0, "SSISSFTTask", string.Format("Please specify an Object Variable for action {0}.", TaskAction), "", 0);
+                    isBaseValid = false;
+                }
+            }
 
             #endregion
 
@@ -359,28 +357,28 @@ namespace SSISSFTPTask100.SSIS
                     }
                 }
 
-                //if (TaskAction == Communication.ActionTask[8])
-                //{
-                //    //componentEvents.FireInformation(0, "SSISSFTTask", GetVariableFromNamespaceContext(FilesList) + " in action", string.Empty, 0, ref refire);
+                if (TaskAction == Communication.ActionTask[8])
+                {
+                    //componentEvents.FireInformation(0, "SSISSFTTask", GetVariableFromNamespaceContext(FilesList) + " in action", string.Empty, 0, ref refire);
 
-                //    var retValue = Communication.GetFileListFromSFtp(EvaluateExpression(SFTPServer, variableDispenser).ToString(),
-                //                                                     EvaluateExpression(SFTPUser, variableDispenser).ToString(),
-                //                                                     EvaluateExpression(SFTPPassword, variableDispenser).ToString(),
-                //                                                     ResolveRemotePathEx(EvaluateExpression(RemotePath, variableDispenser).ToString()));
+                    var retValue = Communication.GetFileListFromSFtp(EvaluateExpression(SFTPServer, variableDispenser).ToString(),
+                                                                     EvaluateExpression(SFTPUser, variableDispenser).ToString(),
+                                                                     EvaluateExpression(SFTPPassword, variableDispenser).ToString(),
+                                                                     ResolveRemotePathEx(EvaluateExpression(RemotePath, variableDispenser).ToString()));
 
-                //    componentEvents.FireInformation(0, "SSISSFTTask", retValue.Count + " files founded", string.Empty, 0, ref refire);
+                    componentEvents.FireInformation(0, "SSISSFTTask", retValue.Count + " files founded", string.Empty, 0, ref refire);
 
-                //    foreach (var VARIABLE in _vars)
-                //    {
-                //        componentEvents.FireInformation(0, "SSISSFTTask", VARIABLE.Name, string.Empty, 0, ref refire);
-                //    }
+                    foreach (var var in _vars)
+                    {
+                        componentEvents.FireInformation(0, "SSISSFTTask", var.Name, string.Empty, 0, ref refire);
+                    }
 
-                //    //_vars[GetVariableFromNamespaceContext(FilesList)].Value = retValue;
-                //    _vars[FilesList.Replace("@[", string.Empty).Replace("]", string.Empty)].Value = retValue;
+                    //_vars[GetVariableFromNamespaceContext(FilesList)].Value = retValue;
+                    _vars[FilesList.Replace("@[", string.Empty).Replace("]", string.Empty)].Value = retValue;
 
-                //    componentEvents.FireInformation(0, "SSISSFTTask", GetVariableFromNamespaceContext(FilesList) + " obtained the list of files", string.Empty, 0, ref refire);
+                    componentEvents.FireInformation(0, "SSISSFTTask", GetVariableFromNamespaceContext(FilesList) + " obtained the list of files", string.Empty, 0, ref refire);
 
-                //}
+                }
 
                 componentEvents.FireInformation(0, "SSISSFTTask", "SFTP Task ended succesfully", string.Empty, 0, ref refire);
             }
@@ -516,22 +514,22 @@ namespace SSISSFTPTask100.SSIS
 
         void IDTSComponentPersist.SaveToXML(XmlDocument doc, IDTSInfoEvents infoEvents)
         {
-            XmlElement taskElement = doc.CreateElement(string.Empty, "SSISSFTTask", string.Empty);
+            XmlElement taskElement = doc.CreateElement(string.Empty, "SSISSFTPTask", string.Empty);
 
-            XmlAttribute SftpServer = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_SERVER, string.Empty);
-            SftpServer.Value = SFTPServer;
+            XmlAttribute sftpServer = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_SERVER, string.Empty);
+            sftpServer.Value = SFTPServer;
 
-            XmlAttribute SftpUser = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_USER, string.Empty);
-            SftpUser.Value = SFTPUser;
+            XmlAttribute sftpUser = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_USER, string.Empty);
+            sftpUser.Value = SFTPUser;
 
-            XmlAttribute SftpPassword = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_PASSWORD, string.Empty);
-            SftpPassword.Value = SFTPPassword;
+            XmlAttribute sftpPassword = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_PASSWORD, string.Empty);
+            sftpPassword.Value = SFTPPassword;
 
-            XmlAttribute SftpSourceFile = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_LOCAL_PATH, string.Empty);
-            SftpSourceFile.Value = LocalPath;
+            XmlAttribute sftpSourceFile = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_LOCAL_PATH, string.Empty);
+            sftpSourceFile.Value = LocalPath;
 
-            XmlAttribute SftpDestinationFile = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_REMOTE_PATH, string.Empty);
-            SftpDestinationFile.Value = RemotePath;
+            XmlAttribute sftpDestinationFile = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_REMOTE_PATH, string.Empty);
+            sftpDestinationFile.Value = RemotePath;
 
             XmlAttribute sftpActionLists = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_ACTION_LIST, string.Empty);
             sftpActionLists.Value = TaskAction;
@@ -539,12 +537,12 @@ namespace SSISSFTPTask100.SSIS
             XmlAttribute sftpFileLists = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_FILES_LIST, string.Empty);
             sftpFileLists.Value = FilesList;
 
-            taskElement.Attributes.Append(SftpServer);
-            taskElement.Attributes.Append(SftpUser);
-            taskElement.Attributes.Append(SftpPassword);
+            taskElement.Attributes.Append(sftpServer);
+            taskElement.Attributes.Append(sftpUser);
+            taskElement.Attributes.Append(sftpPassword);
 
-            taskElement.Attributes.Append(SftpSourceFile);
-            taskElement.Attributes.Append(SftpDestinationFile);
+            taskElement.Attributes.Append(sftpSourceFile);
+            taskElement.Attributes.Append(sftpDestinationFile);
             taskElement.Attributes.Append(sftpActionLists);
             taskElement.Attributes.Append(sftpFileLists);
 
@@ -553,7 +551,7 @@ namespace SSISSFTPTask100.SSIS
 
         void IDTSComponentPersist.LoadFromXML(XmlElement node, IDTSInfoEvents infoEvents)
         {
-            if (node.Name != "SSISSFTTask")
+            if (node.Name != "SSISSFTPTask")
             {
                 throw new Exception("Unexpected task element when loading task.");
             }

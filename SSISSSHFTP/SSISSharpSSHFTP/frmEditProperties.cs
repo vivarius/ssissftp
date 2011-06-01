@@ -1,16 +1,19 @@
 ﻿using System;
+using Microsoft.SqlServer.Dts.Runtime.Wrapper;
 using SSISSFTPTask100.SSIS;
 using System.Linq;
 using System.Windows.Forms;
 using Microsoft.DataTransformationServices.Controls;
 using Microsoft.SqlServer.Dts.Runtime;
+using TaskHost = Microsoft.SqlServer.Dts.Runtime.TaskHost;
+using Variable = Microsoft.SqlServer.Dts.Runtime.Variable;
 
 namespace SSISSFTPTask100
 {
     public partial class frmEditProperties : Form
     {
         #region Private Properties
-        private TaskHost _taskHost;
+        private readonly TaskHost _taskHost;
         private Connections _connections;
 
         #endregion
@@ -30,16 +33,10 @@ namespace SSISSFTPTask100
 
             FillConnectionInfoPanel();
             FillDetailsPanel();
-            ChangeListIndex(0);
         }
         #endregion
 
         #region Events
-        private void lstBoxMenu_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ChangeListIndex(lstBoxMenu.SelectedIndex);
-        }
-
         void btOK_Click(object sender, EventArgs e)
         {
             //Save the values
@@ -81,20 +78,7 @@ namespace SSISSFTPTask100
         #endregion
 
         #region Methods
-        private void ChangeListIndex(int index)
-        {
-            switch (index)
-            {
-                case 0:
-                    panelFileHandling.Visible = false;
-                    panelConnection.Visible = true;
-                    break;
-                case 1:
-                    panelConnection.Visible = false;
-                    panelFileHandling.Visible = true;
-                    break;
-            }
-        }
+       
 
         private void FillConnectionInfoPanel()
         {
@@ -154,6 +138,11 @@ namespace SSISSFTPTask100
             }
         }
         #endregion
+
+        private void cmbAction_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
 
 
 
