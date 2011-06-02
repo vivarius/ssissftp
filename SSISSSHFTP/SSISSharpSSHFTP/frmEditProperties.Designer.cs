@@ -32,7 +32,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmEditProperties));
             this.btOK = new System.Windows.Forms.Button();
             this.btCancel = new System.Windows.Forms.Button();
-            this.txtInfo = new System.Windows.Forms.TextBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -43,6 +42,10 @@
             this.lbUser = new System.Windows.Forms.Label();
             this.lbServer = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.cmbRemote = new System.Windows.Forms.ComboBox();
+            this.optFileVariable = new System.Windows.Forms.RadioButton();
+            this.optFileConnection = new System.Windows.Forms.RadioButton();
+            this.cmbLocal = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cmbFilesList = new System.Windows.Forms.ComboBox();
             this.btDestinationFile = new System.Windows.Forms.Button();
@@ -51,10 +54,7 @@
             this.lbSourceFile = new System.Windows.Forms.Label();
             this.lbAction = new System.Windows.Forms.Label();
             this.cmbAction = new System.Windows.Forms.ComboBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.optFileVariable = new System.Windows.Forms.RadioButton();
-            this.optFileConnection = new System.Windows.Forms.RadioButton();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.linkLabelCodeplex = new System.Windows.Forms.LinkLabel();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -79,16 +79,7 @@
             this.btCancel.TabIndex = 4;
             this.btCancel.Text = "Cancel";
             this.btCancel.UseVisualStyleBackColor = true;
-            // 
-            // txtInfo
-            // 
-            this.txtInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtInfo.Location = new System.Drawing.Point(4, 194);
-            this.txtInfo.Name = "txtInfo";
-            this.txtInfo.ReadOnly = true;
-            this.txtInfo.Size = new System.Drawing.Size(145, 13);
-            this.txtInfo.TabIndex = 6;
-            this.txtInfo.Text = "http://ssissftp.codeplex.com";
+            this.btCancel.Click += new System.EventHandler(this.btCancel_Click);
             // 
             // tabControl1
             // 
@@ -112,7 +103,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 25);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(386, 154);
+            this.tabPage1.Size = new System.Drawing.Size(386, 143);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Connection";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -170,10 +161,10 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.comboBox2);
+            this.tabPage2.Controls.Add(this.cmbRemote);
             this.tabPage2.Controls.Add(this.optFileVariable);
             this.tabPage2.Controls.Add(this.optFileConnection);
-            this.tabPage2.Controls.Add(this.comboBox1);
+            this.tabPage2.Controls.Add(this.cmbLocal);
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.cmbFilesList);
             this.tabPage2.Controls.Add(this.btDestinationFile);
@@ -189,6 +180,46 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Action";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // cmbRemote
+            // 
+            this.cmbRemote.FormattingEnabled = true;
+            this.cmbRemote.Location = new System.Drawing.Point(98, 81);
+            this.cmbRemote.Name = "cmbRemote";
+            this.cmbRemote.Size = new System.Drawing.Size(247, 21);
+            this.cmbRemote.TabIndex = 48;
+            // 
+            // optFileVariable
+            // 
+            this.optFileVariable.AutoSize = true;
+            this.optFileVariable.Location = new System.Drawing.Point(219, 58);
+            this.optFileVariable.Name = "optFileVariable";
+            this.optFileVariable.Size = new System.Drawing.Size(128, 17);
+            this.optFileVariable.TabIndex = 47;
+            this.optFileVariable.Text = "Variable / Expression ";
+            this.optFileVariable.UseVisualStyleBackColor = true;
+            this.optFileVariable.Click += new System.EventHandler(this.optFileVariable_Click);
+            // 
+            // optFileConnection
+            // 
+            this.optFileConnection.AutoSize = true;
+            this.optFileConnection.Checked = true;
+            this.optFileConnection.Location = new System.Drawing.Point(98, 58);
+            this.optFileConnection.Name = "optFileConnection";
+            this.optFileConnection.Size = new System.Drawing.Size(98, 17);
+            this.optFileConnection.TabIndex = 46;
+            this.optFileConnection.TabStop = true;
+            this.optFileConnection.Text = "File Connection";
+            this.optFileConnection.UseVisualStyleBackColor = true;
+            this.optFileConnection.Click += new System.EventHandler(this.optFileConnection_Click);
+            // 
+            // cmbLocal
+            // 
+            this.cmbLocal.FormattingEnabled = true;
+            this.cmbLocal.Location = new System.Drawing.Point(98, 33);
+            this.cmbLocal.Name = "cmbLocal";
+            this.cmbLocal.Size = new System.Drawing.Size(247, 21);
+            this.cmbLocal.TabIndex = 39;
             // 
             // label1
             // 
@@ -216,6 +247,7 @@
             this.btDestinationFile.TabIndex = 36;
             this.btDestinationFile.Text = "f(x)";
             this.btDestinationFile.UseVisualStyleBackColor = true;
+            this.btDestinationFile.Click += new System.EventHandler(this.btDestinationFile_Click);
             // 
             // lbDestinationFile
             // 
@@ -262,45 +294,17 @@
             this.cmbAction.Name = "cmbAction";
             this.cmbAction.Size = new System.Drawing.Size(282, 21);
             this.cmbAction.TabIndex = 29;
-            this.cmbAction.SelectedIndexChanged += new System.EventHandler(this.cmbAction_SelectedIndexChanged);
             // 
-            // comboBox1
+            // linkLabelCodeplex
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(98, 33);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(247, 21);
-            this.comboBox1.TabIndex = 39;
-            // 
-            // optFileVariable
-            // 
-            this.optFileVariable.AutoSize = true;
-            this.optFileVariable.Location = new System.Drawing.Point(219, 58);
-            this.optFileVariable.Name = "optFileVariable";
-            this.optFileVariable.Size = new System.Drawing.Size(128, 17);
-            this.optFileVariable.TabIndex = 47;
-            this.optFileVariable.Text = "Variable / Expression ";
-            this.optFileVariable.UseVisualStyleBackColor = true;
-            // 
-            // optFileConnection
-            // 
-            this.optFileConnection.AutoSize = true;
-            this.optFileConnection.Checked = true;
-            this.optFileConnection.Location = new System.Drawing.Point(98, 58);
-            this.optFileConnection.Name = "optFileConnection";
-            this.optFileConnection.Size = new System.Drawing.Size(98, 17);
-            this.optFileConnection.TabIndex = 46;
-            this.optFileConnection.TabStop = true;
-            this.optFileConnection.Text = "File Connection";
-            this.optFileConnection.UseVisualStyleBackColor = true;
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(98, 81);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(247, 21);
-            this.comboBox2.TabIndex = 48;
+            this.linkLabelCodeplex.AutoSize = true;
+            this.linkLabelCodeplex.Location = new System.Drawing.Point(7, 198);
+            this.linkLabelCodeplex.Name = "linkLabelCodeplex";
+            this.linkLabelCodeplex.Size = new System.Drawing.Size(141, 13);
+            this.linkLabelCodeplex.TabIndex = 10;
+            this.linkLabelCodeplex.TabStop = true;
+            this.linkLabelCodeplex.Text = "http://ssissftp.codeplex.com";
+            this.linkLabelCodeplex.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelCodeplex_LinkClicked);
             // 
             // frmEditProperties
             // 
@@ -309,8 +313,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btCancel;
             this.ClientSize = new System.Drawing.Size(402, 223);
+            this.Controls.Add(this.linkLabelCodeplex);
             this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.txtInfo);
             this.Controls.Add(this.btCancel);
             this.Controls.Add(this.btOK);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -320,6 +324,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Edit SFTP Properties";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmEditProperties_FormClosing);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
@@ -334,7 +339,6 @@
 
         private System.Windows.Forms.Button btOK;
         private System.Windows.Forms.Button btCancel;
-        private System.Windows.Forms.TextBox txtInfo;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
@@ -355,7 +359,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.RadioButton optFileVariable;
         private System.Windows.Forms.RadioButton optFileConnection;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox cmbLocal;
+        private System.Windows.Forms.ComboBox cmbRemote;
+        private System.Windows.Forms.LinkLabel linkLabelCodeplex;
     }
 }

@@ -15,12 +15,12 @@ namespace SSISSFTPTask100.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask100.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask100," +
-        "Version=1.0.0.42," +
+        "Version=1.1.0.0," +
         "Culture=Neutral," +
         "PublicKeyToken=4598105d4a713364",
         IconResource = "SSISSFTPTask100.sftp.ico",
         TaskContact = "cosmin.vlasiu@gmail.com",
-        RequiredProductLevel = DTSProductLevel.Standard
+        RequiredProductLevel = DTSProductLevel.None
         )]
     public class SSISSFTTask : Task, IDTSComponentPersist
     {
@@ -51,6 +51,9 @@ namespace SSISSFTPTask100.SSIS
 
         [Category("File Transfer"), Description("Local File")]
         public string LocalPath { get; set; }
+
+        [Category("File Transfer"), Description("Source from File Connector or from Variable/Expression")]
+        public string LocalPathSourceType { get; set; }
 
         [Category("File Transfer"), Description("Remote File")]
         public string RemotePath { get; set; }
@@ -420,7 +423,7 @@ namespace SSISSFTPTask100.SSIS
 
                 expressionEvaluatorClass.Evaluate(DtsConvert.GetExtendedInterface(variableDispenser), out variableObject, false);
             }
-            catch (Exception) //maybe it's a fixed URL
+            catch (Exception) // for hardcoded values
             {
                 variableObject = mappedParam;
             }
@@ -516,25 +519,28 @@ namespace SSISSFTPTask100.SSIS
         {
             XmlElement taskElement = doc.CreateElement(string.Empty, "SSISSFTPTask", string.Empty);
 
-            XmlAttribute sftpServer = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_SERVER, string.Empty);
+            XmlAttribute sftpServer = doc.CreateAttribute(string.Empty, Keys.FTP_SERVER, string.Empty);
             sftpServer.Value = SFTPServer;
 
-            XmlAttribute sftpUser = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_USER, string.Empty);
+            XmlAttribute sftpUser = doc.CreateAttribute(string.Empty, Keys.FTP_USER, string.Empty);
             sftpUser.Value = SFTPUser;
 
-            XmlAttribute sftpPassword = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_PASSWORD, string.Empty);
+            XmlAttribute sftpPassword = doc.CreateAttribute(string.Empty, Keys.FTP_PASSWORD, string.Empty);
             sftpPassword.Value = SFTPPassword;
 
-            XmlAttribute sftpSourceFile = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_LOCAL_PATH, string.Empty);
+            XmlAttribute sftpSourceFile = doc.CreateAttribute(string.Empty, Keys.FTP_LOCAL_PATH, string.Empty);
             sftpSourceFile.Value = LocalPath;
 
-            XmlAttribute sftpDestinationFile = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_REMOTE_PATH, string.Empty);
+            XmlAttribute sftpSourceFileType = doc.CreateAttribute(string.Empty, Keys.FTP_LOCAL_PATH_SOURCE_TYPE, string.Empty);
+            sftpSourceFileType.Value = LocalPathSourceType;
+
+            XmlAttribute sftpDestinationFile = doc.CreateAttribute(string.Empty, Keys.FTP_REMOTE_PATH, string.Empty);
             sftpDestinationFile.Value = RemotePath;
 
-            XmlAttribute sftpActionLists = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_ACTION_LIST, string.Empty);
+            XmlAttribute sftpActionLists = doc.CreateAttribute(string.Empty, Keys.FTP_ACTION_LIST, string.Empty);
             sftpActionLists.Value = TaskAction;
 
-            XmlAttribute sftpFileLists = doc.CreateAttribute(string.Empty, NamedStringMembers.FTP_FILES_LIST, string.Empty);
+            XmlAttribute sftpFileLists = doc.CreateAttribute(string.Empty, Keys.FTP_FILES_LIST, string.Empty);
             sftpFileLists.Value = FilesList;
 
             taskElement.Attributes.Append(sftpServer);
@@ -542,6 +548,7 @@ namespace SSISSFTPTask100.SSIS
             taskElement.Attributes.Append(sftpPassword);
 
             taskElement.Attributes.Append(sftpSourceFile);
+            taskElement.Attributes.Append(sftpSourceFileType);
             taskElement.Attributes.Append(sftpDestinationFile);
             taskElement.Attributes.Append(sftpActionLists);
             taskElement.Attributes.Append(sftpFileLists);
@@ -558,13 +565,14 @@ namespace SSISSFTPTask100.SSIS
 
             try
             {
-                SFTPServer = node.Attributes.GetNamedItem(NamedStringMembers.FTP_SERVER).Value;
-                SFTPUser = node.Attributes.GetNamedItem(NamedStringMembers.FTP_USER).Value;
-                SFTPPassword = node.Attributes.GetNamedItem(NamedStringMembers.FTP_PASSWORD).Value;
-                TaskAction = node.Attributes.GetNamedItem(NamedStringMembers.FTP_ACTION_LIST).Value;
-                LocalPath = node.Attributes.GetNamedItem(NamedStringMembers.FTP_LOCAL_PATH).Value;
-                RemotePath = node.Attributes.GetNamedItem(NamedStringMembers.FTP_REMOTE_PATH).Value;
-                FilesList = node.Attributes.GetNamedItem(NamedStringMembers.FTP_FILES_LIST).Value;
+                SFTPServer = node.Attributes.GetNamedItem(Keys.FTP_SERVER).Value;
+                SFTPUser = node.Attributes.GetNamedItem(Keys.FTP_USER).Value;
+                SFTPPassword = node.Attributes.GetNamedItem(Keys.FTP_PASSWORD).Value;
+                TaskAction = node.Attributes.GetNamedItem(Keys.FTP_ACTION_LIST).Value;
+                LocalPath = node.Attributes.GetNamedItem(Keys.FTP_LOCAL_PATH).Value;
+                LocalPathSourceType = node.Attributes.GetNamedItem(Keys.FTP_LOCAL_PATH_SOURCE_TYPE).Value;
+                RemotePath = node.Attributes.GetNamedItem(Keys.FTP_REMOTE_PATH).Value;
+                FilesList = node.Attributes.GetNamedItem(Keys.FTP_FILES_LIST).Value;
             }
             catch
             {
