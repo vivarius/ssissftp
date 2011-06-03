@@ -77,7 +77,7 @@
     <Compile Include="DilffieHellman\mono\PrimeGeneratorBase.cs" />
     <Compile Include="DilffieHellman\mono\SecurityParser.cs" />
     <Compile Include="DilffieHellman\mono\SequentialSearchPrimeGeneratorBase.cs" />
-    <Compile Include="NamedItems.cs" />
+    <Compile Include="Keys.cs" />
     <Compile Include="Org.Mentalis.Security\Authentication\AlphaValidator.cs" />
     <Compile Include="Org.Mentalis.Security\Authentication\AuthenticationStructures.cs" />
     <Compile Include="Org.Mentalis.Security\Authentication\CharacterValidator.cs" />

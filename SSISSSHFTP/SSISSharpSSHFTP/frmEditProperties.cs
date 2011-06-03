@@ -32,24 +32,17 @@ namespace SSISSFTPTask100
                 throw new ArgumentNullException("taskHost");
             }
 
-            if (_taskHost.Properties[Keys.FTP_LOCAL_PATH_SOURCE_TYPE].GetValue(_taskHost) != null)
-            {
-                if (_taskHost.Properties[Keys.FTP_LOCAL_PATH_SOURCE_TYPE].GetValue(_taskHost).ToString() == Keys.TRUE)
-                {
-                    LoadLocalFileConnections();
-                }
-                else
-                {
-                    LoadLocalVariables();
-                }
-            }
-
             FillConnectionInfoPanel();
             FillDetailsPanel();
         }
         #endregion
 
         #region Events
+
+        private void btCancel_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
 
         private void btOK_Click(object sender, EventArgs e)
         {
@@ -59,10 +52,14 @@ namespace SSISSFTPTask100
             _taskHost.Properties[Keys.FTP_PASSWORD].SetValue(_taskHost, cmbPassword.Text);
 
             _taskHost.Properties[Keys.FTP_ACTION_LIST].SetValue(_taskHost, cmbAction.SelectedItem);
+
             _taskHost.Properties[Keys.FTP_LOCAL_PATH].SetValue(_taskHost, cmbLocal.Text);
-            _taskHost.Properties[Keys.FTP_LOCAL_PATH_SOURCE_TYPE].SetValue(_taskHost, optFileConnection.Checked);
+            _taskHost.Properties[Keys.FTP_LOCAL_PATH_SOURCE_TYPE].SetValue(_taskHost, optFileConnection.Checked ? Keys.TRUE : Keys.FALSE);
+            _taskHost.Properties[Keys.FTP_LOCAL_PATH_OVERWRITE].SetValue(_taskHost, chkOverwrite.Checked ? Keys.TRUE : Keys.FALSE);
+
             _taskHost.Properties[Keys.FTP_REMOTE_PATH].SetValue(_taskHost, cmbRemote.Text);
-            _taskHost.Properties[Keys.FTP_FILES_LIST].SetValue(_taskHost, cmbFilesList.SelectedItem);
+
+            _taskHost.Properties[Keys.FTP_FILES_LIST].SetValue(_taskHost, cmbFilesList.SelectedItem ?? string.Empty);
 
             DialogResult = DialogResult.OK;
             Close();
@@ -127,21 +124,23 @@ namespace SSISSFTPTask100
 
         #region Methods
 
-        private List<string> LoadVariables(string parameterInfo)
+        private List<string> LoadUserVariables(string parameterInfo)
         {
-            return _variables.Cast<Variable>().Where(variable => Type.GetTypeCode(Type.GetType(parameterInfo)) == variable.DataType).Select(variable => string.Format("@[{0}::{1}]", variable.Namespace, variable.Name)).ToList();
+            return (from Variable var in _variables
+                    where var.DataType == Type.GetTypeCode(Type.GetType(parameterInfo)) && var.Namespace.ToLower() == "user"
+                    select string.Format("@[{0}::{1}]", var.Namespace, var.Name)).ToList();
         }
 
         private void LoadLocalVariables()
         {
             cmbLocal.Items.Clear();
-            cmbLocal.Items.AddRange(LoadVariables("System.String").ToArray());
+            cmbLocal.Items.AddRange(LoadUserVariables("System.String").ToArray());
         }
 
         private void LoadRemoteVariables()
         {
             cmbRemote.Items.Clear();
-            cmbRemote.Items.AddRange(LoadVariables("System.String").ToArray());
+            cmbRemote.Items.AddRange(LoadUserVariables("System.String").ToArray());
         }
 
         private void LoadLocalFileConnections()
@@ -158,26 +157,25 @@ namespace SSISSFTPTask100
         {
             try
             {
-                foreach (var variable in _variables.Cast<Variable>().Where(variable => variable.Namespace == @"User").Where(variable => variable.DataType == TypeCode.String))
+                foreach (var variable in (from Variable var in _variables
+                                          where var.DataType == Type.GetTypeCode(Type.GetType("System.String")) &&
+                                                var.Namespace.ToLower() == "user"
+                                          select var))
                 {
                     cmbServer.Items.Add(string.Format("@[{0}::{1}]", variable.Namespace, variable.Name));
                     cmbUser.Items.Add(string.Format("@[{0}::{1}]", variable.Namespace, variable.Name));
                     cmbPassword.Items.Add(string.Format("@[{0}::{1}]", variable.Namespace, variable.Name));
                 }
 
-                cmbServer.SelectedIndex = (_taskHost.Properties[Keys.FTP_SERVER].GetValue(_taskHost) == null)
-                                            ? -1
-                                            : cmbServer.FindString(_taskHost.Properties[Keys.FTP_SERVER].GetValue(_taskHost).ToString());
-                cmbUser.SelectedIndex = (_taskHost.Properties[Keys.FTP_SERVER].GetValue(_taskHost) == null)
-                                            ? -1
-                                            : cmbUser.FindString(_taskHost.Properties[Keys.FTP_USER].GetValue(_taskHost).ToString());
-                cmbPassword.SelectedIndex = (_taskHost.Properties[Keys.FTP_SERVER].GetValue(_taskHost) == null)
-                                            ? -1
-                                            : cmbPassword.FindString(_taskHost.Properties[Keys.FTP_PASSWORD].GetValue(_taskHost).ToString());
+                cmbServer.SelectedIndex = GetSelectedComboBoxIndex(cmbServer, _taskHost.Properties[Keys.FTP_SERVER].GetValue(_taskHost));
+
+                cmbUser.SelectedIndex = GetSelectedComboBoxIndex(cmbUser, _taskHost.Properties[Keys.FTP_USER].GetValue(_taskHost));
+
+                cmbPassword.SelectedIndex = GetSelectedComboBoxIndex(cmbPassword, _taskHost.Properties[Keys.FTP_PASSWORD].GetValue(_taskHost));
             }
             catch (Exception exception)
             {
-                //go go go
+
             }
         }
 
@@ -186,46 +184,88 @@ namespace SSISSFTPTask100
             try
             {
                 cmbAction.Items.AddRange(Communication.ActionTask.ToArray());
+
                 if (_taskHost.Properties[Keys.FTP_ACTION_LIST].GetValue(_taskHost) != null)
                     cmbAction.SelectedIndex = cmbAction.FindString(_taskHost.Properties[Keys.FTP_ACTION_LIST].GetValue(_taskHost).ToString());
 
+                if (_taskHost.Properties[Keys.FTP_LOCAL_PATH_SOURCE_TYPE].GetValue(_taskHost) != null)
+                {
+                    if (_taskHost.Properties[Keys.FTP_LOCAL_PATH_SOURCE_TYPE].GetValue(_taskHost).ToString() == Keys.TRUE)
+                    {
+                        optFileConnection.Checked = true;
+                        btSourceFile.Enabled = false;
+                        LoadLocalFileConnections();
+                    }
+                    else
+                    {
+                        btSourceFile.Enabled = true;
+                        optFileVariable.Checked = true;
+                        LoadLocalVariables();
+                    }
+                }
+                else
+                {
+                    btSourceFile.Enabled = false;
+                    optFileConnection.Checked = true;
+                    LoadLocalFileConnections();
+                }
+
+                if (_taskHost.Properties[Keys.FTP_LOCAL_PATH_OVERWRITE].GetValue(_taskHost) != null)
+                {
+                    chkOverwrite.Checked = _taskHost.Properties[Keys.FTP_LOCAL_PATH_OVERWRITE].GetValue(_taskHost).ToString() == Keys.TRUE;
+                }
+                else
+                {
+                    chkOverwrite.Checked = true;
+                }
 
                 LoadRemoteVariables();
 
-                foreach (var variable in _variables.Cast<Variable>().Where(variable => variable.Namespace == @"User").Where(variable => variable.DataType == TypeCode.Object))
+                foreach (var variable in (from Variable var in _variables
+                                          where var.DataType == Type.GetTypeCode(typeof(object)) &&
+                                                var.Namespace.ToLower() == "user"
+                                          select var))
                 {
                     cmbFilesList.Items.Add(string.Format("@[{0}::{1}]", variable.Namespace, variable.Name));
                 }
 
-                cmbFilesList.SelectedIndex = (_taskHost.Properties[Keys.FTP_FILES_LIST].GetValue(_taskHost) == null)
-                                            ? -1
-                                            : cmbFilesList.FindString(_taskHost.Properties[Keys.FTP_FILES_LIST].GetValue(_taskHost).ToString());
+                cmbFilesList.SelectedIndex = GetSelectedComboBoxIndex(cmbFilesList, _taskHost.Properties[Keys.FTP_FILES_LIST].GetValue(_taskHost));
 
-                cmbLocal.SelectedIndex = (_taskHost.Properties[Keys.FTP_LOCAL_PATH].GetValue(_taskHost) == null)
-                                             ? -1
-                                             : cmbLocal.FindString(_taskHost.Properties[Keys.FTP_LOCAL_PATH].GetValue(_taskHost).ToString());
+                cmbLocal.SelectedIndex = GetSelectedComboBoxIndex(cmbLocal, _taskHost.Properties[Keys.FTP_LOCAL_PATH].GetValue(_taskHost));
 
-                cmbRemote.SelectedIndex = (_taskHost.Properties[Keys.FTP_REMOTE_PATH].GetValue(_taskHost) == null)
-                                             ? -1
-                                             : cmbRemote.FindString(_taskHost.Properties[Keys.FTP_REMOTE_PATH].GetValue(_taskHost).ToString());
+                cmbRemote.SelectedIndex = GetSelectedComboBoxIndex(cmbRemote, _taskHost.Properties[Keys.FTP_REMOTE_PATH].GetValue(_taskHost));
             }
             catch
             {
-                //go go go
+
             }
         }
 
-        private void btCancel_Click(object sender, EventArgs e)
+        private static int GetSelectedComboBoxIndex(ComboBox comboBox, object value)
         {
-            DialogResult = DialogResult.Cancel;
+            int retValue = -1;
+
+            if (value == null)
+                return retValue;
+
+            if (string.IsNullOrEmpty(value.ToString()))
+                return retValue;
+
+            string strValue = value.ToString();
+
+            if (comboBox.FindString(strValue) > -1)
+            {
+                retValue = comboBox.FindString(strValue);
+            }
+            else
+            {
+                comboBox.Items.Add(strValue);
+                retValue = comboBox.FindString(strValue);
+            }
+
+            return retValue;
         }
 
         #endregion
-
-        private void frmEditProperties_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (DialogResult == DialogResult.Cancel)
-                e.Cancel = true;
-        }
     }
 }
