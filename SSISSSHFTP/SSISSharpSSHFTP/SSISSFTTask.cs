@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
@@ -225,10 +226,14 @@ namespace SSISSFTPTask100.SSIS
             bool refire = false;
             try
             {
-                GetNeededVariables(variableDispenser, SFTPServer);
-                GetNeededVariables(variableDispenser, SFTPUser);
-                GetNeededVariables(variableDispenser, SFTPPassword);
-                GetNeededVariables(variableDispenser, LocalPath);
+                //GetNeededVariables(variableDispenser, SFTPServer);
+                //GetNeededVariables(variableDispenser, SFTPUser);
+                //GetNeededVariables(variableDispenser, SFTPPassword);
+                //GetNeededVariables(variableDispenser, LocalPath);
+                //GetNeededVariables(variableDispenser, RemotePath);
+                //GetNeededVariables(variableDispenser, FilesList, true);
+
+                GetNeededVariables(variableDispenser);
 
                 if (!string.IsNullOrEmpty(LocalPath))
                 {
@@ -237,9 +242,6 @@ namespace SSISSFTPTask100.SSIS
                                     ? connections[LocalPath].ConnectionString
                                     : EvaluateExpression(LocalPath, variableDispenser).ToString();
                 }
-
-                GetNeededVariables(variableDispenser, RemotePath);
-                GetNeededVariables(variableDispenser, FilesList, true);
 
                 variableDispenser.GetVariables(ref _vars);
 
@@ -441,23 +443,140 @@ namespace SSISSFTPTask100.SSIS
             return variableObject;
         }
 
-        private void GetNeededVariables(VariableDispenser variableDispenser, string variableExpression, bool forWrite = false)
+        /// <summary>
+        /// Determines whether [is variable in lock for read or write] [the specified lock for read].
+        /// </summary>
+        /// <param name="lockForRead">The lock for read.</param>
+        /// <param name="variable">The variable.</param>
+        /// <returns>
+        /// 	<c>true</c> if [is variable in lock for read or write] [the specified lock for read]; otherwise, <c>false</c>.
+        /// </returns>
+        private static bool IsVariableInLockForReadOrWrite(List<string> lockForRead, string variable)
         {
-            var mappedParams = variableExpression.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
+            bool retVal = lockForRead.Contains(variable);
 
-            for (int index = 0; index < mappedParams.Length - 1; index++)
+            if (!retVal)
             {
-                try
+                lockForRead.Add(variable);
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// Gets the needed variables.
+        /// </summary>
+        /// <param name="variableDispenser">The variable dispenser.</param>
+        private void GetNeededVariables(VariableDispenser variableDispenser)
+        {
+
+            List<string> lockForRead = new List<string>();
+
+            {
+                var mappedParams = SFTPServer.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
+
+                for (int index = 0; index < mappedParams.Length - 1; index++)
                 {
-                    string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
-                    if (forWrite)
-                        variableDispenser.LockForWrite(param);
-                    else
-                        variableDispenser.LockForRead(param);
+                    try
+                    {
+                        string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        if (!IsVariableInLockForReadOrWrite(lockForRead, param))
+                            variableDispenser.LockForRead(param);
+                    }
+                    catch
+                    {
+                        //We will continue...
+                    }
                 }
-                catch
+            }
+
+            {
+                var mappedParams = SFTPUser.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
+
+                for (int index = 0; index < mappedParams.Length - 1; index++)
                 {
-                    //We will continue...
+                    try
+                    {
+                        string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        if (!IsVariableInLockForReadOrWrite(lockForRead, param))
+                            variableDispenser.LockForRead(param);
+                    }
+                    catch
+                    {
+                        //We will continue...
+                    }
+                }
+            }
+
+            {
+                var mappedParams = SFTPPassword.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
+
+                for (int index = 0; index < mappedParams.Length - 1; index++)
+                {
+                    try
+                    {
+                        string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        if (!IsVariableInLockForReadOrWrite(lockForRead, param))
+                            variableDispenser.LockForRead(param);
+                    }
+                    catch
+                    {
+                        //We will continue...
+                    }
+                }
+            }
+
+            {
+                var mappedParams = LocalPath.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
+
+                for (int index = 0; index < mappedParams.Length - 1; index++)
+                {
+                    try
+                    {
+                        string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        if (!IsVariableInLockForReadOrWrite(lockForRead, param))
+                            variableDispenser.LockForRead(param);
+                    }
+                    catch
+                    {
+                        //We will continue...
+                    }
+                }
+            }
+
+            {
+                var mappedParams = RemotePath.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
+
+                for (int index = 0; index < mappedParams.Length - 1; index++)
+                {
+                    try
+                    {
+                        string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        if (!IsVariableInLockForReadOrWrite(lockForRead, param))
+                            variableDispenser.LockForRead(param);
+                    }
+                    catch
+                    {
+                        //We will continue...
+                    }
+                }
+            }
+
+            {
+                var mappedParams = FilesList.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
+
+                for (int index = 0; index < mappedParams.Length - 1; index++)
+                {
+                    try
+                    {
+                        string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        if (!IsVariableInLockForReadOrWrite(lockForRead, param))
+                            variableDispenser.LockForWrite(param);
+                    }
+                    catch
+                    {
+                        //We will continue...
+                    }
                 }
             }
         }
