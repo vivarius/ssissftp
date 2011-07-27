@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Tamir.SharpSsh.java.util;
 using Tamir.SharpSsh.jsch;
@@ -84,17 +85,17 @@ namespace Tamir.SharpSsh
 
         public void Get(string[] fromFilePaths)
         {
-            for (int i = 0; i < fromFilePaths.Length; i++)
+            foreach (string t in fromFilePaths)
             {
-                Get(fromFilePaths[i]);
+                Get(t);
             }
         }
 
         public void Get(string[] fromFilePaths, string toDirPath)
         {
-            for (int i = 0; i < fromFilePaths.Length; i++)
+            foreach (string t in fromFilePaths)
             {
-                Get(fromFilePaths[i], toDirPath);
+                Get(t, toDirPath);
             }
         }
 
@@ -113,24 +114,44 @@ namespace Tamir.SharpSsh
 
         public void Put(string[] fromFilePaths)
         {
-            for (int i = 0; i < fromFilePaths.Length; i++)
+            foreach (string t in fromFilePaths)
             {
-                Put(fromFilePaths[i]);
+                Put(t);
             }
         }
 
         public void Put(string[] fromFilePaths, string toDirPath)
         {
-            for (int i = 0; i < fromFilePaths.Length; i++)
+            foreach (string t in fromFilePaths)
             {
-                Put(fromFilePaths[i], toDirPath);
+                Put(t, toDirPath);
             }
         }
 
         public override void Put(string fromFilePath, string toFilePath)
         {
-            cancelled = false;
-            SftpChannel.put(fromFilePath, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
+            if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
+            {
+                int lastBackSlashIndex = fromFilePath.LastIndexOf('\\');
+
+                string dir = fromFilePath.Substring(0, lastBackSlashIndex + 1);
+                string pattern = fromFilePath.Substring(lastBackSlashIndex + 1, fromFilePath.Length - lastBackSlashIndex - 1);
+
+                string[] filePaths = Directory.GetFiles(dir, pattern);
+
+                foreach (var filePath in filePaths)
+                {
+                    FileInfo fileInfo = new FileInfo(filePath);
+                    SftpChannel.put(filePath,
+                                    (toFilePath[toFilePath.Length - 1] == '\\')
+                                        ? toFilePath + fileInfo.Name
+                                        : toFilePath + '\\' + fileInfo.Name,
+                                    m_monitor,
+                                    ChannelSftp.OVERWRITE);
+                }
+            }
+            else
+                SftpChannel.put(fromFilePath, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
         }
 
         //MkDir
@@ -144,7 +165,24 @@ namespace Tamir.SharpSsh
         public List<string> GetFileList(string path)
         {
             return (from ChannelSftp.LsEntry entry in SftpChannel.ls(path)
-                    select entry.getFilename().ToString()).ToList();
+                    where !entry.getAttrs().isDir()
+                    select entry.getFilename()).Select(f => (string)f).ToList();
+        }
+
+        //Ls
+        public List<string> GetFileListWithPattern(string path, string pattern)
+        {
+            List<string> list = new List<string>();
+
+            foreach (ChannelSftp.LsEntry entry in SftpChannel.ls(path))
+            {
+                if (!entry.getAttrs().isDir())
+                {
+                    list.Add(entry.getFilename());
+                }
+            }
+
+            return list;
         }
 
         //Delete

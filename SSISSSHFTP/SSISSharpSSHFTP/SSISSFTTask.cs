@@ -16,7 +16,7 @@ namespace SSISSFTPTask100.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask100.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask100," +
-        "Version=1.1.0.23," +
+        "Version=1.1.0.64," +
         "Culture=Neutral," +
         "PublicKeyToken=4598105d4a713364",
         IconResource = "SSISSFTPTask100.sftp.ico",
@@ -205,6 +205,7 @@ namespace SSISSFTPTask100.SSIS
 
             #endregion
 
+
             return isBaseValid ? DTSExecResult.Success : DTSExecResult.Failure;
         }
 
@@ -224,26 +225,17 @@ namespace SSISSFTPTask100.SSIS
         public override DTSExecResult Execute(Connections connections, VariableDispenser variableDispenser, IDTSComponentEvents componentEvents, IDTSLogging log, object transaction)
         {
             bool refire = false;
+
+            GetNeededVariables(variableDispenser);
+
             try
             {
-                //GetNeededVariables(variableDispenser, SFTPServer);
-                //GetNeededVariables(variableDispenser, SFTPUser);
-                //GetNeededVariables(variableDispenser, SFTPPassword);
-                //GetNeededVariables(variableDispenser, LocalPath);
-                //GetNeededVariables(variableDispenser, RemotePath);
-                //GetNeededVariables(variableDispenser, FilesList, true);
-
-                GetNeededVariables(variableDispenser);
-
                 if (!string.IsNullOrEmpty(LocalPath))
                 {
-
                     LocalPath = LocalPathIsConnectionFileType == Keys.TRUE
                                     ? connections[LocalPath].ConnectionString
                                     : EvaluateExpression(LocalPath, variableDispenser).ToString();
                 }
-
-                variableDispenser.GetVariables(ref _vars);
 
                 componentEvents.FireInformation(0, "SSISSFTTask", "START SFTP Task", string.Empty, 0, ref refire);
                 componentEvents.FireInformation(0, "SSISSFTTask", string.Format("SFTP Server: \"{0}\", User \"{1}\"", EvaluateExpression(SFTPServer, variableDispenser), EvaluateExpression(SFTPUser, variableDispenser)), string.Empty, 0, ref refire);
@@ -387,19 +379,16 @@ namespace SSISSFTPTask100.SSIS
 
                     componentEvents.FireInformation(0, "SSISSFTTask", retValue.Count + " file(s) founded", string.Empty, 0, ref refire);
 
-                    componentEvents.FireInformation(0, "SSISSFTTask", string.Format("The unspaced object variable {0} comes from {1}", GetVariableFromNamespaceContext(FilesList), FilesList), string.Empty, 0, ref refire);
-
-                    _vars[GetVariableFromNamespaceContext(FilesList)].Value = (object)retValue;
+                    _vars[GetVariableFromNamespaceContext(FilesList)].Value = retValue;
 
                     componentEvents.FireInformation(0, "SSISSFTTask", GetVariableFromNamespaceContext(FilesList) + " obtained the list of files", string.Empty, 0, ref refire);
-
                 }
 
                 componentEvents.FireInformation(0, "SSISSFTTask", "SFTP Task ended succesfully", string.Empty, 0, ref refire);
             }
             catch (Exception ex)
             {
-                componentEvents.FireError(0, "SSISAssemblyTask", string.Format("Problem & Source : {0} - {1} - {2}", ex.Message, ex.Source, ex.StackTrace), "", 0);
+                componentEvents.FireError(0, "SSISSFTTask", string.Format("Problem & Source : {0} - {1} - {2}", ex.Message, ex.Source, ex.StackTrace), "", 0);
             }
             finally
             {
@@ -451,13 +440,13 @@ namespace SSISSFTPTask100.SSIS
         /// <returns>
         /// 	<c>true</c> if [is variable in lock for read or write] [the specified lock for read]; otherwise, <c>false</c>.
         /// </returns>
-        private static bool IsVariableInLockForReadOrWrite(List<string> lockForRead, string variable)
+        private static bool IsVariableInLockForReadOrWrite(List<string> lockForReadWrite, string variable)
         {
-            bool retVal = lockForRead.Contains(variable);
+            bool retVal = lockForReadWrite.Contains(variable);
 
             if (!retVal)
             {
-                lockForRead.Add(variable);
+                lockForReadWrite.Add(variable);
             }
 
             return retVal;
@@ -470,17 +459,17 @@ namespace SSISSFTPTask100.SSIS
         private void GetNeededVariables(VariableDispenser variableDispenser)
         {
 
-            List<string> lockForRead = new List<string>();
+            List<string> lockForReadWrite = new List<string>();
 
             {
                 var mappedParams = SFTPServer.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
 
-                for (int index = 0; index < mappedParams.Length - 1; index++)
+                foreach (string t in mappedParams)
                 {
                     try
                     {
-                        string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
-                        if (!IsVariableInLockForReadOrWrite(lockForRead, param))
+                        string param = t.Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        if (!IsVariableInLockForReadOrWrite(lockForReadWrite, param))
                             variableDispenser.LockForRead(param);
                     }
                     catch
@@ -493,12 +482,12 @@ namespace SSISSFTPTask100.SSIS
             {
                 var mappedParams = SFTPUser.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
 
-                for (int index = 0; index < mappedParams.Length - 1; index++)
+                foreach (string t in mappedParams)
                 {
                     try
                     {
-                        string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
-                        if (!IsVariableInLockForReadOrWrite(lockForRead, param))
+                        string param = t.Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        if (!IsVariableInLockForReadOrWrite(lockForReadWrite, param))
                             variableDispenser.LockForRead(param);
                     }
                     catch
@@ -511,12 +500,12 @@ namespace SSISSFTPTask100.SSIS
             {
                 var mappedParams = SFTPPassword.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
 
-                for (int index = 0; index < mappedParams.Length - 1; index++)
+                foreach (string t in mappedParams)
                 {
                     try
                     {
-                        string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
-                        if (!IsVariableInLockForReadOrWrite(lockForRead, param))
+                        string param = t.Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        if (!IsVariableInLockForReadOrWrite(lockForReadWrite, param))
                             variableDispenser.LockForRead(param);
                     }
                     catch
@@ -529,12 +518,12 @@ namespace SSISSFTPTask100.SSIS
             {
                 var mappedParams = LocalPath.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
 
-                for (int index = 0; index < mappedParams.Length - 1; index++)
+                foreach (string t in mappedParams)
                 {
                     try
                     {
-                        string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
-                        if (!IsVariableInLockForReadOrWrite(lockForRead, param))
+                        string param = t.Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        if (!IsVariableInLockForReadOrWrite(lockForReadWrite, param))
                             variableDispenser.LockForRead(param);
                     }
                     catch
@@ -547,12 +536,12 @@ namespace SSISSFTPTask100.SSIS
             {
                 var mappedParams = RemotePath.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
 
-                for (int index = 0; index < mappedParams.Length - 1; index++)
+                foreach (string t in mappedParams)
                 {
                     try
                     {
-                        string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
-                        if (!IsVariableInLockForReadOrWrite(lockForRead, param))
+                        string param = t.Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        if (!IsVariableInLockForReadOrWrite(lockForReadWrite, param))
                             variableDispenser.LockForRead(param);
                     }
                     catch
@@ -565,13 +554,13 @@ namespace SSISSFTPTask100.SSIS
             {
                 var mappedParams = FilesList.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
 
-                for (int index = 0; index < mappedParams.Length - 1; index++)
+                foreach (string t in mappedParams)
                 {
                     try
                     {
-                        string param = mappedParams[index].Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
-                        if (!IsVariableInLockForReadOrWrite(lockForRead, param))
-                            variableDispenser.LockForWrite(param);
+                        string param = t.Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        if (!IsVariableInLockForReadOrWrite(lockForReadWrite, param))
+                            variableDispenser.LockOneForWrite(param, ref _vars);
                     }
                     catch
                     {
@@ -579,6 +568,8 @@ namespace SSISSFTPTask100.SSIS
                     }
                 }
             }
+
+            //variableDispenser.GetVariables(ref _vars);
         }
 
         private static string GetVariableFromNamespaceContext(string ssisVariable)

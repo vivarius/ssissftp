@@ -138,5 +138,23 @@ namespace SSISSFTPTask100.SSIS
 
             return retVal;
         }
+
+        public static List<string> GetFileListFromSFtpWithPattern(string url, string login, string password, string folderPath, string pattern)
+        {
+            List<string> retVal = new List<string>();
+
+            try
+            {
+                Sftp sftp = new Sftp(url, login, password);
+                sftp.Connect();
+                retVal = sftp.GetFileListWithPattern(folderPath, pattern);
+            }
+            catch (Exception exception)
+            {
+
+            }
+
+            return retVal;
+        }
     }
 }

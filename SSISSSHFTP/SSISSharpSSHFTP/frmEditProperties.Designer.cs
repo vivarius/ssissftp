@@ -57,7 +57,7 @@
             // 
             // btOK
             // 
-            this.btOK.Location = new System.Drawing.Point(298, 209);
+            this.btOK.Location = new System.Drawing.Point(298, 225);
             this.btOK.Name = "btOK";
             this.btOK.Size = new System.Drawing.Size(59, 26);
             this.btOK.TabIndex = 3;
@@ -68,7 +68,7 @@
             // btCancel
             // 
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(363, 209);
+            this.btCancel.Location = new System.Drawing.Point(363, 225);
             this.btCancel.Name = "btCancel";
             this.btCancel.Size = new System.Drawing.Size(59, 26);
             this.btCancel.TabIndex = 4;
@@ -79,7 +79,7 @@
             // linkLabelCodeplex
             // 
             this.linkLabelCodeplex.AutoSize = true;
-            this.linkLabelCodeplex.Location = new System.Drawing.Point(8, 222);
+            this.linkLabelCodeplex.Location = new System.Drawing.Point(8, 238);
             this.linkLabelCodeplex.Name = "linkLabelCodeplex";
             this.linkLabelCodeplex.Size = new System.Drawing.Size(141, 13);
             this.linkLabelCodeplex.TabIndex = 10;
@@ -194,7 +194,7 @@
             this.cmbFilesList.FormattingEnabled = true;
             this.cmbFilesList.Location = new System.Drawing.Point(112, 198);
             this.cmbFilesList.Name = "cmbFilesList";
-            this.cmbFilesList.Size = new System.Drawing.Size(309, 21);
+            this.cmbFilesList.Size = new System.Drawing.Size(310, 21);
             this.cmbFilesList.TabIndex = 55;
             this.cmbFilesList.Visible = false;
             // 
@@ -253,6 +253,7 @@
             this.cmbAction.Name = "cmbAction";
             this.cmbAction.Size = new System.Drawing.Size(309, 21);
             this.cmbAction.TabIndex = 49;
+            this.cmbAction.SelectedIndexChanged += new System.EventHandler(this.cmbAction_SelectedIndexChanged);
             // 
             // chkOverwrite
             // 
@@ -270,7 +271,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btCancel;
-            this.ClientSize = new System.Drawing.Size(433, 244);
+            this.ClientSize = new System.Drawing.Size(433, 259);
             this.Controls.Add(this.btCancel);
             this.Controls.Add(this.btOK);
             this.Controls.Add(this.chkOverwrite);

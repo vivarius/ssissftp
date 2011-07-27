@@ -120,6 +120,18 @@ namespace SSISSFTPTask100
             System.Diagnostics.Process.Start(linkLabelCodeplex.Text);
         }
 
+        private void cmbAction_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbAction.Text == Communication.ActionTask[8])
+            {
+                cmbFilesList.Visible = label1.Visible = true;
+            }
+            else
+            {
+                cmbFilesList.Visible = label1.Visible = false;
+            }
+        }
+
         #endregion
 
         #region Methods
@@ -267,5 +279,8 @@ namespace SSISSFTPTask100
         }
 
         #endregion
+
+       
+
     }
 }
