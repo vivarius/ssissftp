@@ -16,7 +16,7 @@ namespace SSISSFTPTask100.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask100.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask100," +
-        "Version=1.1.0.64," +
+        "Version=1.1.0.71," +
         "Culture=Neutral," +
         "PublicKeyToken=4598105d4a713364",
         IconResource = "SSISSFTPTask100.sftp.ico",
@@ -205,7 +205,6 @@ namespace SSISSFTPTask100.SSIS
 
             #endregion
 
-
             return isBaseValid ? DTSExecResult.Success : DTSExecResult.Failure;
         }
 
@@ -377,11 +376,15 @@ namespace SSISSFTPTask100.SSIS
                                                                      EvaluateExpression(SFTPPassword, variableDispenser).ToString(),
                                                                      ResolveRemotePathEx(EvaluateExpression(RemotePath, variableDispenser).ToString()));
 
-                    componentEvents.FireInformation(0, "SSISSFTTask", retValue.Count + " file(s) founded", string.Empty, 0, ref refire);
+                    componentEvents.FireInformation(0, "SSISSFTTask", retValue.Count + " file(s) founded:", string.Empty, 0, ref refire);
+                    foreach (var file in retValue)
+                    {
+                        componentEvents.FireInformation(0, "SSISSFTTask", file, string.Empty, 0, ref refire);
+                    }
 
                     _vars[GetVariableFromNamespaceContext(FilesList)].Value = retValue;
 
-                    componentEvents.FireInformation(0, "SSISSFTTask", GetVariableFromNamespaceContext(FilesList) + " obtained the list of files", string.Empty, 0, ref refire);
+                    componentEvents.FireInformation(0, "SSISSFTTask", GetVariableFromNamespaceContext(FilesList) + " has obtained the list of files", string.Empty, 0, ref refire);
                 }
 
                 componentEvents.FireInformation(0, "SSISSFTTask", "SFTP Task ended succesfully", string.Empty, 0, ref refire);

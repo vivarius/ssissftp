@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Tamir.SharpSsh.java.util;
 using Tamir.SharpSsh.jsch;
 using System.Collections;
@@ -99,11 +100,7 @@ namespace Tamir.SharpSsh
             }
         }
 
-        public override void Get(string fromFilePath, string toFilePath)
-        {
-            cancelled = false;
-            SftpChannel.get(fromFilePath, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
-        }
+
 
         //Put
 
@@ -125,6 +122,52 @@ namespace Tamir.SharpSsh
             foreach (string t in fromFilePaths)
             {
                 Put(t, toDirPath);
+            }
+        }
+
+        public override void Get(string fromFilePath, string toFilePath)
+        {
+            if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
+            {
+                int lastSlashIndex = fromFilePath.LastIndexOf('/');
+
+                string dir = fromFilePath.Substring(0, lastSlashIndex + 1);
+                string pattern = fromFilePath.Substring(lastSlashIndex + 1, fromFilePath.Length - lastSlashIndex - 1);
+
+                List<string> remoteFiles = GetFileList(fromFilePath);
+                var tmpRemoteFiles = new List<string>();
+
+                foreach (var remoteFile in remoteFiles)
+                {
+                    lastSlashIndex = remoteFile.LastIndexOf('/');
+                    tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
+                }
+
+                var patternedList = StringExtensions.Like(tmpRemoteFiles, pattern);
+
+                foreach (var file in patternedList)
+                {
+                    string from = (dir.Length == 0)
+                                          ? file
+                                          : string.Format("{0}{1}", dir, file);
+
+                    if (Directory.Exists(toFilePath))
+                    {
+                        toFilePath = (toFilePath[toFilePath.Length - 1] != '\\') ? toFilePath + "\\" : toFilePath;
+                    }
+                    else if (File.Exists(toFilePath))
+                    {
+                        toFilePath = string.Format("{0}\\", new FileInfo(toFilePath).Directory.FullName);
+                    }
+
+                    string to = string.Format("{0}{1}", toFilePath, file);
+
+                    SftpChannel.get(from, to, m_monitor, ChannelSftp.OVERWRITE);
+                }
+            }
+            else
+            {
+                SftpChannel.get(fromFilePath, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
             }
         }
 
@@ -164,31 +207,74 @@ namespace Tamir.SharpSsh
         //Ls
         public List<string> GetFileList(string path)
         {
-            return (from ChannelSftp.LsEntry entry in SftpChannel.ls(path)
-                    where !entry.getAttrs().isDir()
-                    select entry.getFilename()).Select(f => (string)f).ToList();
-        }
 
-        //Ls
-        public List<string> GetFileListWithPattern(string path, string pattern)
-        {
-            List<string> list = new List<string>();
+            List<string> retList = new List<string>();
 
-            foreach (ChannelSftp.LsEntry entry in SftpChannel.ls(path))
+            if (path.Contains("*") || path.Contains("?"))
             {
-                if (!entry.getAttrs().isDir())
+                int lastSlashIndex = path.LastIndexOf('/');
+
+                string dir = path.Substring(0, lastSlashIndex + 1);
+                string pattern = path.Substring(lastSlashIndex + 1, path.Length - lastSlashIndex - 1);
+
+                List<string> remoteFiles = (from ChannelSftp.LsEntry entry in SftpChannel.ls(dir)
+                                            where !entry.getAttrs().isDir()
+                                            select entry.getFilename()).Select(f => (string)f).ToList();
+
+                var tmpRemoteFiles = new List<string>();
+
+                foreach (var remoteFile in remoteFiles)
                 {
-                    list.Add(entry.getFilename());
+                    lastSlashIndex = remoteFile.LastIndexOf('/');
+                    tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
                 }
+
+                retList = StringExtensions.Like(tmpRemoteFiles, pattern);
+            }
+            else
+            {
+                retList = (from ChannelSftp.LsEntry entry in SftpChannel.ls(path)
+                           where !entry.getAttrs().isDir()
+                           select entry.getFilename()).Select(f => (string)f).ToList();
             }
 
-            return list;
+            return retList;
         }
 
         //Delete
         public void Delete(string filePath)
         {
-            SftpChannel.rm(filePath);
+            if (filePath.Contains("*") || filePath.Contains("?"))
+            {
+                int lastSlashIndex = filePath.LastIndexOf('/');
+
+                string dir = filePath.Substring(0, lastSlashIndex + 1);
+                string pattern = filePath.Substring(lastSlashIndex + 1, filePath.Length - lastSlashIndex - 1);
+
+                List<string> remoteFiles = GetFileList(filePath);
+                var tmpRemoteFiles = new List<string>();
+
+                foreach (var remoteFile in remoteFiles)
+                {
+                    lastSlashIndex = remoteFile.LastIndexOf('/');
+                    tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
+                }
+
+                var patternedList = StringExtensions.Like(tmpRemoteFiles, pattern);
+
+                foreach (var file in patternedList)
+                {
+                    string from = (dir.Length == 0)
+                                          ? file
+                                          : string.Format("{0}{1}", dir, file);
+
+                    SftpChannel.rm(from);
+                }
+            }
+            else
+            {
+                SftpChannel.rm(filePath);
+            }
         }
 
         //Delete
@@ -263,5 +349,14 @@ namespace Tamir.SharpSsh
         }
 
         #endregion ProgressMonitor Implementation
+    }
+
+    public static class StringExtensions
+    {
+        public static List<string> Like(List<string> strSource, string wildcard)
+        {
+            var regex = new Regex("^" + Regex.Escape(wildcard).Replace(@"\*", ".*").Replace(@"\?", ".") + "$", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            return strSource.Where(s => regex.IsMatch(s)).ToList();
+        }
     }
 }

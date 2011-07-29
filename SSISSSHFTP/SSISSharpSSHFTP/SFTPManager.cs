@@ -24,14 +24,20 @@ namespace SSISSFTPTask100.SSIS
         {
             bool retVal = false;
 
+            Sftp sftp = new Sftp(url, login, password);
+
             try
             {
-                Sftp sftp = new Sftp(url, login, password);
                 sftp.Connect();
                 sftp.Put(sourceFileName, outputFileName);
                 retVal = true;
             }
             catch (Exception) { }
+            finally
+            {
+                if (sftp.Connected)
+                    sftp.Close();
+            }
 
             return retVal;
         }
@@ -40,14 +46,20 @@ namespace SSISSFTPTask100.SSIS
         {
             bool retVal = false;
 
+            Sftp sftp = new Sftp(url, login, password);
+
             try
             {
-                Sftp sftp = new Sftp(url, login, password);
                 sftp.Connect();
                 sftp.Get(sourceFileName, outputFileName);
                 retVal = true;
             }
             catch (Exception) { }
+            finally
+            {
+                if (sftp.Connected)
+                    sftp.Close();
+            }
 
             return retVal;
         }
@@ -56,12 +68,13 @@ namespace SSISSFTPTask100.SSIS
         {
             bool retVal = false;
 
+            Sftp sftp = new Sftp(url, login, password);
+
             try
             {
-                Sftp sftp = new Sftp(url, login, password);
                 sftp.Connect();
 
-                if (overwrite)
+                if (!sourceFileName.Contains("*") && overwrite)
                     File.Delete(outputFileName);
 
                 sftp.Get(sourceFileName, outputFileName);
@@ -69,6 +82,11 @@ namespace SSISSFTPTask100.SSIS
                 retVal = true;
             }
             catch (Exception) { }
+            finally
+            {
+                if (sftp.Connected)
+                    sftp.Close();
+            }
 
             return retVal;
         }
@@ -77,14 +95,20 @@ namespace SSISSFTPTask100.SSIS
         {
             bool retVal = false;
 
+            Sftp sftp = new Sftp(url, login, password);
+
             try
             {
-                Sftp sftp = new Sftp(url, login, password);
                 sftp.Connect();
                 sftp.Delete(sourceFileName);
                 retVal = true;
             }
             catch (Exception) { }
+            finally
+            {
+                if (sftp.Connected)
+                    sftp.Close();
+            }
 
             return retVal;
         }
@@ -93,14 +117,20 @@ namespace SSISSFTPTask100.SSIS
         {
             bool retVal = false;
 
+            Sftp sftp = new Sftp(url, login, password);
+
             try
             {
-                Sftp sftp = new Sftp(url, login, password);
                 sftp.Connect();
                 sftp.RemoveDir(folderPath);
                 retVal = true;
             }
             catch (Exception) { }
+            finally
+            {
+                if (sftp.Connected)
+                    sftp.Close();
+            }
 
             return retVal;
         }
@@ -109,14 +139,20 @@ namespace SSISSFTPTask100.SSIS
         {
             bool retVal = false;
 
+            Sftp sftp = new Sftp(url, login, password);
+
             try
             {
-                Sftp sftp = new Sftp(url, login, password);
                 sftp.Connect();
                 sftp.Mkdir(folderPath);
                 retVal = true;
             }
             catch (Exception) { }
+            finally
+            {
+                if (sftp.Connected)
+                    sftp.Close();
+            }
 
             return retVal;
         }
@@ -125,33 +161,18 @@ namespace SSISSFTPTask100.SSIS
         {
             List<string> retVal = new List<string>();
 
+            Sftp sftp = new Sftp(url, login, password);
+
             try
             {
-                Sftp sftp = new Sftp(url, login, password);
                 sftp.Connect();
                 retVal = sftp.GetFileList(folderPath);
             }
-            catch (Exception exception)
+            catch (Exception) { }
+            finally
             {
-
-            }
-
-            return retVal;
-        }
-
-        public static List<string> GetFileListFromSFtpWithPattern(string url, string login, string password, string folderPath, string pattern)
-        {
-            List<string> retVal = new List<string>();
-
-            try
-            {
-                Sftp sftp = new Sftp(url, login, password);
-                sftp.Connect();
-                retVal = sftp.GetFileListWithPattern(folderPath, pattern);
-            }
-            catch (Exception exception)
-            {
-
+                if (sftp.Connected)
+                    sftp.Close();
             }
 
             return retVal;
