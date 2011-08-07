@@ -127,7 +127,6 @@
     </Compile>
     <Compile Include="Org.Mentalis.Security\Smartcard\VendorAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SharpSSH\ExecTest.cs" />
     <Compile Include="SharpSSH\ITransferProtocol.cs" />
     <Compile Include="SharpSSH\java\Exception.cs" />
     <Compile Include="SharpSSH\java\io\File.cs" />

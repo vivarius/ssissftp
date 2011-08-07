@@ -28,7 +28,7 @@ namespace SSISSFTPTask100.SSIS
         #region Constructor
         public SSISSFTTask()
         {
-
+            _vars = null;
         }
 
         #endregion
@@ -72,7 +72,7 @@ namespace SSISSFTPTask100.SSIS
 
         #region Private Properties
 
-        Variables _vars = null;
+        Variables _vars;
 
         #endregion
 
@@ -292,12 +292,15 @@ namespace SSISSFTPTask100.SSIS
                 {
                     try
                     {
-                        DirectoryInfo directoryInfo = Directory.CreateDirectory(LocalPath);
-                        componentEvents.FireInformation(0, "SSISSFTTask",
-                                                        directoryInfo.Exists
-                                                            ? string.Format("The folder {0} has been created", ResolveLocalPath(LocalPath))
-                                                            : string.Format("The folder {0} has not been created", ResolveLocalPath(LocalPath)),
-                                                        string.Empty, 0, ref refire);
+                        if (LocalPath != null)
+                        {
+                            DirectoryInfo directoryInfo = Directory.CreateDirectory(LocalPath);
+                            componentEvents.FireInformation(0, "SSISSFTTask",
+                                                            directoryInfo.Exists
+                                                                ? string.Format("The folder {0} has been created", ResolveLocalPath(LocalPath))
+                                                                : string.Format("The folder {0} has not been created", ResolveLocalPath(LocalPath)),
+                                                            string.Empty, 0, ref refire);
+                        }
                     }
                     catch (Exception exception)
                     {
@@ -326,10 +329,13 @@ namespace SSISSFTPTask100.SSIS
                 {
                     try
                     {
-                        Directory.Delete(LocalPath);
-                        componentEvents.FireInformation(0, "SSISSFTTask",
-                                                        string.Format("The local folder {0} has been removed", ResolveLocalPath(LocalPath)),
-                                                        string.Empty, 0, ref refire);
+                        if (LocalPath != null)
+                        {
+                            Directory.Delete(LocalPath);
+                            componentEvents.FireInformation(0, "SSISSFTTask",
+                                                            string.Format("The local folder {0} has been removed", ResolveLocalPath(LocalPath)),
+                                                            string.Empty, 0, ref refire);
+                        }
                     }
                     catch (Exception exception)
                     {
@@ -438,7 +444,7 @@ namespace SSISSFTPTask100.SSIS
         /// <summary>
         /// Determines whether [is variable in lock for read or write] [the specified lock for read].
         /// </summary>
-        /// <param name="lockForRead">The lock for read.</param>
+        /// <param name="lockForReadWrite"></param>
         /// <param name="variable">The variable.</param>
         /// <returns>
         /// 	<c>true</c> if [is variable in lock for read or write] [the specified lock for read]; otherwise, <c>false</c>.
@@ -462,7 +468,7 @@ namespace SSISSFTPTask100.SSIS
         private void GetNeededVariables(VariableDispenser variableDispenser)
         {
 
-            List<string> lockForReadWrite = new List<string>();
+            var lockForReadWrite = new List<string>();
 
             {
                 var mappedParams = SFTPServer.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
@@ -580,33 +586,33 @@ namespace SSISSFTPTask100.SSIS
             return ssisVariable.Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
         }
 
-        private string ResolveRemotePath(string Path)
+        private static string ResolveRemotePath(string path)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
             const string slash = "/";
-            if (!Path.StartsWith(slash))
+            if (!path.StartsWith(slash))
                 stringBuilder.Append(slash);
 
-            stringBuilder.Append(Path.Replace(@"\", slash));
+            stringBuilder.Append(path.Replace(@"\", slash));
 
             return stringBuilder.ToString().Trim();
         }
 
-        private string ResolveRemotePathEx(string Path)
+        private static string ResolveRemotePathEx(string path)
         {
             const string slash = "/";
-            string retVal = string.Empty;
-            if (Path.Length > 0)
+            string retVal;
+            if (path.Length > 0)
             {
-                StringBuilder stringBuilder = new StringBuilder();
+                var stringBuilder = new StringBuilder();
 
-                if (!Path.StartsWith(slash))
+                if (!path.StartsWith(slash))
                     stringBuilder.Append(slash);
 
-                stringBuilder.Append(Path);
+                stringBuilder.Append(path);
 
-                if (!Path.EndsWith(slash))
+                if (!path.EndsWith(slash))
                     stringBuilder.Append(slash);
 
                 retVal = stringBuilder.ToString().Trim();
@@ -618,7 +624,7 @@ namespace SSISSFTPTask100.SSIS
             return retVal;
         }
 
-        private string ResolveLocalPath(string Path)
+        private static string ResolveLocalPath(string path)
         {
             //StringBuilder stringBuilder = new StringBuilder();
 
@@ -630,7 +636,7 @@ namespace SSISSFTPTask100.SSIS
             //    stringBuilder.Append(slash);
 
             //return stringBuilder.ToString();
-            return Path.Trim();
+            return path.Trim();
         }
 
         #endregion
@@ -701,7 +707,7 @@ namespace SSISSFTPTask100.SSIS
                 RemotePath = node.Attributes.GetNamedItem(Keys.FTP_REMOTE_PATH).Value;
                 FilesList = node.Attributes.GetNamedItem(Keys.FTP_FILES_LIST).Value;
             }
-            catch
+            catch (Exception)
             {
 
             }
