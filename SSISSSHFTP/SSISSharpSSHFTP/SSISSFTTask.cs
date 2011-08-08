@@ -16,7 +16,7 @@ namespace SSISSFTPTask100.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask100.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask100," +
-        "Version=1.1.0.71," +
+        "Version=1.2.0.0," +
         "Culture=Neutral," +
         "PublicKeyToken=4598105d4a713364",
         IconResource = "SSISSFTPTask100.sftp.ico",
@@ -94,25 +94,25 @@ namespace SSISSFTPTask100.SSIS
             #region Check connection
             if (string.IsNullOrEmpty(SFTPServer))
             {
-                componentEvents.FireError(0, "SSISSFTTask", "FTP Server is required.", "", 0);
+                componentEvents.FireError(0, "SSISSFTTask", "SFTP Server is required.", "", 0);
                 isBaseValid = false;
             }
 
             if (string.IsNullOrEmpty(SFTPUser))
             {
-                componentEvents.FireError(0, "SSISSFTTask", "FTP User is required.", "", 0);
+                componentEvents.FireError(0, "SSISSFTTask", "SFTP User is required.", "", 0);
                 isBaseValid = false;
             }
 
             if (string.IsNullOrEmpty(SFTPPassword))
             {
-                componentEvents.FireError(0, "SSISSFTTask", "FTP User is required.", "", 0);
+                componentEvents.FireError(0, "SSISSFTTask", "SFTP User is required.", "", 0);
                 isBaseValid = false;
             }
 
             if (string.IsNullOrEmpty(SFTPPassword))
             {
-                componentEvents.FireError(0, "SSISSFTTask", "FTP Password is required.", "", 0);
+                componentEvents.FireError(0, "SSISSFTTask", "SFTP Password is required.", "", 0);
                 isBaseValid = false;
             }
 

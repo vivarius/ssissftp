@@ -256,7 +256,7 @@
     <Compile Include="SSISSFTTaskUIInterface.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="sftp.ico" />
+    <EmbeddedResource Include="sftp.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Org.Mentalis.Security\Authentication\vssver2.scc" />
