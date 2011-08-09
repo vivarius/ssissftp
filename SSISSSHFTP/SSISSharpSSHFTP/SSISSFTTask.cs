@@ -16,7 +16,7 @@ namespace SSISSFTPTask100.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask100.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask100," +
-        "Version=1.2.0.0," +
+        "Version=1.2.0.16," +
         "Culture=Neutral," +
         "PublicKeyToken=4598105d4a713364",
         IconResource = "SSISSFTPTask100.sftp.ico",
@@ -205,6 +205,10 @@ namespace SSISSFTPTask100.SSIS
 
             #endregion
 
+            //bool refire = true;
+            //var transaction = new object();
+            //ExecutesSFTPCommands(componentEvents, refire, variableDispenser, connections, log, transaction);
+
             return isBaseValid ? DTSExecResult.Success : DTSExecResult.Failure;
         }
 
@@ -223,58 +227,78 @@ namespace SSISSFTPTask100.SSIS
         /// <returns></returns>
         public override DTSExecResult Execute(Connections connections, VariableDispenser variableDispenser, IDTSComponentEvents componentEvents, IDTSLogging log, object transaction)
         {
-            bool refire = false;
+            bool refire = true;
 
-            GetNeededVariables(variableDispenser);
+            componentEvents.FireInformation(0, "SSISSFTTask", "START SFTP Task", string.Empty, 0, ref refire);
+
+            return ExecutesSFTPCommands(componentEvents, refire, variableDispenser, connections, log, transaction);
+        }
+
+        private DTSExecResult ExecutesSFTPCommands(IDTSComponentEvents componentEvents, bool refire, VariableDispenser variableDispenser, Connections connections, IDTSLogging log, object transaction)
+        {
+            //GetNeededVariables(variableDispenser);
+
+            string localPathEx = string.Empty;
 
             try
             {
                 if (!string.IsNullOrEmpty(LocalPath))
                 {
-                    LocalPath = LocalPathIsConnectionFileType == Keys.TRUE
-                                    ? connections[LocalPath].ConnectionString
-                                    : EvaluateExpression(LocalPath, variableDispenser).ToString();
+
+                    localPathEx = LocalPathIsConnectionFileType == Keys.TRUE
+                                      ? connections[LocalPath].ConnectionString
+                                      : EvaluateExpression(LocalPath, variableDispenser).ToString();
+
+                    componentEvents.FireInformation(0, "SSISSFTTask", string.Format("The rendered local path is: {0}", localPathEx), string.Empty, 0, ref refire);
                 }
 
-                componentEvents.FireInformation(0, "SSISSFTTask", "START SFTP Task", string.Empty, 0, ref refire);
+
                 componentEvents.FireInformation(0, "SSISSFTTask", string.Format("SFTP Server: \"{0}\", User \"{1}\"", EvaluateExpression(SFTPServer, variableDispenser), EvaluateExpression(SFTPUser, variableDispenser)), string.Empty, 0, ref refire);
 
                 if (TaskAction == Communication.ActionTask[0]) //SEND FILE
                 {
+
+                    componentEvents.FireInformation(0, "SSISSFTTask", string.Format("Preparing to copy the file {0} to {1}", ResolveLocalPath(localPathEx), ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
+
                     if (Communication.SendFileBySFtp(EvaluateExpression(SFTPServer, variableDispenser).ToString(),
                                                      EvaluateExpression(SFTPUser, variableDispenser).ToString(),
                                                      EvaluateExpression(SFTPPassword, variableDispenser).ToString(),
-                                                     ResolveLocalPath(LocalPath),
+                                                     ResolveLocalPath(localPathEx),
                                                      ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())))
                     {
-                        componentEvents.FireInformation(0, "SSISSFTTask", string.Format("The file {0} has been copied to {1}", ResolveLocalPath(LocalPath), ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
+                        componentEvents.FireInformation(0, "SSISSFTTask", string.Format("The file {0} has been copied to {1}", ResolveLocalPath(localPathEx), ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
                     }
                     else
                     {
-                        componentEvents.FireError(0, "SSISSFTTask", string.Format("The file {0} has not been copied to {1}", ResolveLocalPath(LocalPath), ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0);
+                        componentEvents.FireError(0, "SSISSFTTask", string.Format("The file {0} has not been copied to {1}", ResolveLocalPath(localPathEx), ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0);
                     }
                 }
 
                 if (TaskAction == Communication.ActionTask[1]) //GET FILE
                 {
 
+                    componentEvents.FireInformation(0, "SSISSFTTask", string.Format("Preparing to copy the file {0} to {1}", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString()), ResolveLocalPath(localPathEx)), string.Empty, 0, ref refire);
+
                     if (Communication.GetFileBySFtp(EvaluateExpression(SFTPServer, variableDispenser).ToString(),
                                                     EvaluateExpression(SFTPUser, variableDispenser).ToString(),
                                                     EvaluateExpression(SFTPPassword, variableDispenser).ToString(),
                                                     ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString()),
-                                                    ResolveLocalPath(LocalPath),
+                                                    ResolveLocalPath(localPathEx),
                                                     (OverwriteLocalPath == Keys.TRUE) ? true : false))
                     {
-                        componentEvents.FireInformation(0, "SSISSFTTask", string.Format("The file {0} has been copied", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
+                        componentEvents.FireInformation(0, "SSISSFTTask", string.Format("The file {0} has been copied to {1}", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString()), ResolveLocalPath(localPathEx)), string.Empty, 0, ref refire);
                     }
                     else
                     {
-                        componentEvents.FireError(0, "SSISSFTTask", string.Format("The file {0} has not been copied", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0);
+                        componentEvents.FireError(0, "SSISSFTTask", string.Format("The file {0} has not been copied to {1}", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString()), ResolveLocalPath(localPathEx)), string.Empty, 0);
                     }
                 }
 
                 if (TaskAction == Communication.ActionTask[2]) // CREATE REMOTE DIR
                 {
+
+                    componentEvents.FireInformation(0, "SSISSFTTask", string.Format("Preparing to create the remote folder {0} ", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
+
                     if (Communication.CreateFolderBySFtp(EvaluateExpression(SFTPServer, variableDispenser).ToString(),
                                                          EvaluateExpression(SFTPUser, variableDispenser).ToString(),
                                                          EvaluateExpression(SFTPPassword, variableDispenser).ToString(),
@@ -292,26 +316,32 @@ namespace SSISSFTPTask100.SSIS
                 {
                     try
                     {
-                        if (LocalPath != null)
+                        if (!string.IsNullOrEmpty(localPathEx))
                         {
-                            DirectoryInfo directoryInfo = Directory.CreateDirectory(LocalPath);
+
+                            componentEvents.FireInformation(0, "SSISSFTTask", string.Format("Preparing to create the local folder {0}: ", ResolveLocalPath(localPathEx)), string.Empty, 0, ref refire);
+
+                            DirectoryInfo directoryInfo = Directory.CreateDirectory(localPathEx);
                             componentEvents.FireInformation(0, "SSISSFTTask",
                                                             directoryInfo.Exists
-                                                                ? string.Format("The folder {0} has been created", ResolveLocalPath(LocalPath))
-                                                                : string.Format("The folder {0} has not been created", ResolveLocalPath(LocalPath)),
+                                                                ? string.Format("The folder {0} has been created", ResolveLocalPath(localPathEx))
+                                                                : string.Format("The folder {0} has not been created", ResolveLocalPath(localPathEx)),
                                                             string.Empty, 0, ref refire);
                         }
                     }
                     catch (Exception exception)
                     {
                         componentEvents.FireError(0, "SSISSFTTask",
-                                                        string.Format("The folder {0} has not been created. Exception detail {1} - {2}", ResolveLocalPath(LocalPath), exception.Message, exception.Source),
-                                                        string.Empty, 0);
+                                                  string.Format("The folder {0} has not been created. Exception detail {1} - {2}", ResolveLocalPath(localPathEx), exception.Message, exception.Source),
+                                                  string.Empty, 0);
                     }
                 }
 
                 if (TaskAction == Communication.ActionTask[4]) //REMOVE REMOTE DIR
                 {
+
+                    componentEvents.FireInformation(0, "SSISSFTTask", string.Format("Preparing to remove the remote folder {0} ", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
+
                     if (Communication.RemoveFolderBySFtp(EvaluateExpression(SFTPServer, variableDispenser).ToString(),
                                                          EvaluateExpression(SFTPUser, variableDispenser).ToString(),
                                                          EvaluateExpression(SFTPPassword, variableDispenser).ToString(),
@@ -321,7 +351,7 @@ namespace SSISSFTPTask100.SSIS
                     }
                     else
                     {
-                        componentEvents.FireError(0, "SSISSFTTask", string.Format("The remote folder {0} has not been created", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0);
+                        componentEvents.FireError(0, "SSISSFTTask", string.Format("The remote folder {0} has not been removed", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0);
                     }
                 }
 
@@ -329,24 +359,28 @@ namespace SSISSFTPTask100.SSIS
                 {
                     try
                     {
-                        if (LocalPath != null)
+                        if (string.IsNullOrEmpty(localPathEx))
                         {
-                            Directory.Delete(LocalPath);
+                            componentEvents.FireInformation(0, "SSISSFTTask", string.Format("Preparing to remove the local folder {0} ", ResolveLocalPath(localPathEx)), string.Empty, 0, ref refire);
+                            Directory.Delete(localPathEx);
                             componentEvents.FireInformation(0, "SSISSFTTask",
-                                                            string.Format("The local folder {0} has been removed", ResolveLocalPath(LocalPath)),
+                                                            string.Format("The local folder {0} has been removed", ResolveLocalPath(localPathEx)),
                                                             string.Empty, 0, ref refire);
                         }
                     }
                     catch (Exception exception)
                     {
                         componentEvents.FireError(0, "SSISSFTTask",
-                                                        string.Format("The local folder {0} has not been removed. Exception detail {1} - {2}", ResolveLocalPath(LocalPath), exception.Message, exception.Source),
-                                                        string.Empty, 0);
+                                                  string.Format("The local folder {0} has not been removed. Exception detail {1} - {2}", ResolveLocalPath(localPathEx), exception.Message, exception.Source),
+                                                  string.Empty, 0);
                     }
                 }
 
                 if (TaskAction == Communication.ActionTask[6]) //DELETE REMOTE FILE
                 {
+
+                    componentEvents.FireInformation(0, "SSISSFTTask", string.Format("Preparing to delete the remote file {0}", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
+
                     if (Communication.DeleteFileBySFtp(EvaluateExpression(SFTPServer, variableDispenser).ToString(),
                                                        EvaluateExpression(SFTPUser, variableDispenser).ToString(),
                                                        EvaluateExpression(SFTPPassword, variableDispenser).ToString(),
@@ -364,19 +398,22 @@ namespace SSISSFTPTask100.SSIS
                 {
                     try
                     {
-                        File.Delete(ResolveLocalPath(LocalPath));
-                        componentEvents.FireInformation(0, "SSISSFTTask", string.Format("The local file {0} has been deleted", ResolveLocalPath(LocalPath)), string.Empty, 0, ref refire);
+                        componentEvents.FireInformation(0, "SSISSFTTask", string.Format("Preparing to delete the local file {0}", ResolveLocalPath(localPathEx)), string.Empty, 0, ref refire);
+                        File.Delete(ResolveLocalPath(localPathEx));
+                        componentEvents.FireInformation(0, "SSISSFTTask", string.Format("The local file {0} has been deleted", ResolveLocalPath(localPathEx)), string.Empty, 0, ref refire);
                     }
                     catch (Exception exception)
                     {
                         componentEvents.FireError(0, "SSISSFTTask",
-                            string.Format("The local file {0} has not been deleted. Exception detail {1} - {2}", ResolveLocalPath(LocalPath), exception.Message, exception.Source),
-                            string.Empty, 0);
+                                                  string.Format("The local file {0} has not been deleted. Exception detail {1} - {2}", ResolveLocalPath(localPathEx), exception.Message, exception.Source),
+                                                  string.Empty, 0);
                     }
                 }
 
                 if (TaskAction == Communication.ActionTask[8])
                 {
+                    componentEvents.FireInformation(0, "SSISSFTTask", string.Format("Preparing to get the files list from the remote folder {0}", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
+
                     var retValue = Communication.GetFileListFromSFtp(EvaluateExpression(SFTPServer, variableDispenser).ToString(),
                                                                      EvaluateExpression(SFTPUser, variableDispenser).ToString(),
                                                                      EvaluateExpression(SFTPPassword, variableDispenser).ToString(),
@@ -387,6 +424,23 @@ namespace SSISSFTPTask100.SSIS
                     {
                         componentEvents.FireInformation(0, "SSISSFTTask", file, string.Empty, 0, ref refire);
                     }
+
+                    var mappedParams = FilesList.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (string t in mappedParams)
+                    {
+                        try
+                        {
+                            string param = t.Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                            variableDispenser.LockOneForWrite(param, ref _vars);
+                        }
+                        catch
+                        {
+                            //We will continue...
+                        }
+                    }
+
+                    //variableDispenser.GetVariables(ref _vars);
 
                     _vars[GetVariableFromNamespaceContext(FilesList)].Value = retValue;
 
@@ -401,10 +455,10 @@ namespace SSISSFTPTask100.SSIS
             }
             finally
             {
-                if (_vars.Locked)
-                {
-                    _vars.Unlock();
-                }
+                if (_vars != null)
+                    if (_vars.Locked != null)
+                        if (_vars.Locked)
+                            _vars.Unlock();
             }
 
             return base.Execute(connections, variableDispenser, componentEvents, log, transaction);
@@ -481,7 +535,7 @@ namespace SSISSFTPTask100.SSIS
                         if (!IsVariableInLockForReadOrWrite(lockForReadWrite, param))
                             variableDispenser.LockForRead(param);
                     }
-                    catch
+                    catch (Exception)
                     {
                         //We will continue...
                     }

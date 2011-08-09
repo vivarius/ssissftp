@@ -59,7 +59,9 @@ namespace SSISSFTPTask100
 
             _taskHost.Properties[Keys.FTP_REMOTE_PATH].SetValue(_taskHost, cmbRemote.Text);
 
-            _taskHost.Properties[Keys.FTP_FILES_LIST].SetValue(_taskHost, cmbFilesList.SelectedItem ?? string.Empty);
+            _taskHost.Properties[Keys.FTP_FILES_LIST].SetValue(_taskHost, cmbFilesList.Visible 
+                                                                                    ? cmbFilesList.SelectedItem ?? string.Empty 
+                                                                                    : string.Empty);
 
             DialogResult = DialogResult.OK;
             Close();
@@ -280,7 +282,7 @@ namespace SSISSFTPTask100
 
         #endregion
 
-       
+
 
     }
 }
