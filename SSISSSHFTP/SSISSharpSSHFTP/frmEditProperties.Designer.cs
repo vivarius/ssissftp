@@ -53,11 +53,16 @@
             this.lbAction = new System.Windows.Forms.Label();
             this.cmbAction = new System.Windows.Forms.ComboBox();
             this.chkOverwrite = new System.Windows.Forms.CheckBox();
+            this.chkSleep = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.numericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // btOK
             // 
-            this.btOK.Location = new System.Drawing.Point(298, 225);
+            this.btOK.Location = new System.Drawing.Point(297, 248);
             this.btOK.Name = "btOK";
             this.btOK.Size = new System.Drawing.Size(59, 26);
             this.btOK.TabIndex = 3;
@@ -68,7 +73,7 @@
             // btCancel
             // 
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(363, 225);
+            this.btCancel.Location = new System.Drawing.Point(362, 248);
             this.btCancel.Name = "btCancel";
             this.btCancel.Size = new System.Drawing.Size(59, 26);
             this.btCancel.TabIndex = 4;
@@ -79,7 +84,7 @@
             // linkLabelCodeplex
             // 
             this.linkLabelCodeplex.AutoSize = true;
-            this.linkLabelCodeplex.Location = new System.Drawing.Point(8, 238);
+            this.linkLabelCodeplex.Location = new System.Drawing.Point(7, 261);
             this.linkLabelCodeplex.Name = "linkLabelCodeplex";
             this.linkLabelCodeplex.Size = new System.Drawing.Size(141, 13);
             this.linkLabelCodeplex.TabIndex = 10;
@@ -202,7 +207,7 @@
             // 
             this.btDestinationFile.Location = new System.Drawing.Point(381, 170);
             this.btDestinationFile.Name = "btDestinationFile";
-            this.btDestinationFile.Size = new System.Drawing.Size(41, 21);
+            this.btDestinationFile.Size = new System.Drawing.Size(40, 21);
             this.btDestinationFile.TabIndex = 54;
             this.btDestinationFile.Text = "f(x)";
             this.btDestinationFile.UseVisualStyleBackColor = true;
@@ -221,7 +226,7 @@
             // 
             this.btSourceFile.Location = new System.Drawing.Point(381, 122);
             this.btSourceFile.Name = "btSourceFile";
-            this.btSourceFile.Size = new System.Drawing.Size(41, 21);
+            this.btSourceFile.Size = new System.Drawing.Size(40, 21);
             this.btSourceFile.TabIndex = 52;
             this.btSourceFile.Text = "f(x)";
             this.btSourceFile.UseVisualStyleBackColor = true;
@@ -265,13 +270,62 @@
             this.chkOverwrite.Text = "Overwrite local file";
             this.chkOverwrite.UseVisualStyleBackColor = true;
             // 
+            // chkSleep
+            // 
+            this.chkSleep.AutoSize = true;
+            this.chkSleep.Location = new System.Drawing.Point(112, 225);
+            this.chkSleep.Name = "chkSleep";
+            this.chkSleep.Size = new System.Drawing.Size(123, 17);
+            this.chkSleep.TabIndex = 62;
+            this.chkSleep.Text = "Sleep on disconnect";
+            this.chkSleep.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.toolTip1.SetToolTip(this.chkSleep, "To avoid overload connections. Give it the time to disconnect completely.");
+            this.chkSleep.UseVisualStyleBackColor = true;
+            this.chkSleep.Click += new System.EventHandler(this.chkSleep_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(268, 226);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(49, 13);
+            this.label2.TabIndex = 63;
+            this.label2.Text = "Sleep for";
+            // 
+            // numericUpDown
+            // 
+            this.numericUpDown.Enabled = false;
+            this.numericUpDown.Location = new System.Drawing.Point(323, 222);
+            this.numericUpDown.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.numericUpDown.Name = "numericUpDown";
+            this.numericUpDown.Size = new System.Drawing.Size(48, 20);
+            this.numericUpDown.TabIndex = 65;
+            this.numericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(377, 226);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(47, 13);
+            this.label3.TabIndex = 66;
+            this.label3.Text = "seconds";
+            // 
             // frmEditProperties
             // 
             this.AcceptButton = this.btOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btCancel;
-            this.ClientSize = new System.Drawing.Size(433, 259);
+            this.ClientSize = new System.Drawing.Size(433, 281);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.numericUpDown);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.chkSleep);
             this.Controls.Add(this.btCancel);
             this.Controls.Add(this.btOK);
             this.Controls.Add(this.chkOverwrite);
@@ -294,13 +348,15 @@
             this.Controls.Add(this.lbUser);
             this.Controls.Add(this.lbServer);
             this.Controls.Add(this.linkLabelCodeplex);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmEditProperties";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Edit SFTP Properties";
+            this.Text = "SFTP Task Properties";
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -331,5 +387,9 @@
         private System.Windows.Forms.Label lbAction;
         private System.Windows.Forms.ComboBox cmbAction;
         private System.Windows.Forms.CheckBox chkOverwrite;
+        private System.Windows.Forms.CheckBox chkSleep;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.NumericUpDown numericUpDown;
+        private System.Windows.Forms.Label label3;
     }
 }

@@ -16,6 +16,9 @@
 
         public const string FALSE = "False";
         public const string TRUE = "True";
+
+        public const string SLEEP_ON_DISCONNECT = "SleepOnDisconnect";
+        public const string SLEEP_SECONDS = "SleepSeconds";
     }
 }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using SSISSFTPTask100.SSIS;
 using System.Linq;
 using System.Windows.Forms;
@@ -59,12 +60,20 @@ namespace SSISSFTPTask100
 
             _taskHost.Properties[Keys.FTP_REMOTE_PATH].SetValue(_taskHost, cmbRemote.Text);
 
-            _taskHost.Properties[Keys.FTP_FILES_LIST].SetValue(_taskHost, cmbFilesList.Visible 
-                                                                                    ? cmbFilesList.SelectedItem ?? string.Empty 
+            _taskHost.Properties[Keys.FTP_FILES_LIST].SetValue(_taskHost, cmbFilesList.Visible
+                                                                                    ? cmbFilesList.SelectedItem ?? string.Empty
                                                                                     : string.Empty);
+
+            _taskHost.Properties[Keys.SLEEP_ON_DISCONNECT].SetValue(_taskHost, chkSleep.Checked ? Keys.TRUE : Keys.FALSE);
+            _taskHost.Properties[Keys.SLEEP_SECONDS].SetValue(_taskHost, numericUpDown.Text);
 
             DialogResult = DialogResult.OK;
             Close();
+        }
+
+        private void chkSleep_Click(object sender, EventArgs e)
+        {
+            numericUpDown.Enabled = chkSleep.Checked;
         }
 
         private void btSourceFile_Click(object sender, EventArgs e)
@@ -248,6 +257,27 @@ namespace SSISSFTPTask100
                 cmbLocal.SelectedIndex = GetSelectedComboBoxIndex(cmbLocal, _taskHost.Properties[Keys.FTP_LOCAL_PATH].GetValue(_taskHost));
 
                 cmbRemote.SelectedIndex = GetSelectedComboBoxIndex(cmbRemote, _taskHost.Properties[Keys.FTP_REMOTE_PATH].GetValue(_taskHost));
+
+                if (_taskHost.Properties[Keys.SLEEP_ON_DISCONNECT].GetValue(_taskHost) != null)
+                {
+                    chkSleep.Checked = _taskHost.Properties[Keys.SLEEP_ON_DISCONNECT].GetValue(_taskHost).ToString() == Keys.TRUE;
+                    numericUpDown.Enabled = chkSleep.Checked;
+                    if (_taskHost.Properties[Keys.SLEEP_SECONDS].GetValue(_taskHost) != null)
+                    {
+                        Int32 seconds = 0;
+                        numericUpDown.Value = Int32.TryParse(_taskHost.Properties[Keys.SLEEP_SECONDS].GetValue(_taskHost).ToString(),
+                                                             NumberStyles.Integer,
+                                                             CultureInfo.CreateSpecificCulture("en-GB"),
+                                                             out seconds)
+                                                    ? seconds
+                                                    : 0;
+                    }
+                }
+                else
+                {
+                    chkOverwrite.Checked = true;
+                }
+
             }
             catch
             {
@@ -281,8 +311,5 @@ namespace SSISSFTPTask100
         }
 
         #endregion
-
-
-
     }
 }
