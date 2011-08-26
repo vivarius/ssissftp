@@ -3,6 +3,7 @@
     internal static class Keys
     {
         public const string FTP_SERVER = "SFTPServer";
+
         public const string FTP_USER = "SFTPUser";
         public const string FTP_PASSWORD = "SFTPPassword";
 
@@ -16,6 +17,13 @@
 
         public const string FALSE = "False";
         public const string TRUE = "True";
+
+        public const string ENCRYPTION_TYPE = "EncryptionType";
+        public const string ENCRYPTION_TYPE_PASSWORD = "Password";
+        public const string ENCRYPTION_TYPE_KEY = "Key";
+        public const string PRIVATE_KEY_FILE = "PrivateKeyFile";
+        public const string PRIVATE_KEY_FILE_FROM_FILE_CONNECTION = "PrivateKeyFileIsConnectionFileType";
+        public const string PASS_PHRASE = "PassPhrase";
 
         public const string SLEEP_ON_DISCONNECT = "SleepOnDisconnect";
         public const string SLEEP_SECONDS = "SleepSeconds";

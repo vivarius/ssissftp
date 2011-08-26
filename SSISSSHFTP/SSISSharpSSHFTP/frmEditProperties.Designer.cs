@@ -33,13 +33,8 @@
             this.btOK = new System.Windows.Forms.Button();
             this.btCancel = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.chkSleep = new System.Windows.Forms.CheckBox();
             this.linkLabelCodeplex = new System.Windows.Forms.LinkLabel();
-            this.cmbPassword = new System.Windows.Forms.ComboBox();
-            this.cmbUser = new System.Windows.Forms.ComboBox();
-            this.cmbServer = new System.Windows.Forms.ComboBox();
-            this.lbPassword = new System.Windows.Forms.Label();
-            this.lbUser = new System.Windows.Forms.Label();
-            this.lbServer = new System.Windows.Forms.Label();
             this.cmbRemote = new System.Windows.Forms.ComboBox();
             this.optFileVariable = new System.Windows.Forms.RadioButton();
             this.optFileConnection = new System.Windows.Forms.RadioButton();
@@ -53,16 +48,35 @@
             this.lbAction = new System.Windows.Forms.Label();
             this.cmbAction = new System.Windows.Forms.ComboBox();
             this.chkOverwrite = new System.Windows.Forms.CheckBox();
-            this.chkSleep = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.numericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
+            this.groupBoxConnection = new System.Windows.Forms.GroupBox();
+            this.optionEncryptionKey = new System.Windows.Forms.RadioButton();
+            this.optionEncryptionPassword = new System.Windows.Forms.RadioButton();
+            this.label5 = new System.Windows.Forms.Label();
+            this.cmbPassword = new System.Windows.Forms.ComboBox();
+            this.cmbUser = new System.Windows.Forms.ComboBox();
+            this.cmbServer = new System.Windows.Forms.ComboBox();
+            this.lbPassword = new System.Windows.Forms.Label();
+            this.lbUser = new System.Windows.Forms.Label();
+            this.lbServer = new System.Windows.Forms.Label();
+            this.groupBoxEncryption = new System.Windows.Forms.GroupBox();
+            this.cmbPassPhrase = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.optPrivateKeyFileVariable = new System.Windows.Forms.RadioButton();
+            this.optPrivateKeyFileConnection = new System.Windows.Forms.RadioButton();
+            this.cmbKeyFile = new System.Windows.Forms.ComboBox();
+            this.btKeyFileExpression = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).BeginInit();
+            this.groupBoxConnection.SuspendLayout();
+            this.groupBoxEncryption.SuspendLayout();
             this.SuspendLayout();
             // 
             // btOK
             // 
-            this.btOK.Location = new System.Drawing.Point(297, 248);
+            this.btOK.Location = new System.Drawing.Point(299, 425);
             this.btOK.Name = "btOK";
             this.btOK.Size = new System.Drawing.Size(59, 26);
             this.btOK.TabIndex = 3;
@@ -73,7 +87,7 @@
             // btCancel
             // 
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(362, 248);
+            this.btCancel.Location = new System.Drawing.Point(364, 425);
             this.btCancel.Name = "btCancel";
             this.btCancel.Size = new System.Drawing.Size(59, 26);
             this.btCancel.TabIndex = 4;
@@ -81,10 +95,23 @@
             this.btCancel.UseVisualStyleBackColor = true;
             this.btCancel.Click += new System.EventHandler(this.btCancel_Click);
             // 
+            // chkSleep
+            // 
+            this.chkSleep.AutoSize = true;
+            this.chkSleep.Location = new System.Drawing.Point(101, 385);
+            this.chkSleep.Name = "chkSleep";
+            this.chkSleep.Size = new System.Drawing.Size(123, 17);
+            this.chkSleep.TabIndex = 62;
+            this.chkSleep.Text = "Sleep on disconnect";
+            this.chkSleep.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.toolTip1.SetToolTip(this.chkSleep, "To avoid overload connections. Give it the time to disconnect completely.");
+            this.chkSleep.UseVisualStyleBackColor = true;
+            this.chkSleep.Click += new System.EventHandler(this.chkSleep_Click);
+            // 
             // linkLabelCodeplex
             // 
             this.linkLabelCodeplex.AutoSize = true;
-            this.linkLabelCodeplex.Location = new System.Drawing.Point(7, 261);
+            this.linkLabelCodeplex.Location = new System.Drawing.Point(7, 438);
             this.linkLabelCodeplex.Name = "linkLabelCodeplex";
             this.linkLabelCodeplex.Size = new System.Drawing.Size(141, 13);
             this.linkLabelCodeplex.TabIndex = 10;
@@ -92,61 +119,10 @@
             this.linkLabelCodeplex.Text = "http://ssissftp.codeplex.com";
             this.linkLabelCodeplex.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelCodeplex_LinkClicked);
             // 
-            // cmbPassword
-            // 
-            this.cmbPassword.FormattingEnabled = true;
-            this.cmbPassword.Location = new System.Drawing.Point(112, 66);
-            this.cmbPassword.Name = "cmbPassword";
-            this.cmbPassword.Size = new System.Drawing.Size(309, 21);
-            this.cmbPassword.TabIndex = 23;
-            // 
-            // cmbUser
-            // 
-            this.cmbUser.FormattingEnabled = true;
-            this.cmbUser.Location = new System.Drawing.Point(112, 39);
-            this.cmbUser.Name = "cmbUser";
-            this.cmbUser.Size = new System.Drawing.Size(309, 21);
-            this.cmbUser.TabIndex = 22;
-            // 
-            // cmbServer
-            // 
-            this.cmbServer.FormattingEnabled = true;
-            this.cmbServer.Location = new System.Drawing.Point(112, 12);
-            this.cmbServer.Name = "cmbServer";
-            this.cmbServer.Size = new System.Drawing.Size(309, 21);
-            this.cmbServer.TabIndex = 21;
-            // 
-            // lbPassword
-            // 
-            this.lbPassword.AutoSize = true;
-            this.lbPassword.Location = new System.Drawing.Point(8, 69);
-            this.lbPassword.Name = "lbPassword";
-            this.lbPassword.Size = new System.Drawing.Size(53, 13);
-            this.lbPassword.TabIndex = 20;
-            this.lbPassword.Text = "Password";
-            // 
-            // lbUser
-            // 
-            this.lbUser.AutoSize = true;
-            this.lbUser.Location = new System.Drawing.Point(8, 42);
-            this.lbUser.Name = "lbUser";
-            this.lbUser.Size = new System.Drawing.Size(29, 13);
-            this.lbUser.TabIndex = 19;
-            this.lbUser.Text = "User";
-            // 
-            // lbServer
-            // 
-            this.lbServer.AutoSize = true;
-            this.lbServer.Location = new System.Drawing.Point(8, 15);
-            this.lbServer.Name = "lbServer";
-            this.lbServer.Size = new System.Drawing.Size(61, 13);
-            this.lbServer.TabIndex = 18;
-            this.lbServer.Text = "FTP Server";
-            // 
             // cmbRemote
             // 
             this.cmbRemote.FormattingEnabled = true;
-            this.cmbRemote.Location = new System.Drawing.Point(112, 171);
+            this.cmbRemote.Location = new System.Drawing.Point(101, 330);
             this.cmbRemote.Name = "cmbRemote";
             this.cmbRemote.Size = new System.Drawing.Size(262, 21);
             this.cmbRemote.TabIndex = 60;
@@ -154,7 +130,7 @@
             // optFileVariable
             // 
             this.optFileVariable.AutoSize = true;
-            this.optFileVariable.Location = new System.Drawing.Point(213, 150);
+            this.optFileVariable.Location = new System.Drawing.Point(212, 310);
             this.optFileVariable.Name = "optFileVariable";
             this.optFileVariable.Size = new System.Drawing.Size(93, 17);
             this.optFileVariable.TabIndex = 59;
@@ -166,7 +142,7 @@
             // 
             this.optFileConnection.AutoSize = true;
             this.optFileConnection.Checked = true;
-            this.optFileConnection.Location = new System.Drawing.Point(109, 150);
+            this.optFileConnection.Location = new System.Drawing.Point(101, 311);
             this.optFileConnection.Name = "optFileConnection";
             this.optFileConnection.Size = new System.Drawing.Size(98, 17);
             this.optFileConnection.TabIndex = 58;
@@ -178,7 +154,7 @@
             // cmbLocal
             // 
             this.cmbLocal.FormattingEnabled = true;
-            this.cmbLocal.Location = new System.Drawing.Point(112, 123);
+            this.cmbLocal.Location = new System.Drawing.Point(101, 283);
             this.cmbLocal.Name = "cmbLocal";
             this.cmbLocal.Size = new System.Drawing.Size(262, 21);
             this.cmbLocal.TabIndex = 57;
@@ -186,7 +162,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 201);
+            this.label1.Location = new System.Drawing.Point(7, 361);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(90, 13);
             this.label1.TabIndex = 56;
@@ -197,15 +173,15 @@
             // 
             this.cmbFilesList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbFilesList.FormattingEnabled = true;
-            this.cmbFilesList.Location = new System.Drawing.Point(112, 198);
+            this.cmbFilesList.Location = new System.Drawing.Point(101, 358);
             this.cmbFilesList.Name = "cmbFilesList";
-            this.cmbFilesList.Size = new System.Drawing.Size(310, 21);
+            this.cmbFilesList.Size = new System.Drawing.Size(319, 21);
             this.cmbFilesList.TabIndex = 55;
             this.cmbFilesList.Visible = false;
             // 
             // btDestinationFile
             // 
-            this.btDestinationFile.Location = new System.Drawing.Point(381, 170);
+            this.btDestinationFile.Location = new System.Drawing.Point(380, 330);
             this.btDestinationFile.Name = "btDestinationFile";
             this.btDestinationFile.Size = new System.Drawing.Size(40, 21);
             this.btDestinationFile.TabIndex = 54;
@@ -216,7 +192,7 @@
             // lbDestinationFile
             // 
             this.lbDestinationFile.AutoSize = true;
-            this.lbDestinationFile.Location = new System.Drawing.Point(8, 175);
+            this.lbDestinationFile.Location = new System.Drawing.Point(7, 335);
             this.lbDestinationFile.Name = "lbDestinationFile";
             this.lbDestinationFile.Size = new System.Drawing.Size(68, 13);
             this.lbDestinationFile.TabIndex = 53;
@@ -224,7 +200,7 @@
             // 
             // btSourceFile
             // 
-            this.btSourceFile.Location = new System.Drawing.Point(381, 122);
+            this.btSourceFile.Location = new System.Drawing.Point(380, 282);
             this.btSourceFile.Name = "btSourceFile";
             this.btSourceFile.Size = new System.Drawing.Size(40, 21);
             this.btSourceFile.TabIndex = 52;
@@ -235,7 +211,7 @@
             // lbSourceFile
             // 
             this.lbSourceFile.AutoSize = true;
-            this.lbSourceFile.Location = new System.Drawing.Point(8, 123);
+            this.lbSourceFile.Location = new System.Drawing.Point(7, 283);
             this.lbSourceFile.Name = "lbSourceFile";
             this.lbSourceFile.Size = new System.Drawing.Size(58, 13);
             this.lbSourceFile.TabIndex = 51;
@@ -244,7 +220,7 @@
             // lbAction
             // 
             this.lbAction.AutoSize = true;
-            this.lbAction.Location = new System.Drawing.Point(8, 99);
+            this.lbAction.Location = new System.Drawing.Point(7, 259);
             this.lbAction.Name = "lbAction";
             this.lbAction.Size = new System.Drawing.Size(37, 13);
             this.lbAction.TabIndex = 50;
@@ -254,39 +230,26 @@
             // 
             this.cmbAction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbAction.FormattingEnabled = true;
-            this.cmbAction.Location = new System.Drawing.Point(112, 96);
+            this.cmbAction.Location = new System.Drawing.Point(101, 256);
             this.cmbAction.Name = "cmbAction";
-            this.cmbAction.Size = new System.Drawing.Size(309, 21);
+            this.cmbAction.Size = new System.Drawing.Size(319, 21);
             this.cmbAction.TabIndex = 49;
             this.cmbAction.SelectedIndexChanged += new System.EventHandler(this.cmbAction_SelectedIndexChanged);
             // 
             // chkOverwrite
             // 
             this.chkOverwrite.AutoSize = true;
-            this.chkOverwrite.Location = new System.Drawing.Point(312, 151);
+            this.chkOverwrite.Location = new System.Drawing.Point(311, 311);
             this.chkOverwrite.Name = "chkOverwrite";
             this.chkOverwrite.Size = new System.Drawing.Size(112, 17);
             this.chkOverwrite.TabIndex = 61;
             this.chkOverwrite.Text = "Overwrite local file";
             this.chkOverwrite.UseVisualStyleBackColor = true;
             // 
-            // chkSleep
-            // 
-            this.chkSleep.AutoSize = true;
-            this.chkSleep.Location = new System.Drawing.Point(112, 225);
-            this.chkSleep.Name = "chkSleep";
-            this.chkSleep.Size = new System.Drawing.Size(123, 17);
-            this.chkSleep.TabIndex = 62;
-            this.chkSleep.Text = "Sleep on disconnect";
-            this.chkSleep.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.toolTip1.SetToolTip(this.chkSleep, "To avoid overload connections. Give it the time to disconnect completely.");
-            this.chkSleep.UseVisualStyleBackColor = true;
-            this.chkSleep.Click += new System.EventHandler(this.chkSleep_Click);
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(268, 226);
+            this.label2.Location = new System.Drawing.Point(267, 386);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(49, 13);
             this.label2.TabIndex = 63;
@@ -295,7 +258,7 @@
             // numericUpDown
             // 
             this.numericUpDown.Enabled = false;
-            this.numericUpDown.Location = new System.Drawing.Point(323, 222);
+            this.numericUpDown.Location = new System.Drawing.Point(322, 382);
             this.numericUpDown.Maximum = new decimal(new int[] {
             60,
             0,
@@ -309,11 +272,196 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(377, 226);
+            this.label3.Location = new System.Drawing.Point(376, 386);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(47, 13);
             this.label3.TabIndex = 66;
             this.label3.Text = "seconds";
+            // 
+            // groupBoxConnection
+            // 
+            this.groupBoxConnection.Controls.Add(this.optionEncryptionKey);
+            this.groupBoxConnection.Controls.Add(this.optionEncryptionPassword);
+            this.groupBoxConnection.Controls.Add(this.label5);
+            this.groupBoxConnection.Controls.Add(this.cmbPassword);
+            this.groupBoxConnection.Controls.Add(this.cmbUser);
+            this.groupBoxConnection.Controls.Add(this.cmbServer);
+            this.groupBoxConnection.Controls.Add(this.lbPassword);
+            this.groupBoxConnection.Controls.Add(this.lbUser);
+            this.groupBoxConnection.Controls.Add(this.lbServer);
+            this.groupBoxConnection.Location = new System.Drawing.Point(10, 3);
+            this.groupBoxConnection.Name = "groupBoxConnection";
+            this.groupBoxConnection.Size = new System.Drawing.Size(411, 132);
+            this.groupBoxConnection.TabIndex = 72;
+            this.groupBoxConnection.TabStop = false;
+            this.groupBoxConnection.Text = "Connection";
+            // 
+            // optionEncryptionKey
+            // 
+            this.optionEncryptionKey.AutoSize = true;
+            this.optionEncryptionKey.Location = new System.Drawing.Point(169, 46);
+            this.optionEncryptionKey.Name = "optionEncryptionKey";
+            this.optionEncryptionKey.Size = new System.Drawing.Size(43, 17);
+            this.optionEncryptionKey.TabIndex = 85;
+            this.optionEncryptionKey.Text = "Key";
+            this.optionEncryptionKey.UseVisualStyleBackColor = true;
+            this.optionEncryptionKey.Click += new System.EventHandler(this.optionEncryptionKey_Click);
+            // 
+            // optionEncryptionPassword
+            // 
+            this.optionEncryptionPassword.AutoSize = true;
+            this.optionEncryptionPassword.Checked = true;
+            this.optionEncryptionPassword.Location = new System.Drawing.Point(92, 46);
+            this.optionEncryptionPassword.Name = "optionEncryptionPassword";
+            this.optionEncryptionPassword.Size = new System.Drawing.Size(71, 17);
+            this.optionEncryptionPassword.TabIndex = 84;
+            this.optionEncryptionPassword.TabStop = true;
+            this.optionEncryptionPassword.Text = "Password";
+            this.optionEncryptionPassword.UseVisualStyleBackColor = true;
+            this.optionEncryptionPassword.Click += new System.EventHandler(this.optionEncryptionPassword_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 48);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(83, 13);
+            this.label5.TabIndex = 83;
+            this.label5.Text = "Encryption type:";
+            // 
+            // cmbPassword
+            // 
+            this.cmbPassword.FormattingEnabled = true;
+            this.cmbPassword.Location = new System.Drawing.Point(92, 96);
+            this.cmbPassword.Name = "cmbPassword";
+            this.cmbPassword.Size = new System.Drawing.Size(309, 21);
+            this.cmbPassword.TabIndex = 77;
+            // 
+            // cmbUser
+            // 
+            this.cmbUser.FormattingEnabled = true;
+            this.cmbUser.Location = new System.Drawing.Point(92, 69);
+            this.cmbUser.Name = "cmbUser";
+            this.cmbUser.Size = new System.Drawing.Size(309, 21);
+            this.cmbUser.TabIndex = 76;
+            // 
+            // cmbServer
+            // 
+            this.cmbServer.FormattingEnabled = true;
+            this.cmbServer.Location = new System.Drawing.Point(92, 19);
+            this.cmbServer.Name = "cmbServer";
+            this.cmbServer.Size = new System.Drawing.Size(309, 21);
+            this.cmbServer.TabIndex = 75;
+            // 
+            // lbPassword
+            // 
+            this.lbPassword.AutoSize = true;
+            this.lbPassword.Location = new System.Drawing.Point(6, 100);
+            this.lbPassword.Name = "lbPassword";
+            this.lbPassword.Size = new System.Drawing.Size(56, 13);
+            this.lbPassword.TabIndex = 74;
+            this.lbPassword.Text = "Password:";
+            // 
+            // lbUser
+            // 
+            this.lbUser.AutoSize = true;
+            this.lbUser.Location = new System.Drawing.Point(6, 74);
+            this.lbUser.Name = "lbUser";
+            this.lbUser.Size = new System.Drawing.Size(32, 13);
+            this.lbUser.TabIndex = 73;
+            this.lbUser.Text = "User:";
+            // 
+            // lbServer
+            // 
+            this.lbServer.AutoSize = true;
+            this.lbServer.Location = new System.Drawing.Point(6, 22);
+            this.lbServer.Name = "lbServer";
+            this.lbServer.Size = new System.Drawing.Size(71, 13);
+            this.lbServer.TabIndex = 72;
+            this.lbServer.Text = "SFTP Server:";
+            // 
+            // groupBoxEncryption
+            // 
+            this.groupBoxEncryption.Controls.Add(this.cmbPassPhrase);
+            this.groupBoxEncryption.Controls.Add(this.label6);
+            this.groupBoxEncryption.Controls.Add(this.optPrivateKeyFileVariable);
+            this.groupBoxEncryption.Controls.Add(this.optPrivateKeyFileConnection);
+            this.groupBoxEncryption.Controls.Add(this.cmbKeyFile);
+            this.groupBoxEncryption.Controls.Add(this.btKeyFileExpression);
+            this.groupBoxEncryption.Controls.Add(this.label4);
+            this.groupBoxEncryption.Location = new System.Drawing.Point(10, 141);
+            this.groupBoxEncryption.Name = "groupBoxEncryption";
+            this.groupBoxEncryption.Size = new System.Drawing.Size(411, 102);
+            this.groupBoxEncryption.TabIndex = 73;
+            this.groupBoxEncryption.TabStop = false;
+            this.groupBoxEncryption.Text = "Encryption details";
+            // 
+            // cmbPassPhrase
+            // 
+            this.cmbPassPhrase.FormattingEnabled = true;
+            this.cmbPassPhrase.Location = new System.Drawing.Point(92, 68);
+            this.cmbPassPhrase.Name = "cmbPassPhrase";
+            this.cmbPassPhrase.Size = new System.Drawing.Size(309, 21);
+            this.cmbPassPhrase.TabIndex = 94;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 71);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(68, 13);
+            this.label6.TabIndex = 93;
+            this.label6.Text = "Pass phrase:";
+            // 
+            // optPrivateKeyFileVariable
+            // 
+            this.optPrivateKeyFileVariable.AutoSize = true;
+            this.optPrivateKeyFileVariable.Location = new System.Drawing.Point(196, 46);
+            this.optPrivateKeyFileVariable.Name = "optPrivateKeyFileVariable";
+            this.optPrivateKeyFileVariable.Size = new System.Drawing.Size(93, 17);
+            this.optPrivateKeyFileVariable.TabIndex = 92;
+            this.optPrivateKeyFileVariable.Text = "Variables / f(x)";
+            this.optPrivateKeyFileVariable.UseVisualStyleBackColor = true;
+            this.optPrivateKeyFileVariable.Click += new System.EventHandler(this.optPrivateKeyFileVariable_Click_1);
+            // 
+            // optPrivateKeyFileConnection
+            // 
+            this.optPrivateKeyFileConnection.AutoSize = true;
+            this.optPrivateKeyFileConnection.Checked = true;
+            this.optPrivateKeyFileConnection.Location = new System.Drawing.Point(92, 46);
+            this.optPrivateKeyFileConnection.Name = "optPrivateKeyFileConnection";
+            this.optPrivateKeyFileConnection.Size = new System.Drawing.Size(98, 17);
+            this.optPrivateKeyFileConnection.TabIndex = 91;
+            this.optPrivateKeyFileConnection.TabStop = true;
+            this.optPrivateKeyFileConnection.Text = "File Connection";
+            this.optPrivateKeyFileConnection.UseVisualStyleBackColor = true;
+            this.optPrivateKeyFileConnection.Click += new System.EventHandler(this.optPrivateKeyFileConnection_Click_1);
+            // 
+            // cmbKeyFile
+            // 
+            this.cmbKeyFile.FormattingEnabled = true;
+            this.cmbKeyFile.Location = new System.Drawing.Point(92, 19);
+            this.cmbKeyFile.Name = "cmbKeyFile";
+            this.cmbKeyFile.Size = new System.Drawing.Size(261, 21);
+            this.cmbKeyFile.TabIndex = 90;
+            // 
+            // btKeyFileExpression
+            // 
+            this.btKeyFileExpression.Location = new System.Drawing.Point(359, 19);
+            this.btKeyFileExpression.Name = "btKeyFileExpression";
+            this.btKeyFileExpression.Size = new System.Drawing.Size(42, 21);
+            this.btKeyFileExpression.TabIndex = 89;
+            this.btKeyFileExpression.Text = "f(x)";
+            this.btKeyFileExpression.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 22);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(79, 13);
+            this.label4.TabIndex = 88;
+            this.label4.Text = "Private key file:";
             // 
             // frmEditProperties
             // 
@@ -321,7 +469,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btCancel;
-            this.ClientSize = new System.Drawing.Size(433, 281);
+            this.ClientSize = new System.Drawing.Size(430, 461);
+            this.Controls.Add(this.groupBoxEncryption);
+            this.Controls.Add(this.groupBoxConnection);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.numericUpDown);
             this.Controls.Add(this.label2);
@@ -341,12 +491,6 @@
             this.Controls.Add(this.lbSourceFile);
             this.Controls.Add(this.lbAction);
             this.Controls.Add(this.cmbAction);
-            this.Controls.Add(this.cmbPassword);
-            this.Controls.Add(this.cmbUser);
-            this.Controls.Add(this.cmbServer);
-            this.Controls.Add(this.lbPassword);
-            this.Controls.Add(this.lbUser);
-            this.Controls.Add(this.lbServer);
             this.Controls.Add(this.linkLabelCodeplex);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -357,6 +501,10 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SFTP Task Properties";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).EndInit();
+            this.groupBoxConnection.ResumeLayout(false);
+            this.groupBoxConnection.PerformLayout();
+            this.groupBoxEncryption.ResumeLayout(false);
+            this.groupBoxEncryption.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -368,12 +516,6 @@
         private System.Windows.Forms.Button btCancel;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.LinkLabel linkLabelCodeplex;
-        private System.Windows.Forms.ComboBox cmbPassword;
-        private System.Windows.Forms.ComboBox cmbUser;
-        private System.Windows.Forms.ComboBox cmbServer;
-        private System.Windows.Forms.Label lbPassword;
-        private System.Windows.Forms.Label lbUser;
-        private System.Windows.Forms.Label lbServer;
         private System.Windows.Forms.ComboBox cmbRemote;
         private System.Windows.Forms.RadioButton optFileVariable;
         private System.Windows.Forms.RadioButton optFileConnection;
@@ -391,5 +533,23 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown numericUpDown;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.GroupBox groupBoxConnection;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox cmbPassword;
+        private System.Windows.Forms.ComboBox cmbUser;
+        private System.Windows.Forms.ComboBox cmbServer;
+        private System.Windows.Forms.Label lbPassword;
+        private System.Windows.Forms.Label lbUser;
+        private System.Windows.Forms.Label lbServer;
+        private System.Windows.Forms.RadioButton optionEncryptionKey;
+        private System.Windows.Forms.RadioButton optionEncryptionPassword;
+        private System.Windows.Forms.GroupBox groupBoxEncryption;
+        private System.Windows.Forms.ComboBox cmbPassPhrase;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.RadioButton optPrivateKeyFileVariable;
+        private System.Windows.Forms.RadioButton optPrivateKeyFileConnection;
+        private System.Windows.Forms.ComboBox cmbKeyFile;
+        private System.Windows.Forms.Button btKeyFileExpression;
+        private System.Windows.Forms.Label label4;
     }
 }

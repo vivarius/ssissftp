@@ -40,6 +40,35 @@ namespace SSISSFTPTask100
 
         #region Events
 
+        private void optPrivateKeyFileConnection_Click(object sender, EventArgs e)
+        {
+            LoadKeyFileConnections();
+        }
+
+        private void optPrivateKeyFileVariable_Click(object sender, EventArgs e)
+        {
+            cmbKeyFile.Items.Clear();
+
+            cmbKeyFile.Items.Add(string.Empty);
+
+            if (_taskHost.Properties[Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION].GetValue(_taskHost) != null)
+            {
+                if (_taskHost.Properties[Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION].GetValue(_taskHost).ToString() == Keys.FALSE)
+                {
+                    if (_taskHost.Properties[Keys.PRIVATE_KEY_FILE].GetValue(_taskHost) != null)
+                    {
+                        cmbKeyFile.Items.Add(_taskHost.Properties[Keys.PRIVATE_KEY_FILE].GetValue(_taskHost).ToString());
+                    }
+                }
+            }
+
+            cmbKeyFile.Items.AddRange((from Variable var in _variables
+                                       where var.DataType == Type.GetTypeCode(Type.GetType("System.String")) &&
+                                             var.Namespace.ToLower() == "user"
+                                       select string.Format("@[{0}::{1}]", var.Namespace, var.Name)).ToArray());
+
+        }
+
         private void btCancel_Click(object sender, EventArgs e)
         {
             Close();
@@ -51,6 +80,11 @@ namespace SSISSFTPTask100
             _taskHost.Properties[Keys.FTP_SERVER].SetValue(_taskHost, cmbServer.Text);
             _taskHost.Properties[Keys.FTP_USER].SetValue(_taskHost, cmbUser.Text);
             _taskHost.Properties[Keys.FTP_PASSWORD].SetValue(_taskHost, cmbPassword.Text);
+
+            _taskHost.Properties[Keys.ENCRYPTION_TYPE].SetValue(_taskHost, optionEncryptionPassword.Checked ? Keys.ENCRYPTION_TYPE_PASSWORD : Keys.ENCRYPTION_TYPE_KEY);
+            _taskHost.Properties[Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION].SetValue(_taskHost, optPrivateKeyFileConnection.Checked ? Keys.TRUE : Keys.FALSE);
+            _taskHost.Properties[Keys.PRIVATE_KEY_FILE].SetValue(_taskHost, cmbKeyFile.Text);
+            _taskHost.Properties[Keys.PASS_PHRASE].SetValue(_taskHost, cmbPassPhrase.Text);
 
             _taskHost.Properties[Keys.FTP_ACTION_LIST].SetValue(_taskHost, cmbAction.SelectedItem);
 
@@ -83,6 +117,17 @@ namespace SSISSFTPTask100
                 if (expressionBuilder.ShowDialog() == DialogResult.OK)
                 {
                     cmbLocal.Text = expressionBuilder.Expression;
+                }
+            }
+        }
+
+        private void btKeyFileExpression_Click(object sender, EventArgs e)
+        {
+            using (ExpressionBuilder expressionBuilder = ExpressionBuilder.Instantiate(_variables, _taskHost.VariableDispenser, typeof(string), cmbKeyFile.Text))
+            {
+                if (expressionBuilder.ShowDialog() == DialogResult.OK)
+                {
+                    cmbKeyFile.Text = expressionBuilder.Expression;
                 }
             }
         }
@@ -169,10 +214,18 @@ namespace SSISSFTPTask100
         private void LoadLocalFileConnections()
         {
             cmbLocal.Items.Clear();
-
             foreach (var connection in _connections.Cast<ConnectionManager>().Where(connection => connection.CreationName == "FILE"))
             {
                 cmbLocal.Items.Add(connection.Name);
+            }
+        }
+
+        private void LoadKeyFileConnections()
+        {
+            cmbKeyFile.Items.Clear();
+            foreach (var connection in _connections.Cast<ConnectionManager>().Where(connection => connection.CreationName == "FILE"))
+            {
+                cmbKeyFile.Items.Add(connection.Name);
             }
         }
 
@@ -188,18 +241,70 @@ namespace SSISSFTPTask100
                     cmbServer.Items.Add(string.Format("@[{0}::{1}]", variable.Namespace, variable.Name));
                     cmbUser.Items.Add(string.Format("@[{0}::{1}]", variable.Namespace, variable.Name));
                     cmbPassword.Items.Add(string.Format("@[{0}::{1}]", variable.Namespace, variable.Name));
+                    cmbPassPhrase.Items.Add(string.Format("@[{0}::{1}]", variable.Namespace, variable.Name));
                 }
 
                 cmbServer.SelectedIndex = GetSelectedComboBoxIndex(cmbServer, _taskHost.Properties[Keys.FTP_SERVER].GetValue(_taskHost));
-
                 cmbUser.SelectedIndex = GetSelectedComboBoxIndex(cmbUser, _taskHost.Properties[Keys.FTP_USER].GetValue(_taskHost));
-
                 cmbPassword.SelectedIndex = GetSelectedComboBoxIndex(cmbPassword, _taskHost.Properties[Keys.FTP_PASSWORD].GetValue(_taskHost));
+
+                if (_taskHost.Properties[Keys.ENCRYPTION_TYPE].GetValue(_taskHost) != null)
+                {
+                    if (_taskHost.Properties[Keys.ENCRYPTION_TYPE].GetValue(_taskHost).ToString() == Keys.ENCRYPTION_TYPE_PASSWORD)
+                    {
+                        optionEncryptionPassword.Checked = true;
+                        groupBoxEncryption.Enabled = false;
+                    }
+                    else
+                    {
+                        optionEncryptionKey.Checked = true;
+                        groupBoxEncryption.Enabled = true;
+                    }
+
+                    if (_taskHost.Properties[Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION].GetValue(_taskHost) != null)
+                    {
+                        if (_taskHost.Properties[Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION].GetValue(_taskHost).ToString() == Keys.TRUE)
+                        {
+                            optPrivateKeyFileConnection.Checked = true;
+                            LoadKeyFileConnections();
+                        }
+                        else
+                        {
+                            optPrivateKeyFileVariable.Checked = true;
+                            LoadFileKeyPathVariables();
+                        }
+                    }
+
+                    cmbKeyFile.SelectedIndex = GetSelectedComboBoxIndex(cmbKeyFile, _taskHost.Properties[Keys.PRIVATE_KEY_FILE].GetValue(_taskHost));
+                    cmbPassPhrase.SelectedIndex = GetSelectedComboBoxIndex(cmbPassPhrase, _taskHost.Properties[Keys.PASS_PHRASE].GetValue(_taskHost));
+                }
+                else
+                {
+                    optionEncryptionPassword.Checked = true;
+                    groupBoxEncryption.Enabled = false;
+                    LoadKeyFileConnections();
+                }
+
             }
             catch (Exception exception)
             {
 
             }
+        }
+
+        private void LoadFileKeyPathVariables()
+        {
+            cmbKeyFile.Items.Clear();
+            cmbKeyFile.Items.AddRange((from Variable var in _variables
+                                       where var.DataType == Type.GetTypeCode(Type.GetType("System.String")) &&
+                                             var.Namespace.ToLower() == "user"
+                                       select string.Format("@[{0}::{1}]", var.Namespace, var.Name)).ToArray());
+        }
+
+        private void SwitchEncryptionTypePassword(bool type)
+        {
+            cmbUser.Enabled = cmbUser.Enabled = type;
+            cmbKeyFile.Enabled = btKeyFileExpression.Enabled = optPrivateKeyFileConnection.Enabled = optPrivateKeyFileVariable.Enabled = cmbPassPhrase.Enabled = !type;
         }
 
         private void FillDetailsPanel()
@@ -311,5 +416,25 @@ namespace SSISSFTPTask100
         }
 
         #endregion
+
+        private void optPrivateKeyFileConnection_Click_1(object sender, EventArgs e)
+        {
+            LoadKeyFileConnections();
+        }
+
+        private void optPrivateKeyFileVariable_Click_1(object sender, EventArgs e)
+        {
+            LoadFileKeyPathVariables();
+        }
+
+        private void optionEncryptionKey_Click(object sender, EventArgs e)
+        {
+            groupBoxEncryption.Enabled = true;
+        }
+
+        private void optionEncryptionPassword_Click(object sender, EventArgs e)
+        {
+            groupBoxEncryption.Enabled = false;
+        }
     }
 }

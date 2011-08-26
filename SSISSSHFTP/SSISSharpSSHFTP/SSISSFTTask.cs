@@ -18,7 +18,7 @@ namespace SSISSFTPTask100.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask100.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask100," +
-        "Version=1.2.1.0," +
+        "Version=1.2.2.6," +
         "Culture=Neutral," +
         "PublicKeyToken=4598105d4a713364",
         IconResource = "SSISSFTPTask100.sftp.ico",
@@ -44,6 +44,16 @@ namespace SSISSFTPTask100.SSIS
         public string SFTPUser { get; set; }
         [Category("Connection"), Description("SFTP Password")]
         public string SFTPPassword { get; set; }
+
+        [Category("Connection"), Description("Encryption Type (Password/Key)")]
+        public string EncryptionType { get; set; }
+
+        [Category("Connection"), Description("The Path to the Private Key File")]
+        public string PrivateKeyFile { get; set; }
+        [Category("Connection"), Description("Private Key File Is ConnectionFile Type")]
+        public string PrivateKeyFileIsConnectionFileType { get; set; }
+        [Category("Connection"), Description("Pass Phrase")]
+        public string PassPhrase { get; set; }
 
         [Category("Connection"), Description("Sleep on disconnect / To avoid overload connections. Give it the time to disconnect completely.")]
         public string SleepOnDisconnect { get; set; }
@@ -111,10 +121,21 @@ namespace SSISSFTPTask100.SSIS
                 isBaseValid = false;
             }
 
-            if (string.IsNullOrEmpty(SFTPPassword))
+            if (EncryptionType == Keys.FALSE)
             {
-                componentEvents.FireError(0, "SSISSFTTask", "SFTP User is required.", "", 0);
-                isBaseValid = false;
+                if (string.IsNullOrEmpty(SFTPPassword))
+                {
+                    componentEvents.FireError(0, "SSISSFTTask", "SFTP User is required.", "", 0);
+                    isBaseValid = false;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(PrivateKeyFile))
+                {
+                    componentEvents.FireError(0, "SSISSFTTask", "PrivateKeyFile is required.", "", 0);
+                    isBaseValid = false;
+                }
             }
 
             if (string.IsNullOrEmpty(SFTPPassword))
@@ -267,6 +288,32 @@ namespace SSISSFTPTask100.SSIS
                                                               EvaluateExpression(SFTPServer, variableDispenser),
                                                               EvaluateExpression(SFTPUser, variableDispenser)),
                                                 string.Empty, 0, ref refire);
+
+                Communication.EncryptionTypeKey = (EncryptionType == Keys.ENCRYPTION_TYPE_KEY) ? true : false;
+
+                if (Communication.EncryptionTypeKey)
+                {
+                    componentEvents.FireInformation(0, "SSISSFTTask",
+                                                    "The SFTP operation will be encrypted by a key file",
+                                                    string.Empty, 0, ref refire);
+
+
+                    var keyPath = LocalPathIsConnectionFileType == Keys.TRUE
+                                      ? connections[PrivateKeyFile].ConnectionString
+                                      : EvaluateExpression(PrivateKeyFile, variableDispenser).ToString();
+
+                    componentEvents.FireInformation(0, "SSISSFTTask",
+                                string.Format("The source key file is: {0}", keyPath),
+                                string.Empty, 0, ref refire);
+
+                    Communication.PrivateKeyFilePath = EvaluateExpression(keyPath, variableDispenser).ToString();
+
+                    componentEvents.FireInformation(0, "SSISSFTTask",
+                                string.Format("The Pass Phrase is: {0}", EvaluateExpression(PassPhrase, variableDispenser)),
+                                string.Empty, 0, ref refire);
+
+                    Communication.PrivatePassPhrase = EvaluateExpression(PassPhrase, variableDispenser).ToString();
+                }
 
                 if (TaskAction == Communication.ActionTask[0]) //SEND FILE
                 {
@@ -846,10 +893,27 @@ namespace SSISSFTPTask100.SSIS
             XmlAttribute sleepOnDisconnect = doc.CreateAttribute(string.Empty, Keys.SLEEP_ON_DISCONNECT, string.Empty);
             sleepOnDisconnect.Value = SleepOnDisconnect;
 
+            XmlAttribute encryptionType = doc.CreateAttribute(string.Empty, Keys.ENCRYPTION_TYPE, string.Empty);
+            encryptionType.Value = EncryptionType;
+
+            XmlAttribute privateKeyFile = doc.CreateAttribute(string.Empty, Keys.PRIVATE_KEY_FILE, string.Empty);
+            privateKeyFile.Value = PrivateKeyFile;
+
+            XmlAttribute privateKeyFileIsConnectionFileType = doc.CreateAttribute(string.Empty, Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION, string.Empty);
+            privateKeyFileIsConnectionFileType.Value = PrivateKeyFileIsConnectionFileType;
+
+            XmlAttribute passPhrase = doc.CreateAttribute(string.Empty, Keys.PASS_PHRASE, string.Empty);
+            passPhrase.Value = PassPhrase;
+
 
             taskElement.Attributes.Append(sftpServer);
             taskElement.Attributes.Append(sftpUser);
             taskElement.Attributes.Append(sftpPassword);
+
+            taskElement.Attributes.Append(encryptionType);
+            taskElement.Attributes.Append(privateKeyFile);
+            taskElement.Attributes.Append(privateKeyFileIsConnectionFileType);
+            taskElement.Attributes.Append(passPhrase);
 
             taskElement.Attributes.Append(sftpSourceFile);
             taskElement.Attributes.Append(sftpSourceFileType);
@@ -875,6 +939,12 @@ namespace SSISSFTPTask100.SSIS
                 SFTPServer = node.Attributes.GetNamedItem(Keys.FTP_SERVER).Value;
                 SFTPUser = node.Attributes.GetNamedItem(Keys.FTP_USER).Value;
                 SFTPPassword = node.Attributes.GetNamedItem(Keys.FTP_PASSWORD).Value;
+
+                EncryptionType = node.Attributes.GetNamedItem(Keys.ENCRYPTION_TYPE).Value;
+                PrivateKeyFile = node.Attributes.GetNamedItem(Keys.PRIVATE_KEY_FILE).Value;
+                PrivateKeyFileIsConnectionFileType = node.Attributes.GetNamedItem(Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION).Value;
+                PassPhrase = node.Attributes.GetNamedItem(Keys.PASS_PHRASE).Value;
+
                 TaskAction = node.Attributes.GetNamedItem(Keys.FTP_ACTION_LIST).Value;
                 LocalPath = node.Attributes.GetNamedItem(Keys.FTP_LOCAL_PATH).Value;
                 LocalPathIsConnectionFileType = node.Attributes.GetNamedItem(Keys.FTP_LOCAL_PATH_SOURCE_TYPE).Value;

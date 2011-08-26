@@ -2,11 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using Tamir.SharpSsh;
+using Tamir.SharpSsh.jsch;
 
 namespace SSISSFTPTask100.SSIS
 {
     public static class Communication
     {
+
+        public static string PrivateKeyFilePath { get; set; }
+        public static string PrivatePassPhrase { get; set; }
+        public static bool EncryptionTypeKey { get; set; }
+
         public static List<string> ActionTask = new List<string>
                              {
                                   "Send File",
@@ -20,11 +26,36 @@ namespace SSISSFTPTask100.SSIS
                                   "Get Files List From the Remote Folder" 
                              };
 
+        private static void AddEncryptionIfAvailable(Sftp sftp)
+        {
+            if (EncryptionTypeKey)
+            {
+                if (!string.IsNullOrEmpty(PrivateKeyFilePath) && !string.IsNullOrEmpty(PrivatePassPhrase))
+                    sftp.AddIdentityFile(PrivateKeyFilePath, PrivatePassPhrase);
+
+                if (string.IsNullOrEmpty(PrivateKeyFilePath) && string.IsNullOrEmpty(PrivatePassPhrase))
+                    sftp.AddIdentityFile(PrivateKeyFilePath);
+
+                if (string.IsNullOrEmpty(PrivateKeyFilePath) && string.IsNullOrEmpty(PrivatePassPhrase))
+                    throw new SftpException(1, "You choosed the connection encryption type to be provided by a key file. Please specify at least the path to the file.");
+            }
+        }
+
         public static bool SendFileBySFtp(string url, string login, string password, string sourceFileName, string outputFileName)
         {
             bool retVal = false;
 
-            Sftp sftp = new Sftp(url, login, password);
+            Sftp sftp;
+
+            if (EncryptionTypeKey)
+            {
+                sftp = new Sftp(url, login);
+                AddEncryptionIfAvailable(sftp);
+            }
+            else
+            {
+                sftp = new Sftp(url, login, password);
+            }
 
             try
             {
@@ -46,7 +77,17 @@ namespace SSISSFTPTask100.SSIS
         {
             bool retVal = false;
 
-            Sftp sftp = new Sftp(url, login, password);
+            Sftp sftp;
+
+            if (EncryptionTypeKey)
+            {
+                sftp = new Sftp(url, login);
+                AddEncryptionIfAvailable(sftp);
+            }
+            else
+            {
+                sftp = new Sftp(url, login, password);
+            }
 
             try
             {
@@ -68,7 +109,17 @@ namespace SSISSFTPTask100.SSIS
         {
             bool retVal = false;
 
-            Sftp sftp = new Sftp(url, login, password);
+            Sftp sftp;
+
+            if (EncryptionTypeKey)
+            {
+                sftp = new Sftp(url, login);
+                AddEncryptionIfAvailable(sftp);
+            }
+            else
+            {
+                sftp = new Sftp(url, login, password);
+            }
 
             try
             {
@@ -95,7 +146,17 @@ namespace SSISSFTPTask100.SSIS
         {
             bool retVal = false;
 
-            Sftp sftp = new Sftp(url, login, password);
+            Sftp sftp;
+
+            if (EncryptionTypeKey)
+            {
+                sftp = new Sftp(url, login);
+                AddEncryptionIfAvailable(sftp);
+            }
+            else
+            {
+                sftp = new Sftp(url, login, password);
+            }
 
             try
             {
@@ -117,7 +178,17 @@ namespace SSISSFTPTask100.SSIS
         {
             bool retVal = false;
 
-            Sftp sftp = new Sftp(url, login, password);
+            Sftp sftp;
+
+            if (EncryptionTypeKey)
+            {
+                sftp = new Sftp(url, login);
+                AddEncryptionIfAvailable(sftp);
+            }
+            else
+            {
+                sftp = new Sftp(url, login, password);
+            }
 
             try
             {
@@ -139,7 +210,17 @@ namespace SSISSFTPTask100.SSIS
         {
             bool retVal = false;
 
-            Sftp sftp = new Sftp(url, login, password);
+            Sftp sftp;
+
+            if (EncryptionTypeKey)
+            {
+                sftp = new Sftp(url, login);
+                AddEncryptionIfAvailable(sftp);
+            }
+            else
+            {
+                sftp = new Sftp(url, login, password);
+            }
 
             try
             {
@@ -161,7 +242,17 @@ namespace SSISSFTPTask100.SSIS
         {
             List<string> retVal = new List<string>();
 
-            Sftp sftp = new Sftp(url, login, password);
+            Sftp sftp;
+
+            if (EncryptionTypeKey)
+            {
+                sftp = new Sftp(url, login);
+                AddEncryptionIfAvailable(sftp);
+            }
+            else
+            {
+                sftp = new Sftp(url, login, password);
+            }
 
             try
             {
