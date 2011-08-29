@@ -18,7 +18,7 @@ namespace SSISSFTPTask100.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask100.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask100," +
-        "Version=1.2.2.6," +
+        "Version=1.3.0.0," +
         "Culture=Neutral," +
         "PublicKeyToken=4598105d4a713364",
         IconResource = "SSISSFTPTask100.sftp.ico",
@@ -121,7 +121,7 @@ namespace SSISSFTPTask100.SSIS
                 isBaseValid = false;
             }
 
-            if (EncryptionType == Keys.FALSE)
+            if (EncryptionType == Keys.ENCRYPTION_TYPE_PASSWORD)
             {
                 if (string.IsNullOrEmpty(SFTPPassword))
                 {
@@ -136,12 +136,6 @@ namespace SSISSFTPTask100.SSIS
                     componentEvents.FireError(0, "SSISSFTTask", "PrivateKeyFile is required.", "", 0);
                     isBaseValid = false;
                 }
-            }
-
-            if (string.IsNullOrEmpty(SFTPPassword))
-            {
-                componentEvents.FireError(0, "SSISSFTTask", "SFTP Password is required.", "", 0);
-                isBaseValid = false;
             }
 
             #endregion
