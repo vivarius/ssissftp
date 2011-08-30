@@ -40,12 +40,12 @@ namespace SSISSFTPTask100
 
         #region Events
 
-        private void optPrivateKeyFileConnection_Click(object sender, EventArgs e)
+        private void optPublicKeyFileConnection_Click(object sender, EventArgs e)
         {
             LoadKeyFileConnections();
         }
 
-        private void optPrivateKeyFileVariable_Click(object sender, EventArgs e)
+        private void optPublicKeyFileVariable_Click(object sender, EventArgs e)
         {
             cmbKeyFile.Items.Clear();
 
@@ -82,7 +82,7 @@ namespace SSISSFTPTask100
             _taskHost.Properties[Keys.FTP_PASSWORD].SetValue(_taskHost, cmbPassword.Text);
 
             _taskHost.Properties[Keys.ENCRYPTION_TYPE].SetValue(_taskHost, optionEncryptionPassword.Checked ? Keys.ENCRYPTION_TYPE_PASSWORD : Keys.ENCRYPTION_TYPE_KEY);
-            _taskHost.Properties[Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION].SetValue(_taskHost, optPrivateKeyFileConnection.Checked ? Keys.TRUE : Keys.FALSE);
+            _taskHost.Properties[Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION].SetValue(_taskHost, optPublicKeyFileConnection.Checked ? Keys.TRUE : Keys.FALSE);
             _taskHost.Properties[Keys.PRIVATE_KEY_FILE].SetValue(_taskHost, cmbKeyFile.Text);
             _taskHost.Properties[Keys.PASS_PHRASE].SetValue(_taskHost, cmbPassPhrase.Text);
 
@@ -265,12 +265,12 @@ namespace SSISSFTPTask100
                     {
                         if (_taskHost.Properties[Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION].GetValue(_taskHost).ToString() == Keys.TRUE)
                         {
-                            optPrivateKeyFileConnection.Checked = true;
+                            optPublicKeyFileConnection.Checked = true;
                             LoadKeyFileConnections();
                         }
                         else
                         {
-                            optPrivateKeyFileVariable.Checked = true;
+                            optPublicKeyFileVariable.Checked = true;
                             LoadFileKeyPathVariables();
                         }
                     }
@@ -304,7 +304,7 @@ namespace SSISSFTPTask100
         private void SwitchEncryptionTypePassword(bool type)
         {
             cmbUser.Enabled = cmbUser.Enabled = type;
-            cmbKeyFile.Enabled = btKeyFileExpression.Enabled = optPrivateKeyFileConnection.Enabled = optPrivateKeyFileVariable.Enabled = cmbPassPhrase.Enabled = !type;
+            cmbKeyFile.Enabled = btKeyFileExpression.Enabled = optPublicKeyFileConnection.Enabled = optPublicKeyFileVariable.Enabled = cmbPassPhrase.Enabled = !type;
         }
 
         private void FillDetailsPanel()
@@ -417,12 +417,12 @@ namespace SSISSFTPTask100
 
         #endregion
 
-        private void optPrivateKeyFileConnection_Click_1(object sender, EventArgs e)
+        private void optPublicKeyFileConnection_Click_1(object sender, EventArgs e)
         {
             LoadKeyFileConnections();
         }
 
-        private void optPrivateKeyFileVariable_Click_1(object sender, EventArgs e)
+        private void optPublicKeyFileVariable_Click_1(object sender, EventArgs e)
         {
             LoadFileKeyPathVariables();
         }

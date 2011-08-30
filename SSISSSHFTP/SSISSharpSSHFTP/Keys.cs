@@ -21,8 +21,8 @@
         public const string ENCRYPTION_TYPE = "EncryptionType";
         public const string ENCRYPTION_TYPE_PASSWORD = "Password";
         public const string ENCRYPTION_TYPE_KEY = "Key";
-        public const string PRIVATE_KEY_FILE = "PrivateKeyFile";
-        public const string PRIVATE_KEY_FILE_FROM_FILE_CONNECTION = "PrivateKeyFileIsConnectionFileType";
+        public const string PRIVATE_KEY_FILE = "PublicKeyFile";
+        public const string PRIVATE_KEY_FILE_FROM_FILE_CONNECTION = "PublicKeyFileIsConnectionFileType";
         public const string PASS_PHRASE = "PassPhrase";
 
         public const string SLEEP_ON_DISCONNECT = "SleepOnDisconnect";

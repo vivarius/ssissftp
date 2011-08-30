@@ -264,21 +264,6 @@
     <None Include="Org.Mentalis.Security\Resources\vssver2.scc" />
     <None Include="Org.Mentalis.Security\Smartcard\UI\vssver2.scc" />
     <None Include="Org.Mentalis.Security\Smartcard\vssver2.scc" />
-    <None Include="SharpSSH\java\io\CVS\Entries" />
-    <None Include="SharpSSH\java\io\CVS\Repository" />
-    <None Include="SharpSSH\java\io\CVS\Root" />
-    <None Include="SharpSSH\java\lang\CVS\Entries" />
-    <None Include="SharpSSH\java\lang\CVS\Repository" />
-    <None Include="SharpSSH\java\lang\CVS\Root" />
-    <None Include="SharpSSH\java\net\CVS\Entries" />
-    <None Include="SharpSSH\java\net\CVS\Repository" />
-    <None Include="SharpSSH\java\net\CVS\Root" />
-    <None Include="SharpSSH\java\util\CVS\Entries" />
-    <None Include="SharpSSH\java\util\CVS\Repository" />
-    <None Include="SharpSSH\java\util\CVS\Root" />
-    <None Include="SharpSSH\jsch\jce\CVS\Entries" />
-    <None Include="SharpSSH\jsch\jce\CVS\Repository" />
-    <None Include="SharpSSH\jsch\jce\CVS\Root" />
     <None Include="SSISSFTTask.snk" />
   </ItemGroup>
   <ItemGroup>

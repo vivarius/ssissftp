@@ -49,9 +49,9 @@ namespace SSISSFTPTask100.SSIS
         public string EncryptionType { get; set; }
 
         [Category("Connection"), Description("The Path to the Private Key File")]
-        public string PrivateKeyFile { get; set; }
+        public string PublicKeyFile { get; set; }
         [Category("Connection"), Description("Private Key File Is ConnectionFile Type")]
-        public string PrivateKeyFileIsConnectionFileType { get; set; }
+        public string PublicKeyFileIsConnectionFileType { get; set; }
         [Category("Connection"), Description("Pass Phrase")]
         public string PassPhrase { get; set; }
 
@@ -131,9 +131,9 @@ namespace SSISSFTPTask100.SSIS
             }
             else
             {
-                if (string.IsNullOrEmpty(PrivateKeyFile))
+                if (string.IsNullOrEmpty(PublicKeyFile))
                 {
-                    componentEvents.FireError(0, "SSISSFTTask", "PrivateKeyFile is required.", "", 0);
+                    componentEvents.FireError(0, "SSISSFTTask", "PublicKeyFile is required.", "", 0);
                     isBaseValid = false;
                 }
             }
@@ -293,14 +293,14 @@ namespace SSISSFTPTask100.SSIS
 
 
                     var keyPath = LocalPathIsConnectionFileType == Keys.TRUE
-                                      ? connections[PrivateKeyFile].ConnectionString
-                                      : EvaluateExpression(PrivateKeyFile, variableDispenser).ToString();
+                                      ? connections[PublicKeyFile].ConnectionString
+                                      : EvaluateExpression(PublicKeyFile, variableDispenser).ToString();
 
                     componentEvents.FireInformation(0, "SSISSFTTask",
                                 string.Format("The source key file is: {0}", keyPath),
                                 string.Empty, 0, ref refire);
 
-                    Communication.PrivateKeyFilePath = EvaluateExpression(keyPath, variableDispenser).ToString();
+                    Communication.PublicKeyFilePath = EvaluateExpression(keyPath, variableDispenser).ToString();
 
                     componentEvents.FireInformation(0, "SSISSFTTask",
                                 string.Format("The Pass Phrase is: {0}", EvaluateExpression(PassPhrase, variableDispenser)),
@@ -890,11 +890,11 @@ namespace SSISSFTPTask100.SSIS
             XmlAttribute encryptionType = doc.CreateAttribute(string.Empty, Keys.ENCRYPTION_TYPE, string.Empty);
             encryptionType.Value = EncryptionType;
 
-            XmlAttribute privateKeyFile = doc.CreateAttribute(string.Empty, Keys.PRIVATE_KEY_FILE, string.Empty);
-            privateKeyFile.Value = PrivateKeyFile;
+            XmlAttribute publicKeyFile = doc.CreateAttribute(string.Empty, Keys.PRIVATE_KEY_FILE, string.Empty);
+            publicKeyFile.Value = PublicKeyFile;
 
-            XmlAttribute privateKeyFileIsConnectionFileType = doc.CreateAttribute(string.Empty, Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION, string.Empty);
-            privateKeyFileIsConnectionFileType.Value = PrivateKeyFileIsConnectionFileType;
+            XmlAttribute publicKeyFileIsConnectionFileType = doc.CreateAttribute(string.Empty, Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION, string.Empty);
+            publicKeyFileIsConnectionFileType.Value = PublicKeyFileIsConnectionFileType;
 
             XmlAttribute passPhrase = doc.CreateAttribute(string.Empty, Keys.PASS_PHRASE, string.Empty);
             passPhrase.Value = PassPhrase;
@@ -905,8 +905,8 @@ namespace SSISSFTPTask100.SSIS
             taskElement.Attributes.Append(sftpPassword);
 
             taskElement.Attributes.Append(encryptionType);
-            taskElement.Attributes.Append(privateKeyFile);
-            taskElement.Attributes.Append(privateKeyFileIsConnectionFileType);
+            taskElement.Attributes.Append(publicKeyFile);
+            taskElement.Attributes.Append(publicKeyFileIsConnectionFileType);
             taskElement.Attributes.Append(passPhrase);
 
             taskElement.Attributes.Append(sftpSourceFile);
@@ -935,8 +935,8 @@ namespace SSISSFTPTask100.SSIS
                 SFTPPassword = node.Attributes.GetNamedItem(Keys.FTP_PASSWORD).Value;
 
                 EncryptionType = node.Attributes.GetNamedItem(Keys.ENCRYPTION_TYPE).Value;
-                PrivateKeyFile = node.Attributes.GetNamedItem(Keys.PRIVATE_KEY_FILE).Value;
-                PrivateKeyFileIsConnectionFileType = node.Attributes.GetNamedItem(Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION).Value;
+                PublicKeyFile = node.Attributes.GetNamedItem(Keys.PRIVATE_KEY_FILE).Value;
+                PublicKeyFileIsConnectionFileType = node.Attributes.GetNamedItem(Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION).Value;
                 PassPhrase = node.Attributes.GetNamedItem(Keys.PASS_PHRASE).Value;
 
                 TaskAction = node.Attributes.GetNamedItem(Keys.FTP_ACTION_LIST).Value;

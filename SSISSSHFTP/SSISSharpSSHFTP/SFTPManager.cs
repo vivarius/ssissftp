@@ -9,7 +9,7 @@ namespace SSISSFTPTask100.SSIS
     public static class Communication
     {
 
-        public static string PrivateKeyFilePath { get; set; }
+        public static string PublicKeyFilePath { get; set; }
         public static string PrivatePassPhrase { get; set; }
         public static bool EncryptionTypeKey { get; set; }
 
@@ -30,13 +30,13 @@ namespace SSISSFTPTask100.SSIS
         {
             if (EncryptionTypeKey)
             {
-                if (!string.IsNullOrEmpty(PrivateKeyFilePath) && !string.IsNullOrEmpty(PrivatePassPhrase))
-                    sftp.AddIdentityFile(PrivateKeyFilePath, PrivatePassPhrase);
+                if (!string.IsNullOrEmpty(PublicKeyFilePath) && !string.IsNullOrEmpty(PrivatePassPhrase))
+                    sftp.AddIdentityFile(PublicKeyFilePath, PrivatePassPhrase);
 
-                if (string.IsNullOrEmpty(PrivateKeyFilePath) && string.IsNullOrEmpty(PrivatePassPhrase))
-                    sftp.AddIdentityFile(PrivateKeyFilePath);
+                if (!string.IsNullOrEmpty(PublicKeyFilePath) && string.IsNullOrEmpty(PrivatePassPhrase))
+                    sftp.AddIdentityFile(PublicKeyFilePath);
 
-                if (string.IsNullOrEmpty(PrivateKeyFilePath) && string.IsNullOrEmpty(PrivatePassPhrase))
+                if (string.IsNullOrEmpty(PublicKeyFilePath) && string.IsNullOrEmpty(PrivatePassPhrase))
                     throw new SftpException(1, "You choosed the connection encryption type to be provided by a key file. Please specify at least the path to the file.");
             }
         }

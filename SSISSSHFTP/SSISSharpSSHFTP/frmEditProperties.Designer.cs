@@ -64,8 +64,8 @@
             this.groupBoxEncryption = new System.Windows.Forms.GroupBox();
             this.cmbPassPhrase = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.optPrivateKeyFileVariable = new System.Windows.Forms.RadioButton();
-            this.optPrivateKeyFileConnection = new System.Windows.Forms.RadioButton();
+            this.optPublicKeyFileVariable = new System.Windows.Forms.RadioButton();
+            this.optPublicKeyFileConnection = new System.Windows.Forms.RadioButton();
             this.cmbKeyFile = new System.Windows.Forms.ComboBox();
             this.btKeyFileExpression = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
@@ -384,8 +384,8 @@
             // 
             this.groupBoxEncryption.Controls.Add(this.cmbPassPhrase);
             this.groupBoxEncryption.Controls.Add(this.label6);
-            this.groupBoxEncryption.Controls.Add(this.optPrivateKeyFileVariable);
-            this.groupBoxEncryption.Controls.Add(this.optPrivateKeyFileConnection);
+            this.groupBoxEncryption.Controls.Add(this.optPublicKeyFileVariable);
+            this.groupBoxEncryption.Controls.Add(this.optPublicKeyFileConnection);
             this.groupBoxEncryption.Controls.Add(this.cmbKeyFile);
             this.groupBoxEncryption.Controls.Add(this.btKeyFileExpression);
             this.groupBoxEncryption.Controls.Add(this.label4);
@@ -413,29 +413,29 @@
             this.label6.TabIndex = 93;
             this.label6.Text = "Pass phrase:";
             // 
-            // optPrivateKeyFileVariable
+            // optPublicKeyFileVariable
             // 
-            this.optPrivateKeyFileVariable.AutoSize = true;
-            this.optPrivateKeyFileVariable.Location = new System.Drawing.Point(196, 46);
-            this.optPrivateKeyFileVariable.Name = "optPrivateKeyFileVariable";
-            this.optPrivateKeyFileVariable.Size = new System.Drawing.Size(93, 17);
-            this.optPrivateKeyFileVariable.TabIndex = 92;
-            this.optPrivateKeyFileVariable.Text = "Variables / f(x)";
-            this.optPrivateKeyFileVariable.UseVisualStyleBackColor = true;
-            this.optPrivateKeyFileVariable.Click += new System.EventHandler(this.optPrivateKeyFileVariable_Click_1);
+            this.optPublicKeyFileVariable.AutoSize = true;
+            this.optPublicKeyFileVariable.Location = new System.Drawing.Point(196, 46);
+            this.optPublicKeyFileVariable.Name = "optPublicKeyFileVariable";
+            this.optPublicKeyFileVariable.Size = new System.Drawing.Size(93, 17);
+            this.optPublicKeyFileVariable.TabIndex = 92;
+            this.optPublicKeyFileVariable.Text = "Variables / f(x)";
+            this.optPublicKeyFileVariable.UseVisualStyleBackColor = true;
+            this.optPublicKeyFileVariable.Click += new System.EventHandler(this.optPublicKeyFileVariable_Click_1);
             // 
-            // optPrivateKeyFileConnection
+            // optPublicKeyFileConnection
             // 
-            this.optPrivateKeyFileConnection.AutoSize = true;
-            this.optPrivateKeyFileConnection.Checked = true;
-            this.optPrivateKeyFileConnection.Location = new System.Drawing.Point(92, 46);
-            this.optPrivateKeyFileConnection.Name = "optPrivateKeyFileConnection";
-            this.optPrivateKeyFileConnection.Size = new System.Drawing.Size(98, 17);
-            this.optPrivateKeyFileConnection.TabIndex = 91;
-            this.optPrivateKeyFileConnection.TabStop = true;
-            this.optPrivateKeyFileConnection.Text = "File Connection";
-            this.optPrivateKeyFileConnection.UseVisualStyleBackColor = true;
-            this.optPrivateKeyFileConnection.Click += new System.EventHandler(this.optPrivateKeyFileConnection_Click_1);
+            this.optPublicKeyFileConnection.AutoSize = true;
+            this.optPublicKeyFileConnection.Checked = true;
+            this.optPublicKeyFileConnection.Location = new System.Drawing.Point(92, 46);
+            this.optPublicKeyFileConnection.Name = "optPublicKeyFileConnection";
+            this.optPublicKeyFileConnection.Size = new System.Drawing.Size(98, 17);
+            this.optPublicKeyFileConnection.TabIndex = 91;
+            this.optPublicKeyFileConnection.TabStop = true;
+            this.optPublicKeyFileConnection.Text = "File Connection";
+            this.optPublicKeyFileConnection.UseVisualStyleBackColor = true;
+            this.optPublicKeyFileConnection.Click += new System.EventHandler(this.optPublicKeyFileConnection_Click_1);
             // 
             // cmbKeyFile
             // 
@@ -459,9 +459,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(6, 22);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(79, 13);
+            this.label4.Size = new System.Drawing.Size(75, 13);
             this.label4.TabIndex = 88;
-            this.label4.Text = "Private key file:";
+            this.label4.Text = "Public key file:";
             // 
             // frmEditProperties
             // 
@@ -546,8 +546,8 @@
         private System.Windows.Forms.GroupBox groupBoxEncryption;
         private System.Windows.Forms.ComboBox cmbPassPhrase;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.RadioButton optPrivateKeyFileVariable;
-        private System.Windows.Forms.RadioButton optPrivateKeyFileConnection;
+        private System.Windows.Forms.RadioButton optPublicKeyFileVariable;
+        private System.Windows.Forms.RadioButton optPublicKeyFileConnection;
         private System.Windows.Forms.ComboBox cmbKeyFile;
         private System.Windows.Forms.Button btKeyFileExpression;
         private System.Windows.Forms.Label label4;
