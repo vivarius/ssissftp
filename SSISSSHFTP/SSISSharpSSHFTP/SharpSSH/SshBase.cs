@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Tamir.SharpSsh.jsch;
+using System.ComponentModel;
 
 /* 
  * SshBase.cs
@@ -50,6 +51,12 @@ namespace Tamir.SharpSsh
         /// Default TCP port of SSH protocol
         /// </summary>
         private static int SSH_TCP_PORT = 22;
+
+        public int NewPort
+        {
+            get { return SSH_TCP_PORT; }
+            set { SSH_TCP_PORT = value; }
+        }
 
         /// <summary>
         /// Constructs a new SSH instance
@@ -120,9 +127,9 @@ namespace Tamir.SharpSsh
             if (Password != null)
                 m_session.setUserInfo(new KeyboardInteractiveUserInfo(Password));
             Hashtable config = new Hashtable
-			                       {
-			                           {"StrictHostKeyChecking", "no"}
-			                       };
+								   {
+									   {"StrictHostKeyChecking", "no"}
+								   };
             m_session.setConfig(config);
             m_session.connect();
         }
@@ -295,9 +302,9 @@ namespace Tamir.SharpSsh
             public string[] promptKeyboardInteractive(string destination, string name, string instruction, string[] prompt, bool[] echo)
             {
                 return new[]
-				           {
-				               _password
-				           };
+						   {
+							   _password
+						   };
             }
 
             #endregion

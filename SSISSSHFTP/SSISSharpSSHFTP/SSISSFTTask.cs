@@ -18,7 +18,7 @@ namespace SSISSFTPTask100.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask100.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask100," +
-        "Version=1.3.0.0," +
+        "Version=1.3.5.0," +
         "Culture=Neutral," +
         "PublicKeyToken=4598105d4a713364",
         IconResource = "SSISSFTPTask100.sftp.ico",
@@ -44,6 +44,8 @@ namespace SSISSFTPTask100.SSIS
         public string SFTPUser { get; set; }
         [Category("Connection"), Description("SFTP Password")]
         public string SFTPPassword { get; set; }
+        [Category("Connection"), Description("SFTP Port / By default 22")]
+        public string SFTPPort { get; set; }
 
         [Category("Connection"), Description("Encryption Type (Password/Key)")]
         public string EncryptionType { get; set; }
@@ -283,12 +285,20 @@ namespace SSISSFTPTask100.SSIS
                                                               EvaluateExpression(SFTPUser, variableDispenser)),
                                                 string.Empty, 0, ref refire);
 
-                Communication.EncryptionTypeKey = (EncryptionType == Keys.ENCRYPTION_TYPE_KEY) ? true : false;
+                Communication.EncryptionTypeKey = EncryptionType == Keys.ENCRYPTION_TYPE_KEY;
+
+                int port = 22;
+                Int32.TryParse(EvaluateExpression(SFTPPort, variableDispenser).ToString(), out port);
+                Communication.Port = port;
+
+                componentEvents.FireInformation(0, "SSISSFTTask",
+                                                    string.Format("The SFTP port: {0}", port),
+                                                    string.Empty, 0, ref refire);
 
                 if (Communication.EncryptionTypeKey)
                 {
                     componentEvents.FireInformation(0, "SSISSFTTask",
-                                                    "The SFTP operation will be encrypted by a key file",
+                                                    "The SFTP operation will be encrypted by a private key file",
                                                     string.Empty, 0, ref refire);
 
 
@@ -297,7 +307,7 @@ namespace SSISSFTPTask100.SSIS
                                       : EvaluateExpression(PublicKeyFile, variableDispenser).ToString();
 
                     componentEvents.FireInformation(0, "SSISSFTTask",
-                                string.Format("The source key file is: {0}", keyPath),
+                                string.Format("The source private key file is: {0}", keyPath),
                                 string.Empty, 0, ref refire);
 
                     Communication.PublicKeyFilePath = EvaluateExpression(keyPath, variableDispenser).ToString();
@@ -313,7 +323,7 @@ namespace SSISSFTPTask100.SSIS
                 {
 
                     componentEvents.FireInformation(0, "SSISSFTTask",
-                                                    string.Format("Preparing to copy the file {0} to {1}",
+                                                    string.Format("Preparing to copy the file(s) {0} to {1}",
                                                                   ResolveLocalPath(localPathEx),
                                                                   ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
 
@@ -355,11 +365,7 @@ namespace SSISSFTPTask100.SSIS
                                                     (OverwriteLocalPath == Keys.TRUE) ? true : false))
                     {
                         componentEvents.FireInformation(0, "SSISSFTTask",
-                                                        string.Format("The file {0} has been copied to {1}",
-                                                                      ResolveRemotePath(
-                                                                          EvaluateExpression(RemotePath,
-                                                                                             variableDispenser).ToString
-                                                                              ()), ResolveLocalPath(localPathEx)),
+                                                        string.Format("The file {0} has been copied to {1}", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString()), ResolveLocalPath(localPathEx)),
                                                         string.Empty, 0, ref refire);
                     }
                     else
@@ -410,19 +416,16 @@ namespace SSISSFTPTask100.SSIS
                             DirectoryInfo directoryInfo = Directory.CreateDirectory(localPathEx);
                             componentEvents.FireInformation(0, "SSISSFTTask",
                                                             directoryInfo.Exists
-                                                                ? string.Format("The folder {0} has been created",
-                                                                                ResolveLocalPath(localPathEx))
-                                                                : string.Format("The folder {0} has not been created",
-                                                                                ResolveLocalPath(localPathEx)),
+                                                                ? string.Format("The folder {0} has been created", ResolveLocalPath(localPathEx))
+                                                                : string.Format("The folder {0} has not been created", ResolveLocalPath(localPathEx)),
                                                             string.Empty, 0, ref refire);
                         }
                     }
                     catch (Exception exception)
                     {
                         componentEvents.FireError(0, "SSISSFTTask",
-                                                  string.Format(
-                                                      "The folder {0} has not been created. Exception detail {1} - {2}",
-                                                      ResolveLocalPath(localPathEx), exception.Message, exception.Source),
+                                                  string.Format("The folder {0} has not been created. Exception detail {1} - {2}", 
+                                                                ResolveLocalPath(localPathEx), exception.Message, exception.Source),
                                                   string.Empty, 0);
                     }
                 }
@@ -604,7 +607,8 @@ namespace SSISSFTPTask100.SSIS
             }
             catch (Exception ex)
             {
-                componentEvents.FireError(0, "SSISSFTTask", string.Format("Problem & Source : {0} - {1} - {2}", ex.Message, ex.Source, ex.StackTrace), "", 0);
+                componentEvents.FireError(0, "SSISSFTTask", string.Format("Error : {0}", ex.Message), "", 0);
+                //componentEvents.FireError(0, "SSISSFTTask", string.Format("Problem & Source : {0} - {1} - {2}", ex.Message, ex.Source, ex.StackTrace), "", 0);
             }
             finally
             {
@@ -863,6 +867,9 @@ namespace SSISSFTPTask100.SSIS
             XmlAttribute sftpPassword = doc.CreateAttribute(string.Empty, Keys.FTP_PASSWORD, string.Empty);
             sftpPassword.Value = SFTPPassword;
 
+            XmlAttribute sftpPort = doc.CreateAttribute(string.Empty, Keys.FTP_PORT, string.Empty);
+            sftpPort.Value = SFTPPort;
+
             XmlAttribute sftpSourceFile = doc.CreateAttribute(string.Empty, Keys.FTP_LOCAL_PATH, string.Empty);
             sftpSourceFile.Value = LocalPath;
 
@@ -903,6 +910,7 @@ namespace SSISSFTPTask100.SSIS
             taskElement.Attributes.Append(sftpServer);
             taskElement.Attributes.Append(sftpUser);
             taskElement.Attributes.Append(sftpPassword);
+            taskElement.Attributes.Append(sftpPort);
 
             taskElement.Attributes.Append(encryptionType);
             taskElement.Attributes.Append(publicKeyFile);
@@ -933,6 +941,7 @@ namespace SSISSFTPTask100.SSIS
                 SFTPServer = node.Attributes.GetNamedItem(Keys.FTP_SERVER).Value;
                 SFTPUser = node.Attributes.GetNamedItem(Keys.FTP_USER).Value;
                 SFTPPassword = node.Attributes.GetNamedItem(Keys.FTP_PASSWORD).Value;
+                SFTPPort = node.Attributes.GetNamedItem(Keys.FTP_PORT).Value;
 
                 EncryptionType = node.Attributes.GetNamedItem(Keys.ENCRYPTION_TYPE).Value;
                 PublicKeyFile = node.Attributes.GetNamedItem(Keys.PRIVATE_KEY_FILE).Value;

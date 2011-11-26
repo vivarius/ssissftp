@@ -81,6 +81,8 @@ namespace SSISSFTPTask100
             _taskHost.Properties[Keys.FTP_USER].SetValue(_taskHost, cmbUser.Text);
             _taskHost.Properties[Keys.FTP_PASSWORD].SetValue(_taskHost, cmbPassword.Text);
 
+            _taskHost.Properties[Keys.FTP_PORT].SetValue(_taskHost, !string.IsNullOrEmpty(cmbPort.Text) ? cmbPort.Text : "22");
+
             _taskHost.Properties[Keys.ENCRYPTION_TYPE].SetValue(_taskHost, optionEncryptionPassword.Checked ? Keys.ENCRYPTION_TYPE_PASSWORD : Keys.ENCRYPTION_TYPE_KEY);
             _taskHost.Properties[Keys.PRIVATE_KEY_FILE_FROM_FILE_CONNECTION].SetValue(_taskHost, optPublicKeyFileConnection.Checked ? Keys.TRUE : Keys.FALSE);
             _taskHost.Properties[Keys.PRIVATE_KEY_FILE].SetValue(_taskHost, cmbKeyFile.Text);
@@ -244,9 +246,19 @@ namespace SSISSFTPTask100
                     cmbPassPhrase.Items.Add(string.Format("@[{0}::{1}]", variable.Namespace, variable.Name));
                 }
 
+                foreach (var variable in (from Variable var in _variables
+                                          where (var.DataType == Type.GetTypeCode(Type.GetType("System.Int32")) ||
+                                                 var.DataType == Type.GetTypeCode(Type.GetType("System.Int16"))) &&
+                                                 var.Namespace.ToLower() == "user"
+                                          select var))
+                {
+                    cmbPort.Items.Add(string.Format("@[{0}::{1}]", variable.Namespace, variable.Name));
+                }
+
                 cmbServer.SelectedIndex = GetSelectedComboBoxIndex(cmbServer, _taskHost.Properties[Keys.FTP_SERVER].GetValue(_taskHost));
                 cmbUser.SelectedIndex = GetSelectedComboBoxIndex(cmbUser, _taskHost.Properties[Keys.FTP_USER].GetValue(_taskHost));
                 cmbPassword.SelectedIndex = GetSelectedComboBoxIndex(cmbPassword, _taskHost.Properties[Keys.FTP_PASSWORD].GetValue(_taskHost));
+                cmbPort.SelectedIndex = GetSelectedComboBoxIndex(cmbPort, _taskHost.Properties[Keys.FTP_PORT].GetValue(_taskHost));
 
                 if (_taskHost.Properties[Keys.ENCRYPTION_TYPE].GetValue(_taskHost) != null)
                 {

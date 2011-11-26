@@ -291,7 +291,7 @@ namespace Org.Mentalis.SecurityServices.Smartcard.UI {
             m_Selected = null;
             string[] readers = SmartcardReader.InternalGetReaders(m_Context);
             if (readers == null || readers.Length == 0) {
-                MessageBox.Show(this, ResourceController.GetString("SelectReaderForm_NoReaders"), ResourceController.GetString("SelectReaderForm_NoReadersTitle"), MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+                //MessageBox.Show(this, ResourceController.GetString("SelectReaderForm_NoReaders"), ResourceController.GetString("SelectReaderForm_NoReadersTitle"), MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
                 this.Close();
                 return;
             } else {

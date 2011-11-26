@@ -6,6 +6,7 @@
 
         public const string FTP_USER = "SFTPUser";
         public const string FTP_PASSWORD = "SFTPPassword";
+        public const string FTP_PORT = "SFTPPort";
 
         public const string FTP_ACTION_LIST = "TaskAction";
         public const string FTP_LOCAL_PATH = "LocalPath";
@@ -28,5 +29,11 @@
         public const string SLEEP_ON_DISCONNECT = "SleepOnDisconnect";
         public const string SLEEP_SECONDS = "SleepSeconds";
     }
+
+    internal static class ExceptionMessages
+    {
+        public const string SLEEP_SECONDS = "SleepSeconds";
+    }
+
 }
 

@@ -186,9 +186,9 @@ namespace Tamir.SharpSsh
                 {
                     FileInfo fileInfo = new FileInfo(filePath);
                     SftpChannel.put(filePath,
-                                    (toFilePath[toFilePath.Length - 1] == '\\')
+                                    (toFilePath[toFilePath.Length - 1] == '/')
                                         ? toFilePath + fileInfo.Name
-                                        : toFilePath + '\\' + fileInfo.Name,
+                                        : toFilePath + '/' + fileInfo.Name,
                                     m_monitor,
                                     ChannelSftp.OVERWRITE);
                 }

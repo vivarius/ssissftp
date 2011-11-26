@@ -230,7 +230,7 @@ namespace Org.Mentalis.SecurityServices.Smartcard.UI {
 
 		private void OkButton_Click(object sender, System.EventArgs e) {
             if (!m_Validator.Validate(PinText.Text)) {
-                MessageBox.Show(this, ResourceController.GetString("PinForm_InvalidPin"), ResourceController.GetString("PinForm_InvalidPinTitle"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+                //MessageBox.Show(this, ResourceController.GetString("PinForm_InvalidPin"), ResourceController.GetString("PinForm_InvalidPinTitle"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
                 return;
             }
             m_PIN = PinText.Text;

@@ -52,6 +52,8 @@
             this.numericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBoxConnection = new System.Windows.Forms.GroupBox();
+            this.cmbPort = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.optionEncryptionKey = new System.Windows.Forms.RadioButton();
             this.optionEncryptionPassword = new System.Windows.Forms.RadioButton();
             this.label5 = new System.Windows.Forms.Label();
@@ -76,9 +78,9 @@
             // 
             // btOK
             // 
-            this.btOK.Location = new System.Drawing.Point(299, 425);
+            this.btOK.Location = new System.Drawing.Point(341, 425);
             this.btOK.Name = "btOK";
-            this.btOK.Size = new System.Drawing.Size(59, 26);
+            this.btOK.Size = new System.Drawing.Size(82, 26);
             this.btOK.TabIndex = 3;
             this.btOK.Text = "OK";
             this.btOK.UseVisualStyleBackColor = true;
@@ -87,9 +89,9 @@
             // btCancel
             // 
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(364, 425);
+            this.btCancel.Location = new System.Drawing.Point(253, 425);
             this.btCancel.Name = "btCancel";
-            this.btCancel.Size = new System.Drawing.Size(59, 26);
+            this.btCancel.Size = new System.Drawing.Size(82, 26);
             this.btCancel.TabIndex = 4;
             this.btCancel.Text = "Cancel";
             this.btCancel.UseVisualStyleBackColor = true;
@@ -280,6 +282,8 @@
             // 
             // groupBoxConnection
             // 
+            this.groupBoxConnection.Controls.Add(this.cmbPort);
+            this.groupBoxConnection.Controls.Add(this.label7);
             this.groupBoxConnection.Controls.Add(this.optionEncryptionKey);
             this.groupBoxConnection.Controls.Add(this.optionEncryptionPassword);
             this.groupBoxConnection.Controls.Add(this.label5);
@@ -295,6 +299,24 @@
             this.groupBoxConnection.TabIndex = 72;
             this.groupBoxConnection.TabStop = false;
             this.groupBoxConnection.Text = "Connection";
+            // 
+            // cmbPort
+            // 
+            this.cmbPort.FormattingEnabled = true;
+            this.cmbPort.Location = new System.Drawing.Point(253, 44);
+            this.cmbPort.Name = "cmbPort";
+            this.cmbPort.Size = new System.Drawing.Size(148, 21);
+            this.cmbPort.TabIndex = 87;
+            this.cmbPort.Text = "22";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(218, 48);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(29, 13);
+            this.label7.TabIndex = 86;
+            this.label7.Text = "Port:";
             // 
             // optionEncryptionKey
             // 
@@ -459,9 +481,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(6, 22);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(75, 13);
+            this.label4.Size = new System.Drawing.Size(79, 13);
             this.label4.TabIndex = 88;
-            this.label4.Text = "Public key file:";
+            this.label4.Text = "Private key file:";
             // 
             // frmEditProperties
             // 
@@ -551,5 +573,7 @@
         private System.Windows.Forms.ComboBox cmbKeyFile;
         private System.Windows.Forms.Button btKeyFileExpression;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox cmbPort;
     }
 }

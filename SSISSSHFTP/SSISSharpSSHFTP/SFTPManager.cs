@@ -9,9 +9,25 @@ namespace SSISSFTPTask100.SSIS
     public static class Communication
     {
 
+        private static int _port;
+
         public static string PublicKeyFilePath { get; set; }
         public static string PrivatePassPhrase { get; set; }
         public static bool EncryptionTypeKey { get; set; }
+        public static int Port
+        {
+            get
+            {
+                if (_port == 0)
+                    _port = 22;
+
+                return _port;
+            }
+            set
+            {
+                _port = value;
+            }
+        }
 
         public static List<string> ActionTask = new List<string>
                              {
@@ -59,11 +75,15 @@ namespace SSISSFTPTask100.SSIS
 
             try
             {
+                sftp.NewPort = Port;
                 sftp.Connect();
                 sftp.Put(sourceFileName, outputFileName);
                 retVal = true;
             }
-            catch (Exception) { }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
             finally
             {
                 if (sftp.Connected)
@@ -91,11 +111,15 @@ namespace SSISSFTPTask100.SSIS
 
             try
             {
+                sftp.NewPort = Port;
                 sftp.Connect();
                 sftp.Get(sourceFileName, outputFileName);
                 retVal = true;
             }
-            catch (Exception) { }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
             finally
             {
                 if (sftp.Connected)
@@ -123,6 +147,7 @@ namespace SSISSFTPTask100.SSIS
 
             try
             {
+                sftp.NewPort = Port;
                 sftp.Connect();
 
                 if (!sourceFileName.Contains("*") && overwrite)
@@ -132,7 +157,10 @@ namespace SSISSFTPTask100.SSIS
 
                 retVal = true;
             }
-            catch (Exception) { }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
             finally
             {
                 if (sftp.Connected)
@@ -160,11 +188,15 @@ namespace SSISSFTPTask100.SSIS
 
             try
             {
+                sftp.NewPort = Port;
                 sftp.Connect();
                 sftp.Delete(sourceFileName);
                 retVal = true;
             }
-            catch (Exception) { }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
             finally
             {
                 if (sftp.Connected)
@@ -192,11 +224,15 @@ namespace SSISSFTPTask100.SSIS
 
             try
             {
+                sftp.NewPort = Port;
                 sftp.Connect();
                 sftp.RemoveDir(folderPath);
                 retVal = true;
             }
-            catch (Exception) { }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
             finally
             {
                 if (sftp.Connected)
@@ -224,11 +260,15 @@ namespace SSISSFTPTask100.SSIS
 
             try
             {
+                sftp.NewPort = Port;
                 sftp.Connect();
                 sftp.Mkdir(folderPath);
                 retVal = true;
             }
-            catch (Exception) { }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
             finally
             {
                 if (sftp.Connected)
@@ -256,10 +296,14 @@ namespace SSISSFTPTask100.SSIS
 
             try
             {
+                sftp.NewPort = Port;
                 sftp.Connect();
                 retVal = sftp.GetFileList(folderPath);
             }
-            catch (Exception) { }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
             finally
             {
                 if (sftp.Connected)
