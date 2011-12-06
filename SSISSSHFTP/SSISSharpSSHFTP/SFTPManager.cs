@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.SqlServer.Dts.Runtime;
 using Tamir.SharpSsh;
 using Tamir.SharpSsh.jsch;
 
@@ -14,6 +15,7 @@ namespace SSISSFTPTask100.SSIS
         public static string PublicKeyFilePath { get; set; }
         public static string PrivatePassPhrase { get; set; }
         public static bool EncryptionTypeKey { get; set; }
+        public static IDTSComponentEvents ComponentEvents { get; set; }
         public static int Port
         {
             get
@@ -73,6 +75,8 @@ namespace SSISSFTPTask100.SSIS
                 sftp = new Sftp(url, login, password);
             }
 
+            sftp.ComponentEvents = ComponentEvents;
+
             try
             {
                 sftp.NewPort = Port;
@@ -109,6 +113,8 @@ namespace SSISSFTPTask100.SSIS
                 sftp = new Sftp(url, login, password);
             }
 
+            sftp.ComponentEvents = ComponentEvents;
+
             try
             {
                 sftp.NewPort = Port;
@@ -144,6 +150,8 @@ namespace SSISSFTPTask100.SSIS
             {
                 sftp = new Sftp(url, login, password);
             }
+
+            sftp.ComponentEvents = ComponentEvents;
 
             try
             {
@@ -186,6 +194,8 @@ namespace SSISSFTPTask100.SSIS
                 sftp = new Sftp(url, login, password);
             }
 
+            sftp.ComponentEvents = ComponentEvents;
+
             try
             {
                 sftp.NewPort = Port;
@@ -221,6 +231,8 @@ namespace SSISSFTPTask100.SSIS
             {
                 sftp = new Sftp(url, login, password);
             }
+
+            sftp.ComponentEvents = ComponentEvents;
 
             try
             {
@@ -258,6 +270,8 @@ namespace SSISSFTPTask100.SSIS
                 sftp = new Sftp(url, login, password);
             }
 
+            sftp.ComponentEvents = ComponentEvents;
+
             try
             {
                 sftp.NewPort = Port;
@@ -293,6 +307,8 @@ namespace SSISSFTPTask100.SSIS
             {
                 sftp = new Sftp(url, login, password);
             }
+
+            sftp.ComponentEvents = ComponentEvents;
 
             try
             {

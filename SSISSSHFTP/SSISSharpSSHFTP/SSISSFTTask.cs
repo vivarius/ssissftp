@@ -18,7 +18,7 @@ namespace SSISSFTPTask100.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask100.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask100," +
-        "Version=1.3.5.0," +
+        "Version=1.3.6.0," +
         "Culture=Neutral," +
         "PublicKeyToken=4598105d4a713364",
         IconResource = "SSISSFTPTask100.sftp.ico",
@@ -263,6 +263,7 @@ namespace SSISSFTPTask100.SSIS
             //GetNeededVariables(variableDispenser);
 
             string localPathEx = string.Empty;
+            Communication.ComponentEvents = componentEvents;
 
             try
             {
@@ -362,7 +363,7 @@ namespace SSISSFTPTask100.SSIS
                                                     EvaluateExpression(SFTPPassword, variableDispenser).ToString(),
                                                     ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString()),
                                                     ResolveLocalPath(localPathEx),
-                                                    (OverwriteLocalPath == Keys.TRUE) ? true : false))
+                                                    OverwriteLocalPath == Keys.TRUE))
                     {
                         componentEvents.FireInformation(0, "SSISSFTTask",
                                                         string.Format("The file {0} has been copied to {1}", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString()), ResolveLocalPath(localPathEx)),
@@ -424,7 +425,7 @@ namespace SSISSFTPTask100.SSIS
                     catch (Exception exception)
                     {
                         componentEvents.FireError(0, "SSISSFTTask",
-                                                  string.Format("The folder {0} has not been created. Exception detail {1} - {2}", 
+                                                  string.Format("The folder {0} has not been created. Exception detail {1} - {2}",
                                                                 ResolveLocalPath(localPathEx), exception.Message, exception.Source),
                                                   string.Empty, 0);
                     }

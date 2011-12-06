@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.SqlServer.Dts.Runtime;
 using Tamir.SharpSsh.java.util;
 using Tamir.SharpSsh.jsch;
 using System.Collections;
@@ -44,6 +45,8 @@ namespace Tamir.SharpSsh
     {
         private MyProgressMonitor m_monitor;
         private bool cancelled = false;
+        public IDTSComponentEvents ComponentEvents { get; set; }
+        bool _refire = false;
 
         public Sftp(string sftpHost, string user, string password)
             : base(sftpHost, user, password)
@@ -100,7 +103,68 @@ namespace Tamir.SharpSsh
             }
         }
 
+        public override void Get(string fromFilePath, string toFilePath)
+        {
+            if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
+            {
+                int lastSlashIndex = fromFilePath.LastIndexOf('/');
 
+                string dir = fromFilePath.Substring(0, lastSlashIndex + 1);
+                string pattern = fromFilePath.Substring(lastSlashIndex + 1, fromFilePath.Length - lastSlashIndex - 1);
+
+                List<string> remoteFiles = GetFileList(fromFilePath);
+                var tmpRemoteFiles = new List<string>();
+
+                foreach (var remoteFile in remoteFiles)
+                {
+                    lastSlashIndex = remoteFile.LastIndexOf('/');
+                    tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
+                }
+
+                var patternedList = StringExtensions.Like(tmpRemoteFiles, pattern);
+                int fileCounter = 0;
+
+                ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                                string.Format("Preparing to copy {0} files", patternedList.Count),
+                                                string.Empty, 0, ref _refire);
+
+                foreach (var file in patternedList)
+                {
+                    string from = (dir.Length == 0)
+                                          ? file
+                                          : string.Format("{0}{1}", dir, file);
+
+                    if (Directory.Exists(toFilePath))
+                    {
+                        toFilePath = (toFilePath[toFilePath.Length - 1] != '\\') ? toFilePath + "\\" : toFilePath;
+                    }
+                    else if (File.Exists(toFilePath))
+                    {
+                        toFilePath = string.Format("{0}\\", new FileInfo(toFilePath).Directory.FullName);
+                    }
+
+                    string to = string.Format("{0}{1}", toFilePath, file);
+
+                    SftpChannel.get(from, to, m_monitor, ChannelSftp.OVERWRITE);
+
+                    ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                string.Format("File copied from {0} to {1}", from, to),
+                                string.Empty, 0, ref _refire);
+                    fileCounter++;
+                }
+
+                ComponentEvents.FireInformation(0, "SSISSFTTask",
+                            string.Format("Total copied files {0}", fileCounter),
+                            string.Empty, 0, ref _refire);
+            }
+            else
+            {
+                SftpChannel.get(fromFilePath, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
+                ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                string.Format("File copied from {0} to {1}: {0}", fromFilePath, toFilePath),
+                                string.Empty, 0, ref _refire);
+            }
+        }
 
         //Put
 
@@ -125,52 +189,6 @@ namespace Tamir.SharpSsh
             }
         }
 
-        public override void Get(string fromFilePath, string toFilePath)
-        {
-            if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
-            {
-                int lastSlashIndex = fromFilePath.LastIndexOf('/');
-
-                string dir = fromFilePath.Substring(0, lastSlashIndex + 1);
-                string pattern = fromFilePath.Substring(lastSlashIndex + 1, fromFilePath.Length - lastSlashIndex - 1);
-
-                List<string> remoteFiles = GetFileList(fromFilePath);
-                var tmpRemoteFiles = new List<string>();
-
-                foreach (var remoteFile in remoteFiles)
-                {
-                    lastSlashIndex = remoteFile.LastIndexOf('/');
-                    tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
-                }
-
-                var patternedList = StringExtensions.Like(tmpRemoteFiles, pattern);
-
-                foreach (var file in patternedList)
-                {
-                    string from = (dir.Length == 0)
-                                          ? file
-                                          : string.Format("{0}{1}", dir, file);
-
-                    if (Directory.Exists(toFilePath))
-                    {
-                        toFilePath = (toFilePath[toFilePath.Length - 1] != '\\') ? toFilePath + "\\" : toFilePath;
-                    }
-                    else if (File.Exists(toFilePath))
-                    {
-                        toFilePath = string.Format("{0}\\", new FileInfo(toFilePath).Directory.FullName);
-                    }
-
-                    string to = string.Format("{0}{1}", toFilePath, file);
-
-                    SftpChannel.get(from, to, m_monitor, ChannelSftp.OVERWRITE);
-                }
-            }
-            else
-            {
-                SftpChannel.get(fromFilePath, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
-            }
-        }
-
         public override void Put(string fromFilePath, string toFilePath)
         {
             if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
@@ -182,19 +200,43 @@ namespace Tamir.SharpSsh
 
                 string[] filePaths = Directory.GetFiles(dir, pattern);
 
+                int fileCounter = 0;
+
+                ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                string.Format("Preparing to copy {0} files", filePaths.Length),
+                                string.Empty, 0, ref _refire);
+
                 foreach (var filePath in filePaths)
                 {
                     FileInfo fileInfo = new FileInfo(filePath);
+
+                    string fileDestination = (toFilePath[toFilePath.Length - 1] == '/')
+                                                 ? toFilePath + fileInfo.Name
+                                                 : toFilePath + '/' + fileInfo.Name;
+
+                    ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                                    string.Format("Send file from {0} to {1}", filePath, fileDestination),
+                                                    string.Empty, 0, ref _refire);
+
                     SftpChannel.put(filePath,
-                                    (toFilePath[toFilePath.Length - 1] == '/')
-                                        ? toFilePath + fileInfo.Name
-                                        : toFilePath + '/' + fileInfo.Name,
+                                    fileDestination,
                                     m_monitor,
                                     ChannelSftp.OVERWRITE);
+
+                    fileCounter++;
                 }
+
+                ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                string.Format("Number of sended files: {0}", fileCounter),
+                                string.Empty, 0, ref _refire);
             }
             else
+            {
                 SftpChannel.put(fromFilePath, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
+                ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                string.Format("File sended  from {0} to {1}", fromFilePath, toFilePath),
+                                string.Empty, 0, ref _refire);
+            }
         }
 
         //MkDir
@@ -262,17 +304,38 @@ namespace Tamir.SharpSsh
 
                 var patternedList = StringExtensions.Like(tmpRemoteFiles, pattern);
 
+                ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                string.Format("Number of files to delete {0}", patternedList.Count),
+                                string.Empty, 0, ref _refire);
+
+                int fileCounter = 0;
+
                 foreach (var file in patternedList)
                 {
                     string from = (dir.Length == 0)
                                           ? file
                                           : string.Format("{0}{1}", dir, file);
 
+
+                    ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                    string.Format("Deleting file: {0}", from),
+                                    string.Empty, 0, ref _refire);
+
                     SftpChannel.rm(from);
+
+                    fileCounter++;
                 }
+
+                ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                string.Format("Deleted files: {0}", fileCounter),
+                                string.Empty, 0, ref _refire);
             }
             else
             {
+
+                ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                                string.Format("Deleting file: {0}", filePath),
+                                                string.Empty, 0, ref _refire);
                 SftpChannel.rm(filePath);
             }
         }
@@ -287,29 +350,29 @@ namespace Tamir.SharpSsh
 
         private class MyProgressMonitor : SftpProgressMonitor
         {
-            private long transferred = 0;
-            private long total = 0;
-            private int elapsed = -1;
-            private Sftp m_sftp;
-            private string src;
-            private string dest;
+            private long _transferred = 0;
+            private long _total = 0;
+            private int _elapsed = -1;
+            private readonly Sftp _mSftp;
+            private string _src;
+            private string _dest;
 
-            System.Timers.Timer timer;
+            System.Timers.Timer _timer;
 
             public MyProgressMonitor(Sftp sftp)
             {
-                m_sftp = sftp;
+                _mSftp = sftp;
             }
 
             public override void init(int op, String src, String dest, long max)
             {
-                this.src = src;
-                this.dest = dest;
-                this.elapsed = 0;
-                this.total = max;
-                timer = new System.Timers.Timer(1000);
-                timer.Start();
-                timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
+                this._src = src;
+                this._dest = dest;
+                this._elapsed = 0;
+                this._total = max;
+                _timer = new System.Timers.Timer(1000);
+                _timer.Start();
+                _timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
 
                 string note;
                 if (op.Equals(GET))
@@ -320,31 +383,31 @@ namespace Tamir.SharpSsh
                 {
                     note = "Uploading " + System.IO.Path.GetFileName(src) + "...";
                 }
-                m_sftp.SendStartMessage(src, dest, (int)total, note);
+                _mSftp.SendStartMessage(src, dest, (int)_total, note);
             }
             public override bool count(long c)
             {
-                this.transferred += c;
-                string note = ("Transfering... [Elapsed time: " + elapsed + "]");
-                m_sftp.SendProgressMessage(src, dest, (int)transferred, (int)total, note);
-                return !m_sftp.cancelled;
+                this._transferred += c;
+                string note = ("Transfering... [Elapsed time: " + _elapsed + "]");
+                _mSftp.SendProgressMessage(_src, _dest, (int)_transferred, (int)_total, note);
+                return !_mSftp.cancelled;
             }
             public override void end()
             {
-                timer.Stop();
-                timer.Dispose();
-                string note = ("Done in " + elapsed + " seconds!");
-                m_sftp.SendEndMessage(src, dest, (int)transferred, (int)total, note);
-                transferred = 0;
-                total = 0;
-                elapsed = -1;
-                src = null;
-                dest = null;
+                _timer.Stop();
+                _timer.Dispose();
+                string note = ("Done in " + _elapsed + " seconds!");
+                _mSftp.SendEndMessage(_src, _dest, (int)_transferred, (int)_total, note);
+                _transferred = 0;
+                _total = 0;
+                _elapsed = -1;
+                _src = null;
+                _dest = null;
             }
 
             private void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
             {
-                this.elapsed++;
+                this._elapsed++;
             }
         }
 
