@@ -35,7 +35,11 @@ namespace SSISSFTPTask100
 
             FillConnectionInfoPanel();
             FillDetailsPanel();
+            FillRecordSetElements();
         }
+
+
+
         #endregion
 
         #region Events
@@ -102,6 +106,13 @@ namespace SSISSFTPTask100
 
             _taskHost.Properties[Keys.SLEEP_ON_DISCONNECT].SetValue(_taskHost, chkSleep.Checked ? Keys.TRUE : Keys.FALSE);
             _taskHost.Properties[Keys.SLEEP_SECONDS].SetValue(_taskHost, numericUpDown.Text);
+
+            //Recordset
+            _taskHost.Properties[Keys.RecordsetEnabled].SetValue(_taskHost, chkResultSetEnabled.Checked);
+            _taskHost.Properties[Keys.RecordsetColumnIndex].SetValue(_taskHost, Int32.Parse(domainUpDownIndex.Text));
+            _taskHost.Properties[Keys.RecordsetVariable].SetValue(_taskHost, cmbRecordset.Text);
+            _taskHost.Properties[Keys.ValueIsFullPath].SetValue(_taskHost, optFullPath.Checked);
+
 
             DialogResult = DialogResult.OK;
             Close();
@@ -190,6 +201,20 @@ namespace SSISSFTPTask100
             }
         }
 
+        private void optionEncryptionKey_Click(object sender, EventArgs e)
+        {
+            groupBoxEncryption.Enabled = true;
+        }
+
+        private void optionEncryptionPassword_Click(object sender, EventArgs e)
+        {
+            groupBoxEncryption.Enabled = false;
+        }
+
+        private void chkResultSetEnabled_Click(object sender, EventArgs e)
+        {
+            EnableRecordsetControls(chkResultSetEnabled.Checked);
+        }
         #endregion
 
         #region Methods
@@ -205,6 +230,12 @@ namespace SSISSFTPTask100
         {
             cmbLocal.Items.Clear();
             cmbLocal.Items.AddRange(LoadUserVariables("System.String").ToArray());
+        }
+
+        private void LoadRecordSetVariables()
+        {
+            cmbRecordset.Items.Clear();
+            cmbRecordset.Items.AddRange(LoadUserVariables("System.Object").ToArray());
         }
 
         private void LoadRemoteVariables()
@@ -319,6 +350,54 @@ namespace SSISSFTPTask100
             cmbKeyFile.Enabled = btKeyFileExpression.Enabled = optPublicKeyFileConnection.Enabled = optPublicKeyFileVariable.Enabled = cmbPassPhrase.Enabled = !type;
         }
 
+        private void FillRecordSetElements()
+        {
+            if (_taskHost.Properties[Keys.RecordsetEnabled].GetValue(_taskHost) != null)
+            {
+                chkResultSetEnabled.Checked = (bool)_taskHost.Properties[Keys.RecordsetEnabled].GetValue(_taskHost);
+                EnableRecordsetControls(chkResultSetEnabled.Checked);
+
+                if (_taskHost.Properties[Keys.RecordsetColumnIndex].GetValue(_taskHost) != null)
+                {
+                    domainUpDownIndex.Text = _taskHost.Properties[Keys.RecordsetColumnIndex].GetValue(_taskHost).ToString();
+                }
+
+                if (_taskHost.Properties[Keys.ValueIsFullPath].GetValue(_taskHost) != null)
+                {
+                    if ((bool)_taskHost.Properties[Keys.ValueIsFullPath].GetValue(_taskHost))
+                    {
+                        optFullPath.Checked = true;
+                        optNameOnly.Checked = !optFullPath.Checked;
+                    }
+                    else
+                    {
+                        optNameOnly.Checked = true;
+                        optFullPath.Checked = !optNameOnly.Checked;
+                    }
+                }
+
+                LoadRecordSetVariables();
+                cmbRecordset.SelectedIndex = GetSelectedComboBoxIndex(cmbRecordset, _taskHost.Properties[Keys.RecordsetVariable].GetValue(_taskHost));
+            }
+            else
+            {
+                chkSleep.Checked = false;
+                LoadRecordSetVariables();
+                EnableRecordsetControls(false);
+            }
+        }
+
+        private void EnableRecordsetControls(bool enable)
+        {
+            label8.Enabled = enable;
+            cmbRecordset.Enabled = enable;
+            label9.Enabled = enable;
+            domainUpDownIndex.Enabled = enable;
+            label10.Enabled = enable;
+            optNameOnly.Enabled = enable;
+            optFullPath.Enabled = enable;
+        }
+
         private void FillDetailsPanel()
         {
             try
@@ -429,24 +508,6 @@ namespace SSISSFTPTask100
 
         #endregion
 
-        private void optPublicKeyFileConnection_Click_1(object sender, EventArgs e)
-        {
-            LoadKeyFileConnections();
-        }
 
-        private void optPublicKeyFileVariable_Click_1(object sender, EventArgs e)
-        {
-            LoadFileKeyPathVariables();
-        }
-
-        private void optionEncryptionKey_Click(object sender, EventArgs e)
-        {
-            groupBoxEncryption.Enabled = true;
-        }
-
-        private void optionEncryptionPassword_Click(object sender, EventArgs e)
-        {
-            groupBoxEncryption.Enabled = false;
-        }
     }
 }

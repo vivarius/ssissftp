@@ -4,9 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.SqlServer.Dts.Runtime;
-using Tamir.SharpSsh.java.util;
+using SSISSFTPTask100;
 using Tamir.SharpSsh.jsch;
-using System.Collections;
 
 /* 
  * Sftp.cs
@@ -46,6 +45,7 @@ namespace Tamir.SharpSsh
         private MyProgressMonitor m_monitor;
         private bool cancelled = false;
         public IDTSComponentEvents ComponentEvents { get; set; }
+        public static RecordsetHandlerObject RecordsetHandler { get; set; }
         bool _refire = false;
 
         public Sftp(string sftpHost, string user, string password)
@@ -105,7 +105,53 @@ namespace Tamir.SharpSsh
 
         public override void Get(string fromFilePath, string toFilePath)
         {
-            if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
+            if (RecordsetHandler.RecordsetEnabled)
+            {
+
+                IEnumerable<string> listOfFiles = RecordsetHandler.GetValues();
+                if (listOfFiles != null)
+                {
+                    ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                                    string.Format("Preparing to copy {0} files", listOfFiles.Count()),
+                                                    string.Empty, 0, ref _refire);
+
+                    int fileCounter = 0;
+                    int lastSlashIndex = fromFilePath.LastIndexOf('/');
+                    string dir = fromFilePath.Substring(0, lastSlashIndex + 1);
+
+                    foreach (var file in listOfFiles)
+                    {
+
+                        string from = (dir.Length == 0)
+                                         ? file
+                                         : string.Format("{0}{1}", dir, file);
+
+                        if (Directory.Exists(toFilePath))
+                        {
+                            toFilePath = (toFilePath[toFilePath.Length - 1] != '\\') ? toFilePath + "\\" : toFilePath;
+                        }
+                        else if (File.Exists(toFilePath))
+                        {
+                            toFilePath = string.Format("{0}\\", new FileInfo(toFilePath).Directory.FullName);
+                        }
+
+                        string to = string.Format("{0}{1}", toFilePath, file);
+
+                        SftpChannel.get(from, to, m_monitor, ChannelSftp.OVERWRITE);
+
+                        ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                    string.Format("File copied from {0} to {1}", from, to),
+                                    string.Empty, 0, ref _refire);
+
+                        fileCounter++;
+                    }
+
+                    ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                string.Format("Total copied files {0}", fileCounter),
+                                string.Empty, 0, ref _refire);
+                }
+            }
+            else if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
             {
                 int lastSlashIndex = fromFilePath.LastIndexOf('/');
 
@@ -157,7 +203,7 @@ namespace Tamir.SharpSsh
                             string.Format("Total copied files {0}", fileCounter),
                             string.Empty, 0, ref _refire);
             }
-            else
+            else if (!RecordsetHandler.RecordsetEnabled && (!fromFilePath.Contains("*") || !fromFilePath.Contains("?")))
             {
                 SftpChannel.get(fromFilePath, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
                 ComponentEvents.FireInformation(0, "SSISSFTTask",
@@ -191,7 +237,36 @@ namespace Tamir.SharpSsh
 
         public override void Put(string fromFilePath, string toFilePath)
         {
-            if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
+            if (RecordsetHandler.RecordsetEnabled)
+            {
+
+                IEnumerable<string> listOfFiles = RecordsetHandler.GetValues();
+                if (listOfFiles != null)
+                {
+                    ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                                    string.Format("Preparing to copy {0} files", listOfFiles.Count()),
+                                                    string.Empty, 0, ref _refire);
+
+                    int fileCounter = 0;
+
+                    foreach (var file in listOfFiles)
+                    {
+
+                        SftpChannel.put(file, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
+
+                        ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                    string.Format("Send file from {0} to {1}", file, toFilePath),
+                                    string.Empty, 0, ref _refire);
+
+                        fileCounter++;
+                    }
+
+                    ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                string.Format("Total copied files {0}", fileCounter),
+                                string.Empty, 0, ref _refire);
+                }
+            }
+            else if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
             {
                 int lastBackSlashIndex = fromFilePath.LastIndexOf('\\');
 
@@ -230,7 +305,7 @@ namespace Tamir.SharpSsh
                                 string.Format("Number of sended files: {0}", fileCounter),
                                 string.Empty, 0, ref _refire);
             }
-            else
+            else if (!RecordsetHandler.RecordsetEnabled && (!fromFilePath.Contains("*") || !fromFilePath.Contains("?")))
             {
                 SftpChannel.put(fromFilePath, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
                 ComponentEvents.FireInformation(0, "SSISSFTTask",
@@ -286,7 +361,35 @@ namespace Tamir.SharpSsh
         //Delete
         public void Delete(string filePath)
         {
-            if (filePath.Contains("*") || filePath.Contains("?"))
+            if (RecordsetHandler.RecordsetEnabled)
+            {
+                IEnumerable<string> listOfFiles = RecordsetHandler.GetValues();
+                if (listOfFiles != null)
+                {
+                    ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                                    string.Format("Preparing to delete {0} files", listOfFiles.Count()),
+                                                    string.Empty, 0, ref _refire);
+
+                    int fileCounter = 0;
+
+                    foreach (var file in listOfFiles)
+                    {
+
+                        SftpChannel.rm(file);
+
+                        ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                    string.Format("File {0} deleted", file),
+                                    string.Empty, 0, ref _refire);
+
+                        fileCounter++;
+                    }
+
+                    ComponentEvents.FireInformation(0, "SSISSFTTask",
+                                string.Format("Total deleted files {0}", fileCounter),
+                                string.Empty, 0, ref _refire);
+                }
+            }
+            else if (filePath.Contains("*") || filePath.Contains("?"))
             {
                 int lastSlashIndex = filePath.LastIndexOf('/');
 
@@ -330,7 +433,7 @@ namespace Tamir.SharpSsh
                                 string.Format("Deleted files: {0}", fileCounter),
                                 string.Empty, 0, ref _refire);
             }
-            else
+            else if (!RecordsetHandler.RecordsetEnabled && (!filePath.Contains("*") || !filePath.Contains("?")))
             {
 
                 ComponentEvents.FireInformation(0, "SSISSFTTask",

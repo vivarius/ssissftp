@@ -35,23 +35,10 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.chkSleep = new System.Windows.Forms.CheckBox();
             this.linkLabelCodeplex = new System.Windows.Forms.LinkLabel();
-            this.cmbRemote = new System.Windows.Forms.ComboBox();
-            this.optFileVariable = new System.Windows.Forms.RadioButton();
-            this.optFileConnection = new System.Windows.Forms.RadioButton();
-            this.cmbLocal = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.cmbFilesList = new System.Windows.Forms.ComboBox();
-            this.btDestinationFile = new System.Windows.Forms.Button();
-            this.lbDestinationFile = new System.Windows.Forms.Label();
-            this.btSourceFile = new System.Windows.Forms.Button();
-            this.lbSourceFile = new System.Windows.Forms.Label();
-            this.lbAction = new System.Windows.Forms.Label();
-            this.cmbAction = new System.Windows.Forms.ComboBox();
-            this.chkOverwrite = new System.Windows.Forms.CheckBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.numericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
             this.groupBoxConnection = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.numericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
             this.cmbPort = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.optionEncryptionKey = new System.Windows.Forms.RadioButton();
@@ -71,14 +58,40 @@
             this.cmbKeyFile = new System.Windows.Forms.ComboBox();
             this.btKeyFileExpression = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).BeginInit();
+            this.groupbox = new System.Windows.Forms.GroupBox();
+            this.chkOverwrite = new System.Windows.Forms.CheckBox();
+            this.cmbRemote = new System.Windows.Forms.ComboBox();
+            this.optFileVariable = new System.Windows.Forms.RadioButton();
+            this.optFileConnection = new System.Windows.Forms.RadioButton();
+            this.cmbLocal = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cmbFilesList = new System.Windows.Forms.ComboBox();
+            this.btDestinationFile = new System.Windows.Forms.Button();
+            this.lbDestinationFile = new System.Windows.Forms.Label();
+            this.btSourceFile = new System.Windows.Forms.Button();
+            this.lbSourceFile = new System.Windows.Forms.Label();
+            this.lbAction = new System.Windows.Forms.Label();
+            this.cmbAction = new System.Windows.Forms.ComboBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.optFullPath = new System.Windows.Forms.RadioButton();
+            this.optNameOnly = new System.Windows.Forms.RadioButton();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.cmbRecordset = new System.Windows.Forms.ComboBox();
+            this.chkResultSetEnabled = new System.Windows.Forms.CheckBox();
+            this.domainUpDownIndex = new System.Windows.Forms.NumericUpDown();
             this.groupBoxConnection.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).BeginInit();
             this.groupBoxEncryption.SuspendLayout();
+            this.groupbox.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.domainUpDownIndex)).BeginInit();
             this.SuspendLayout();
             // 
             // btOK
             // 
-            this.btOK.Location = new System.Drawing.Point(341, 425);
+            this.btOK.Location = new System.Drawing.Point(756, 341);
             this.btOK.Name = "btOK";
             this.btOK.Size = new System.Drawing.Size(82, 26);
             this.btOK.TabIndex = 3;
@@ -89,7 +102,7 @@
             // btCancel
             // 
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(253, 425);
+            this.btCancel.Location = new System.Drawing.Point(668, 341);
             this.btCancel.Name = "btCancel";
             this.btCancel.Size = new System.Drawing.Size(82, 26);
             this.btCancel.TabIndex = 4;
@@ -100,10 +113,10 @@
             // chkSleep
             // 
             this.chkSleep.AutoSize = true;
-            this.chkSleep.Location = new System.Drawing.Point(101, 385);
+            this.chkSleep.Location = new System.Drawing.Point(92, 127);
             this.chkSleep.Name = "chkSleep";
             this.chkSleep.Size = new System.Drawing.Size(123, 17);
-            this.chkSleep.TabIndex = 62;
+            this.chkSleep.TabIndex = 88;
             this.chkSleep.Text = "Sleep on disconnect";
             this.chkSleep.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.toolTip1.SetToolTip(this.chkSleep, "To avoid overload connections. Give it the time to disconnect completely.");
@@ -113,7 +126,7 @@
             // linkLabelCodeplex
             // 
             this.linkLabelCodeplex.AutoSize = true;
-            this.linkLabelCodeplex.Location = new System.Drawing.Point(7, 438);
+            this.linkLabelCodeplex.Location = new System.Drawing.Point(7, 348);
             this.linkLabelCodeplex.Name = "linkLabelCodeplex";
             this.linkLabelCodeplex.Size = new System.Drawing.Size(141, 13);
             this.linkLabelCodeplex.TabIndex = 10;
@@ -121,167 +134,12 @@
             this.linkLabelCodeplex.Text = "http://ssissftp.codeplex.com";
             this.linkLabelCodeplex.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelCodeplex_LinkClicked);
             // 
-            // cmbRemote
-            // 
-            this.cmbRemote.FormattingEnabled = true;
-            this.cmbRemote.Location = new System.Drawing.Point(101, 330);
-            this.cmbRemote.Name = "cmbRemote";
-            this.cmbRemote.Size = new System.Drawing.Size(262, 21);
-            this.cmbRemote.TabIndex = 60;
-            // 
-            // optFileVariable
-            // 
-            this.optFileVariable.AutoSize = true;
-            this.optFileVariable.Location = new System.Drawing.Point(212, 310);
-            this.optFileVariable.Name = "optFileVariable";
-            this.optFileVariable.Size = new System.Drawing.Size(93, 17);
-            this.optFileVariable.TabIndex = 59;
-            this.optFileVariable.Text = "Variables / f(x)";
-            this.optFileVariable.UseVisualStyleBackColor = true;
-            this.optFileVariable.Click += new System.EventHandler(this.optFileVariable_Click);
-            // 
-            // optFileConnection
-            // 
-            this.optFileConnection.AutoSize = true;
-            this.optFileConnection.Checked = true;
-            this.optFileConnection.Location = new System.Drawing.Point(101, 311);
-            this.optFileConnection.Name = "optFileConnection";
-            this.optFileConnection.Size = new System.Drawing.Size(98, 17);
-            this.optFileConnection.TabIndex = 58;
-            this.optFileConnection.TabStop = true;
-            this.optFileConnection.Text = "File Connection";
-            this.optFileConnection.UseVisualStyleBackColor = true;
-            this.optFileConnection.Click += new System.EventHandler(this.optFileConnection_Click);
-            // 
-            // cmbLocal
-            // 
-            this.cmbLocal.FormattingEnabled = true;
-            this.cmbLocal.Location = new System.Drawing.Point(101, 283);
-            this.cmbLocal.Name = "cmbLocal";
-            this.cmbLocal.Size = new System.Drawing.Size(262, 21);
-            this.cmbLocal.TabIndex = 57;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 361);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(90, 13);
-            this.label1.TabIndex = 56;
-            this.label1.Text = "Returned files list ";
-            this.label1.Visible = false;
-            // 
-            // cmbFilesList
-            // 
-            this.cmbFilesList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbFilesList.FormattingEnabled = true;
-            this.cmbFilesList.Location = new System.Drawing.Point(101, 358);
-            this.cmbFilesList.Name = "cmbFilesList";
-            this.cmbFilesList.Size = new System.Drawing.Size(319, 21);
-            this.cmbFilesList.TabIndex = 55;
-            this.cmbFilesList.Visible = false;
-            // 
-            // btDestinationFile
-            // 
-            this.btDestinationFile.Location = new System.Drawing.Point(380, 330);
-            this.btDestinationFile.Name = "btDestinationFile";
-            this.btDestinationFile.Size = new System.Drawing.Size(40, 21);
-            this.btDestinationFile.TabIndex = 54;
-            this.btDestinationFile.Text = "f(x)";
-            this.btDestinationFile.UseVisualStyleBackColor = true;
-            this.btDestinationFile.Click += new System.EventHandler(this.btDestinationFile_Click);
-            // 
-            // lbDestinationFile
-            // 
-            this.lbDestinationFile.AutoSize = true;
-            this.lbDestinationFile.Location = new System.Drawing.Point(7, 335);
-            this.lbDestinationFile.Name = "lbDestinationFile";
-            this.lbDestinationFile.Size = new System.Drawing.Size(68, 13);
-            this.lbDestinationFile.TabIndex = 53;
-            this.lbDestinationFile.Text = "Remote path";
-            // 
-            // btSourceFile
-            // 
-            this.btSourceFile.Location = new System.Drawing.Point(380, 282);
-            this.btSourceFile.Name = "btSourceFile";
-            this.btSourceFile.Size = new System.Drawing.Size(40, 21);
-            this.btSourceFile.TabIndex = 52;
-            this.btSourceFile.Text = "f(x)";
-            this.btSourceFile.UseVisualStyleBackColor = true;
-            this.btSourceFile.Click += new System.EventHandler(this.btSourceFile_Click);
-            // 
-            // lbSourceFile
-            // 
-            this.lbSourceFile.AutoSize = true;
-            this.lbSourceFile.Location = new System.Drawing.Point(7, 283);
-            this.lbSourceFile.Name = "lbSourceFile";
-            this.lbSourceFile.Size = new System.Drawing.Size(58, 13);
-            this.lbSourceFile.TabIndex = 51;
-            this.lbSourceFile.Text = "Local Path";
-            // 
-            // lbAction
-            // 
-            this.lbAction.AutoSize = true;
-            this.lbAction.Location = new System.Drawing.Point(7, 259);
-            this.lbAction.Name = "lbAction";
-            this.lbAction.Size = new System.Drawing.Size(37, 13);
-            this.lbAction.TabIndex = 50;
-            this.lbAction.Text = "Action";
-            // 
-            // cmbAction
-            // 
-            this.cmbAction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbAction.FormattingEnabled = true;
-            this.cmbAction.Location = new System.Drawing.Point(101, 256);
-            this.cmbAction.Name = "cmbAction";
-            this.cmbAction.Size = new System.Drawing.Size(319, 21);
-            this.cmbAction.TabIndex = 49;
-            this.cmbAction.SelectedIndexChanged += new System.EventHandler(this.cmbAction_SelectedIndexChanged);
-            // 
-            // chkOverwrite
-            // 
-            this.chkOverwrite.AutoSize = true;
-            this.chkOverwrite.Location = new System.Drawing.Point(311, 311);
-            this.chkOverwrite.Name = "chkOverwrite";
-            this.chkOverwrite.Size = new System.Drawing.Size(112, 17);
-            this.chkOverwrite.TabIndex = 61;
-            this.chkOverwrite.Text = "Overwrite local file";
-            this.chkOverwrite.UseVisualStyleBackColor = true;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(267, 386);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(49, 13);
-            this.label2.TabIndex = 63;
-            this.label2.Text = "Sleep for";
-            // 
-            // numericUpDown
-            // 
-            this.numericUpDown.Enabled = false;
-            this.numericUpDown.Location = new System.Drawing.Point(322, 382);
-            this.numericUpDown.Maximum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-            this.numericUpDown.Name = "numericUpDown";
-            this.numericUpDown.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDown.TabIndex = 65;
-            this.numericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(376, 386);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(47, 13);
-            this.label3.TabIndex = 66;
-            this.label3.Text = "seconds";
-            // 
             // groupBoxConnection
             // 
+            this.groupBoxConnection.Controls.Add(this.label3);
+            this.groupBoxConnection.Controls.Add(this.numericUpDown);
+            this.groupBoxConnection.Controls.Add(this.label2);
+            this.groupBoxConnection.Controls.Add(this.chkSleep);
             this.groupBoxConnection.Controls.Add(this.cmbPort);
             this.groupBoxConnection.Controls.Add(this.label7);
             this.groupBoxConnection.Controls.Add(this.optionEncryptionKey);
@@ -295,10 +153,42 @@
             this.groupBoxConnection.Controls.Add(this.lbServer);
             this.groupBoxConnection.Location = new System.Drawing.Point(10, 3);
             this.groupBoxConnection.Name = "groupBoxConnection";
-            this.groupBoxConnection.Size = new System.Drawing.Size(411, 132);
+            this.groupBoxConnection.Size = new System.Drawing.Size(411, 157);
             this.groupBoxConnection.TabIndex = 72;
             this.groupBoxConnection.TabStop = false;
             this.groupBoxConnection.Text = "Connection";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(339, 124);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(47, 13);
+            this.label3.TabIndex = 91;
+            this.label3.Text = "seconds";
+            // 
+            // numericUpDown
+            // 
+            this.numericUpDown.Enabled = false;
+            this.numericUpDown.Location = new System.Drawing.Point(285, 122);
+            this.numericUpDown.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.numericUpDown.Name = "numericUpDown";
+            this.numericUpDown.Size = new System.Drawing.Size(48, 20);
+            this.numericUpDown.TabIndex = 90;
+            this.numericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(230, 127);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(49, 13);
+            this.label2.TabIndex = 89;
+            this.label2.Text = "Sleep for";
             // 
             // cmbPort
             // 
@@ -411,9 +301,9 @@
             this.groupBoxEncryption.Controls.Add(this.cmbKeyFile);
             this.groupBoxEncryption.Controls.Add(this.btKeyFileExpression);
             this.groupBoxEncryption.Controls.Add(this.label4);
-            this.groupBoxEncryption.Location = new System.Drawing.Point(10, 141);
+            this.groupBoxEncryption.Location = new System.Drawing.Point(427, 3);
             this.groupBoxEncryption.Name = "groupBoxEncryption";
-            this.groupBoxEncryption.Size = new System.Drawing.Size(411, 102);
+            this.groupBoxEncryption.Size = new System.Drawing.Size(411, 157);
             this.groupBoxEncryption.TabIndex = 73;
             this.groupBoxEncryption.TabStop = false;
             this.groupBoxEncryption.Text = "Encryption details";
@@ -444,7 +334,7 @@
             this.optPublicKeyFileVariable.TabIndex = 92;
             this.optPublicKeyFileVariable.Text = "Variables / f(x)";
             this.optPublicKeyFileVariable.UseVisualStyleBackColor = true;
-            this.optPublicKeyFileVariable.Click += new System.EventHandler(this.optPublicKeyFileVariable_Click_1);
+            this.optPublicKeyFileVariable.Click += new System.EventHandler(this.optPublicKeyFileVariable_Click);
             // 
             // optPublicKeyFileConnection
             // 
@@ -457,7 +347,7 @@
             this.optPublicKeyFileConnection.TabStop = true;
             this.optPublicKeyFileConnection.Text = "File Connection";
             this.optPublicKeyFileConnection.UseVisualStyleBackColor = true;
-            this.optPublicKeyFileConnection.Click += new System.EventHandler(this.optPublicKeyFileConnection_Click_1);
+            this.optPublicKeyFileConnection.Click += new System.EventHandler(this.optPublicKeyFileConnection_Click);
             // 
             // cmbKeyFile
             // 
@@ -475,6 +365,7 @@
             this.btKeyFileExpression.TabIndex = 89;
             this.btKeyFileExpression.Text = "f(x)";
             this.btKeyFileExpression.UseVisualStyleBackColor = true;
+            this.btKeyFileExpression.Click += new System.EventHandler(this.btKeyFileExpression_Click);
             // 
             // label4
             // 
@@ -485,34 +376,268 @@
             this.label4.TabIndex = 88;
             this.label4.Text = "Private key file:";
             // 
+            // groupbox
+            // 
+            this.groupbox.Controls.Add(this.chkOverwrite);
+            this.groupbox.Controls.Add(this.cmbRemote);
+            this.groupbox.Controls.Add(this.optFileVariable);
+            this.groupbox.Controls.Add(this.optFileConnection);
+            this.groupbox.Controls.Add(this.cmbLocal);
+            this.groupbox.Controls.Add(this.label1);
+            this.groupbox.Controls.Add(this.cmbFilesList);
+            this.groupbox.Controls.Add(this.btDestinationFile);
+            this.groupbox.Controls.Add(this.lbDestinationFile);
+            this.groupbox.Controls.Add(this.btSourceFile);
+            this.groupbox.Controls.Add(this.lbSourceFile);
+            this.groupbox.Controls.Add(this.lbAction);
+            this.groupbox.Controls.Add(this.cmbAction);
+            this.groupbox.Location = new System.Drawing.Point(10, 166);
+            this.groupbox.Name = "groupbox";
+            this.groupbox.Size = new System.Drawing.Size(411, 163);
+            this.groupbox.TabIndex = 75;
+            this.groupbox.TabStop = false;
+            this.groupbox.Text = "Paths";
+            // 
+            // chkOverwrite
+            // 
+            this.chkOverwrite.AutoSize = true;
+            this.chkOverwrite.Location = new System.Drawing.Point(289, 80);
+            this.chkOverwrite.Name = "chkOverwrite";
+            this.chkOverwrite.Size = new System.Drawing.Size(112, 17);
+            this.chkOverwrite.TabIndex = 74;
+            this.chkOverwrite.Text = "Overwrite local file";
+            this.chkOverwrite.UseVisualStyleBackColor = true;
+            // 
+            // cmbRemote
+            // 
+            this.cmbRemote.FormattingEnabled = true;
+            this.cmbRemote.Location = new System.Drawing.Point(92, 99);
+            this.cmbRemote.Name = "cmbRemote";
+            this.cmbRemote.Size = new System.Drawing.Size(251, 21);
+            this.cmbRemote.TabIndex = 73;
+            // 
+            // optFileVariable
+            // 
+            this.optFileVariable.AutoSize = true;
+            this.optFileVariable.Location = new System.Drawing.Point(196, 79);
+            this.optFileVariable.Name = "optFileVariable";
+            this.optFileVariable.Size = new System.Drawing.Size(93, 17);
+            this.optFileVariable.TabIndex = 72;
+            this.optFileVariable.Text = "Variables / f(x)";
+            this.optFileVariable.UseVisualStyleBackColor = true;
+            this.optFileVariable.Click += new System.EventHandler(this.optFileVariable_Click);
+            // 
+            // optFileConnection
+            // 
+            this.optFileConnection.AutoSize = true;
+            this.optFileConnection.Checked = true;
+            this.optFileConnection.Location = new System.Drawing.Point(92, 79);
+            this.optFileConnection.Name = "optFileConnection";
+            this.optFileConnection.Size = new System.Drawing.Size(98, 17);
+            this.optFileConnection.TabIndex = 71;
+            this.optFileConnection.TabStop = true;
+            this.optFileConnection.Text = "File Connection";
+            this.optFileConnection.UseVisualStyleBackColor = true;
+            this.optFileConnection.Click += new System.EventHandler(this.optFileConnection_Click);
+            // 
+            // cmbLocal
+            // 
+            this.cmbLocal.FormattingEnabled = true;
+            this.cmbLocal.Location = new System.Drawing.Point(92, 52);
+            this.cmbLocal.Name = "cmbLocal";
+            this.cmbLocal.Size = new System.Drawing.Size(251, 21);
+            this.cmbLocal.TabIndex = 70;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(2, 130);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(90, 13);
+            this.label1.TabIndex = 69;
+            this.label1.Text = "Returned files list ";
+            this.label1.Visible = false;
+            // 
+            // cmbFilesList
+            // 
+            this.cmbFilesList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFilesList.FormattingEnabled = true;
+            this.cmbFilesList.Location = new System.Drawing.Point(92, 126);
+            this.cmbFilesList.Name = "cmbFilesList";
+            this.cmbFilesList.Size = new System.Drawing.Size(309, 21);
+            this.cmbFilesList.TabIndex = 68;
+            this.cmbFilesList.Visible = false;
+            // 
+            // btDestinationFile
+            // 
+            this.btDestinationFile.Location = new System.Drawing.Point(361, 99);
+            this.btDestinationFile.Name = "btDestinationFile";
+            this.btDestinationFile.Size = new System.Drawing.Size(40, 21);
+            this.btDestinationFile.TabIndex = 67;
+            this.btDestinationFile.Text = "f(x)";
+            this.btDestinationFile.UseVisualStyleBackColor = true;
+            this.btDestinationFile.Click += new System.EventHandler(this.btDestinationFile_Click);
+            // 
+            // lbDestinationFile
+            // 
+            this.lbDestinationFile.AutoSize = true;
+            this.lbDestinationFile.Location = new System.Drawing.Point(2, 103);
+            this.lbDestinationFile.Name = "lbDestinationFile";
+            this.lbDestinationFile.Size = new System.Drawing.Size(68, 13);
+            this.lbDestinationFile.TabIndex = 66;
+            this.lbDestinationFile.Text = "Remote path";
+            // 
+            // btSourceFile
+            // 
+            this.btSourceFile.Location = new System.Drawing.Point(359, 51);
+            this.btSourceFile.Name = "btSourceFile";
+            this.btSourceFile.Size = new System.Drawing.Size(40, 21);
+            this.btSourceFile.TabIndex = 65;
+            this.btSourceFile.Text = "f(x)";
+            this.btSourceFile.UseVisualStyleBackColor = true;
+            this.btSourceFile.Click += new System.EventHandler(this.btSourceFile_Click);
+            // 
+            // lbSourceFile
+            // 
+            this.lbSourceFile.AutoSize = true;
+            this.lbSourceFile.Location = new System.Drawing.Point(2, 51);
+            this.lbSourceFile.Name = "lbSourceFile";
+            this.lbSourceFile.Size = new System.Drawing.Size(58, 13);
+            this.lbSourceFile.TabIndex = 64;
+            this.lbSourceFile.Text = "Local Path";
+            // 
+            // lbAction
+            // 
+            this.lbAction.AutoSize = true;
+            this.lbAction.Location = new System.Drawing.Point(2, 28);
+            this.lbAction.Name = "lbAction";
+            this.lbAction.Size = new System.Drawing.Size(37, 13);
+            this.lbAction.TabIndex = 63;
+            this.lbAction.Text = "Action";
+            // 
+            // cmbAction
+            // 
+            this.cmbAction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbAction.FormattingEnabled = true;
+            this.cmbAction.Location = new System.Drawing.Point(92, 25);
+            this.cmbAction.Name = "cmbAction";
+            this.cmbAction.Size = new System.Drawing.Size(307, 21);
+            this.cmbAction.TabIndex = 62;
+            this.cmbAction.SelectedIndexChanged += new System.EventHandler(this.cmbAction_SelectedIndexChanged);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.domainUpDownIndex);
+            this.groupBox1.Controls.Add(this.optFullPath);
+            this.groupBox1.Controls.Add(this.optNameOnly);
+            this.groupBox1.Controls.Add(this.label10);
+            this.groupBox1.Controls.Add(this.label9);
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Controls.Add(this.cmbRecordset);
+            this.groupBox1.Controls.Add(this.chkResultSetEnabled);
+            this.groupBox1.Location = new System.Drawing.Point(427, 166);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(411, 163);
+            this.groupBox1.TabIndex = 76;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Resultset";
+            // 
+            // optFullPath
+            // 
+            this.optFullPath.AutoSize = true;
+            this.optFullPath.Location = new System.Drawing.Point(167, 140);
+            this.optFullPath.Name = "optFullPath";
+            this.optFullPath.Size = new System.Drawing.Size(84, 17);
+            this.optFullPath.TabIndex = 8;
+            this.optFullPath.TabStop = true;
+            this.optFullPath.Text = "The full path";
+            this.optFullPath.UseVisualStyleBackColor = true;
+            // 
+            // optNameOnly
+            // 
+            this.optNameOnly.AutoSize = true;
+            this.optNameOnly.Location = new System.Drawing.Point(9, 140);
+            this.optNameOnly.Name = "optNameOnly";
+            this.optNameOnly.Size = new System.Drawing.Size(139, 17);
+            this.optNameOnly.TabIndex = 7;
+            this.optNameOnly.TabStop = true;
+            this.optNameOnly.Text = "Only the name of the file";
+            this.optNameOnly.UseVisualStyleBackColor = true;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 126);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(145, 13);
+            this.label10.TabIndex = 6;
+            this.label10.Text = "The obtained value contains:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 99);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(157, 13);
+            this.label9.TabIndex = 3;
+            this.label9.Text = "Index of the concerned column:";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 55);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(159, 13);
+            this.label8.TabIndex = 2;
+            this.label8.Text = "Choose the object type variable:";
+            // 
+            // cmbRecordset
+            // 
+            this.cmbRecordset.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbRecordset.FormattingEnabled = true;
+            this.cmbRecordset.Location = new System.Drawing.Point(9, 71);
+            this.cmbRecordset.Name = "cmbRecordset";
+            this.cmbRecordset.Size = new System.Drawing.Size(392, 21);
+            this.cmbRecordset.TabIndex = 1;
+            // 
+            // chkResultSetEnabled
+            // 
+            this.chkResultSetEnabled.AutoSize = true;
+            this.chkResultSetEnabled.Location = new System.Drawing.Point(9, 28);
+            this.chkResultSetEnabled.Name = "chkResultSetEnabled";
+            this.chkResultSetEnabled.Size = new System.Drawing.Size(390, 17);
+            this.chkResultSetEnabled.TabIndex = 0;
+            this.chkResultSetEnabled.Text = "The source file(s) for GET or PUT or DEL operations comes from a Recordset";
+            this.chkResultSetEnabled.UseVisualStyleBackColor = true;
+            this.chkResultSetEnabled.Click += new System.EventHandler(this.chkResultSetEnabled_Click);
+            // 
+            // domainUpDownIndex
+            // 
+            this.domainUpDownIndex.Enabled = false;
+            this.domainUpDownIndex.Location = new System.Drawing.Point(169, 97);
+            this.domainUpDownIndex.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.domainUpDownIndex.Name = "domainUpDownIndex";
+            this.domainUpDownIndex.Size = new System.Drawing.Size(48, 20);
+            this.domainUpDownIndex.TabIndex = 91;
+            this.domainUpDownIndex.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
             // frmEditProperties
             // 
             this.AcceptButton = this.btOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btCancel;
-            this.ClientSize = new System.Drawing.Size(430, 461);
+            this.ClientSize = new System.Drawing.Size(849, 376);
+            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.groupbox);
             this.Controls.Add(this.groupBoxEncryption);
             this.Controls.Add(this.groupBoxConnection);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.numericUpDown);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.chkSleep);
             this.Controls.Add(this.btCancel);
             this.Controls.Add(this.btOK);
-            this.Controls.Add(this.chkOverwrite);
-            this.Controls.Add(this.cmbRemote);
-            this.Controls.Add(this.optFileVariable);
-            this.Controls.Add(this.optFileConnection);
-            this.Controls.Add(this.cmbLocal);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.cmbFilesList);
-            this.Controls.Add(this.btDestinationFile);
-            this.Controls.Add(this.lbDestinationFile);
-            this.Controls.Add(this.btSourceFile);
-            this.Controls.Add(this.lbSourceFile);
-            this.Controls.Add(this.lbAction);
-            this.Controls.Add(this.cmbAction);
             this.Controls.Add(this.linkLabelCodeplex);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -522,11 +647,16 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SFTP Task Properties";
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).EndInit();
             this.groupBoxConnection.ResumeLayout(false);
             this.groupBoxConnection.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).EndInit();
             this.groupBoxEncryption.ResumeLayout(false);
             this.groupBoxEncryption.PerformLayout();
+            this.groupbox.ResumeLayout(false);
+            this.groupbox.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.domainUpDownIndex)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -538,23 +668,6 @@
         private System.Windows.Forms.Button btCancel;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.LinkLabel linkLabelCodeplex;
-        private System.Windows.Forms.ComboBox cmbRemote;
-        private System.Windows.Forms.RadioButton optFileVariable;
-        private System.Windows.Forms.RadioButton optFileConnection;
-        private System.Windows.Forms.ComboBox cmbLocal;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox cmbFilesList;
-        private System.Windows.Forms.Button btDestinationFile;
-        private System.Windows.Forms.Label lbDestinationFile;
-        private System.Windows.Forms.Button btSourceFile;
-        private System.Windows.Forms.Label lbSourceFile;
-        private System.Windows.Forms.Label lbAction;
-        private System.Windows.Forms.ComboBox cmbAction;
-        private System.Windows.Forms.CheckBox chkOverwrite;
-        private System.Windows.Forms.CheckBox chkSleep;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.NumericUpDown numericUpDown;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox groupBoxConnection;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cmbPassword;
@@ -575,5 +688,32 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox cmbPort;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown numericUpDown;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox chkSleep;
+        private System.Windows.Forms.GroupBox groupbox;
+        private System.Windows.Forms.CheckBox chkOverwrite;
+        private System.Windows.Forms.ComboBox cmbRemote;
+        private System.Windows.Forms.RadioButton optFileVariable;
+        private System.Windows.Forms.RadioButton optFileConnection;
+        private System.Windows.Forms.ComboBox cmbLocal;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox cmbFilesList;
+        private System.Windows.Forms.Button btDestinationFile;
+        private System.Windows.Forms.Label lbDestinationFile;
+        private System.Windows.Forms.Button btSourceFile;
+        private System.Windows.Forms.Label lbSourceFile;
+        private System.Windows.Forms.Label lbAction;
+        private System.Windows.Forms.ComboBox cmbAction;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox chkResultSetEnabled;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox cmbRecordset;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.RadioButton optFullPath;
+        private System.Windows.Forms.RadioButton optNameOnly;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.NumericUpDown domainUpDownIndex;
     }
 }

@@ -65,6 +65,7 @@
       <DependentUpon>frmEditProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="SFTPManager.cs" />
+    <Compile Include="SharpSSH\BigInteger.cs" />
     <Compile Include="SSISSFTTask.cs" />
     <Compile Include="DilffieHellman\DHKeyGeneration.cs" />
     <Compile Include="DilffieHellman\DHParameters.cs" />

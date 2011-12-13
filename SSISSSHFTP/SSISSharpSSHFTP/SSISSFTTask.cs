@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
+using System.Data.OleDb;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Xml;
@@ -18,7 +21,7 @@ namespace SSISSFTPTask100.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask100.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask100," +
-        "Version=1.3.6.0," +
+        "Version=1.5.0.0," +
         "Culture=Neutral," +
         "PublicKeyToken=4598105d4a713364",
         IconResource = "SSISSFTPTask100.sftp.ico",
@@ -62,6 +65,18 @@ namespace SSISSFTPTask100.SSIS
         [Category("Connection"), Description("Sleep seconds")]
         public string SleepSeconds { get; set; }
 
+        #endregion
+
+        #region Recordset
+
+        [Category("Recordset"), Description("Enable Recordset")]
+        public bool RecordsetEnabled { get; set; }
+        [Category("Recordset"), Description("Recordset Variable")]
+        public string RecordsetVariable { get; set; }
+        [Category("Recordset"), Description("Recordset Column Index")]
+        public int RecordsetColumnIndex { get; set; }
+        [Category("Recordset"), Description("Values Is FullPath?")]
+        public bool ValueIsFullPath { get; set; }
         #endregion
 
         #region Action
@@ -229,6 +244,18 @@ namespace SSISSFTPTask100.SSIS
 
             #endregion
 
+            #region Recordset
+            if (RecordsetEnabled)
+            {
+                if (string.IsNullOrEmpty(RecordsetVariable))
+                {
+                    componentEvents.FireError(0, "SSISSFTTask", "Please specify an Object Variable for Recordset's source.", "", 0);
+                    isBaseValid = false;
+                }
+            }
+
+            #endregion
+
             //bool refire = true;
             //var transaction = new object();
             //ExecutesSFTPCommands(componentEvents, refire, variableDispenser, connections, log, transaction);
@@ -267,6 +294,15 @@ namespace SSISSFTPTask100.SSIS
 
             try
             {
+                Communication.RecordsetHandler = new RecordsetHandlerObject
+                                                                {
+                                                                    RecordsetColumnIndex = RecordsetColumnIndex,
+                                                                    RecordsetEnabled = RecordsetEnabled,
+                                                                    RecordsetVariable = RecordsetVariable,
+                                                                    VariableDispenser = variableDispenser,
+                                                                    ValueIsFullPath = ValueIsFullPath
+                                                                };
+
                 if (!string.IsNullOrEmpty(LocalPath))
                 {
 
@@ -293,7 +329,7 @@ namespace SSISSFTPTask100.SSIS
                 Communication.Port = port;
 
                 componentEvents.FireInformation(0, "SSISSFTTask",
-                                                    string.Format("The SFTP port: {0}", port),
+                                                    string.Format("SFTP port: {0}", port),
                                                     string.Empty, 0, ref refire);
 
                 if (Communication.EncryptionTypeKey)
@@ -308,7 +344,7 @@ namespace SSISSFTPTask100.SSIS
                                       : EvaluateExpression(PublicKeyFile, variableDispenser).ToString();
 
                     componentEvents.FireInformation(0, "SSISSFTTask",
-                                string.Format("The source private key file is: {0}", keyPath),
+                                string.Format("The path to the private key file is: {0}", keyPath),
                                 string.Empty, 0, ref refire);
 
                     Communication.PublicKeyFilePath = EvaluateExpression(keyPath, variableDispenser).ToString();
@@ -322,11 +358,15 @@ namespace SSISSFTPTask100.SSIS
 
                 if (TaskAction == Communication.ActionTask[0]) //SEND FILE
                 {
+                    if (RecordsetEnabled)
+                        componentEvents.FireInformation(0, "SSISSFTTask", "Preparing to SEND some file(s) within a recordset", string.Empty, 0, ref refire);
+                    else
+                        componentEvents.FireInformation(0, "SSISSFTTask",
+                                                        string.Format("Preparing to copy the file(s) {0} to {1}",
+                                                                      ResolveLocalPath(localPathEx),
+                                                                      ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
 
-                    componentEvents.FireInformation(0, "SSISSFTTask",
-                                                    string.Format("Preparing to copy the file(s) {0} to {1}",
-                                                                  ResolveLocalPath(localPathEx),
-                                                                  ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
+                    Communication.RecordsetHandler.RootPath = ResolveLocalPath(localPathEx);
 
                     if (Communication.SendFileBySFtp(EvaluateExpression(SFTPServer, variableDispenser).ToString(),
                                                      EvaluateExpression(SFTPUser, variableDispenser).ToString(),
@@ -334,10 +374,13 @@ namespace SSISSFTPTask100.SSIS
                                                      ResolveLocalPath(localPathEx),
                                                      ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())))
                     {
-                        componentEvents.FireInformation(0, "SSISSFTTask",
-                                                        string.Format("The file {0} has been copied to {1}",
-                                                                      ResolveLocalPath(localPathEx),
-                                                                      ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
+                        if (RecordsetEnabled)
+                            componentEvents.FireInformation(0, "SSISSFTTask", "End of the SEND operation", string.Empty, 0, ref refire);
+                        else
+                            componentEvents.FireInformation(0, "SSISSFTTask",
+                                                            string.Format("The file {0} has been copied to {1}",
+                                                                          ResolveLocalPath(localPathEx),
+                                                                          ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
                     }
                     else
                     {
@@ -350,13 +393,16 @@ namespace SSISSFTPTask100.SSIS
 
                 if (TaskAction == Communication.ActionTask[1]) //GET FILE
                 {
+                    if (RecordsetEnabled)
+                        componentEvents.FireInformation(0, "SSISSFTTask", "Start of GET operation within a Recordset", string.Empty, 0, ref refire);
+                    else
+                        componentEvents.FireInformation(0, "SSISSFTTask",
+                                                        string.Format("Preparing to copy the file {0} to {1}",
+                                                                      ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString()),
+                                                                      ResolveLocalPath(localPathEx)),
+                                                        string.Empty, 0, ref refire);
 
-                    componentEvents.FireInformation(0, "SSISSFTTask",
-                                                    string.Format("Preparing to copy the file {0} to {1}",
-                                                                  ResolveRemotePath(
-                                                                      EvaluateExpression(RemotePath, variableDispenser).
-                                                                          ToString()), ResolveLocalPath(localPathEx)),
-                                                    string.Empty, 0, ref refire);
+                    Communication.RecordsetHandler.RootPath = ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString());
 
                     if (Communication.GetFileBySFtp(EvaluateExpression(SFTPServer, variableDispenser).ToString(),
                                                     EvaluateExpression(SFTPUser, variableDispenser).ToString(),
@@ -365,15 +411,21 @@ namespace SSISSFTPTask100.SSIS
                                                     ResolveLocalPath(localPathEx),
                                                     OverwriteLocalPath == Keys.TRUE))
                     {
-                        componentEvents.FireInformation(0, "SSISSFTTask",
-                                                        string.Format("The file {0} has been copied to {1}", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString()), ResolveLocalPath(localPathEx)),
-                                                        string.Empty, 0, ref refire);
+                        if (RecordsetEnabled)
+                            componentEvents.FireInformation(0, "SSISSFTTask", "End of GET operation within a Recordset", string.Empty, 0, ref refire);
+                        else
+                            componentEvents.FireInformation(0, "SSISSFTTask",
+                                                            string.Format("The file {0} has been copied to {1}",
+                                                                          ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString()),
+                                                                          ResolveLocalPath(localPathEx)),
+                                                            string.Empty, 0, ref refire);
                     }
                     else
                     {
                         componentEvents.FireError(0, "SSISSFTTask",
                                                   string.Format("The file {0} has not been copied to {1}",
-                                                                ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString()), ResolveLocalPath(localPathEx)),
+                                                                ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString()),
+                                                                ResolveLocalPath(localPathEx)),
                                                   string.Empty, 0);
                     }
                 }
@@ -484,19 +536,26 @@ namespace SSISSFTPTask100.SSIS
 
                 if (TaskAction == Communication.ActionTask[6]) //DELETE REMOTE FILE
                 {
+                    if (RecordsetEnabled)
+                        componentEvents.FireInformation(0, "SSISSFTTask", "Start of the DELETE operation within a Recordset", string.Empty, 0, ref refire);
+                    else
+                        componentEvents.FireInformation(0, "SSISSFTTask",
+                                                        string.Format("Preparing to delete the remote file {0}",
+                                                                      ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
 
-                    componentEvents.FireInformation(0, "SSISSFTTask",
-                                                    string.Format("Preparing to delete the remote file {0}",
-                                                                  ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
+                    Communication.RecordsetHandler.RootPath = ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString());
 
                     if (Communication.DeleteFileBySFtp(EvaluateExpression(SFTPServer, variableDispenser).ToString(),
                                                        EvaluateExpression(SFTPUser, variableDispenser).ToString(),
                                                        EvaluateExpression(SFTPPassword, variableDispenser).ToString(),
                                                        ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())))
                     {
-                        componentEvents.FireInformation(0, "SSISSFTTask",
-                                                        string.Format("The remote file {0} has been deleted",
-                                                                      ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
+                        if (RecordsetEnabled)
+                            componentEvents.FireInformation(0, "SSISSFTTask", "ENd of the DELETE operation within a Recordset", string.Empty, 0, ref refire);
+                        else
+                            componentEvents.FireInformation(0, "SSISSFTTask",
+                                                            string.Format("The remote file {0} has been deleted",
+                                                                          ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
                     }
                     else
                     {
@@ -855,7 +914,7 @@ namespace SSISSFTPTask100.SSIS
 
         #region Implementation of IDTSComponentPersist
 
-        void IDTSComponentPersist.SaveToXML(XmlDocument doc, IDTSInfoEvents infoEvents)
+        public void SaveToXML(XmlDocument doc, IDTSInfoEvents infoEvents)
         {
             XmlElement taskElement = doc.CreateElement(string.Empty, "SSISSFTPTask", string.Empty);
 
@@ -907,6 +966,18 @@ namespace SSISSFTPTask100.SSIS
             XmlAttribute passPhrase = doc.CreateAttribute(string.Empty, Keys.PASS_PHRASE, string.Empty);
             passPhrase.Value = PassPhrase;
 
+            XmlAttribute recordsetColumnIndex = doc.CreateAttribute(string.Empty, Keys.RecordsetColumnIndex, string.Empty);
+            recordsetColumnIndex.Value = RecordsetColumnIndex.ToString();
+
+            XmlAttribute recordsetEnabled = doc.CreateAttribute(string.Empty, Keys.RecordsetEnabled, string.Empty);
+            recordsetEnabled.Value = RecordsetEnabled.ToString();
+
+            XmlAttribute recordsetVariable = doc.CreateAttribute(string.Empty, Keys.RecordsetVariable, string.Empty);
+            recordsetVariable.Value = RecordsetVariable;
+
+            XmlAttribute valueIsFullPath = doc.CreateAttribute(string.Empty, Keys.ValueIsFullPath, string.Empty);
+            valueIsFullPath.Value = ValueIsFullPath.ToString();
+
 
             taskElement.Attributes.Append(sftpServer);
             taskElement.Attributes.Append(sftpUser);
@@ -927,10 +998,15 @@ namespace SSISSFTPTask100.SSIS
             taskElement.Attributes.Append(sleepSeconds);
             taskElement.Attributes.Append(sleepOnDisconnect);
 
+            taskElement.Attributes.Append(recordsetColumnIndex);
+            taskElement.Attributes.Append(recordsetEnabled);
+            taskElement.Attributes.Append(recordsetVariable);
+            taskElement.Attributes.Append(valueIsFullPath);
+
             doc.AppendChild(taskElement);
         }
 
-        void IDTSComponentPersist.LoadFromXML(XmlElement node, IDTSInfoEvents infoEvents)
+        public void LoadFromXML(XmlElement node, IDTSInfoEvents infoEvents)
         {
             if (node.Name != "SSISSFTPTask")
             {
@@ -957,6 +1033,18 @@ namespace SSISSFTPTask100.SSIS
                 FilesList = node.Attributes.GetNamedItem(Keys.FTP_FILES_LIST).Value;
                 SleepOnDisconnect = node.Attributes.GetNamedItem(Keys.SLEEP_ON_DISCONNECT).Value;
                 SleepSeconds = node.Attributes.GetNamedItem(Keys.SLEEP_SECONDS).Value;
+
+                RecordsetColumnIndex = Convert.ToInt32(node.Attributes.GetNamedItem(Keys.RecordsetColumnIndex).Value);
+                RecordsetVariable = node.Attributes.GetNamedItem(Keys.RecordsetVariable).Value;
+
+                bool b = false;
+
+                bool.TryParse(node.Attributes.GetNamedItem(Keys.RecordsetEnabled).Value, out b);
+                RecordsetEnabled = b;
+
+                bool.TryParse(node.Attributes.GetNamedItem(Keys.ValueIsFullPath).Value, out b);
+                ValueIsFullPath = b;
+
             }
             catch (Exception)
             {
@@ -966,4 +1054,6 @@ namespace SSISSFTPTask100.SSIS
 
         #endregion
     }
+
+
 }

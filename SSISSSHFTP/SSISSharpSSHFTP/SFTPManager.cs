@@ -11,7 +11,7 @@ namespace SSISSFTPTask100.SSIS
     {
 
         private static int _port;
-
+        public static RecordsetHandlerObject RecordsetHandler { get; set; }
         public static string PublicKeyFilePath { get; set; }
         public static string PrivatePassPhrase { get; set; }
         public static bool EncryptionTypeKey { get; set; }
@@ -76,6 +76,7 @@ namespace SSISSFTPTask100.SSIS
             }
 
             sftp.ComponentEvents = ComponentEvents;
+            Sftp.RecordsetHandler = RecordsetHandler;
 
             try
             {
@@ -114,6 +115,7 @@ namespace SSISSFTPTask100.SSIS
             }
 
             sftp.ComponentEvents = ComponentEvents;
+            Sftp.RecordsetHandler = RecordsetHandler;
 
             try
             {
@@ -152,6 +154,7 @@ namespace SSISSFTPTask100.SSIS
             }
 
             sftp.ComponentEvents = ComponentEvents;
+            Sftp.RecordsetHandler = RecordsetHandler;
 
             try
             {
@@ -195,6 +198,7 @@ namespace SSISSFTPTask100.SSIS
             }
 
             sftp.ComponentEvents = ComponentEvents;
+            Sftp.RecordsetHandler = RecordsetHandler;
 
             try
             {

@@ -1,4 +1,14 @@
-﻿namespace SSISSFTPTask100
+﻿
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.OleDb;
+using System.Linq;
+using Microsoft.SqlServer.Dts.Runtime;
+using Microsoft.SqlServer.Dts.Runtime.Wrapper;
+using VariableDispenser = Microsoft.SqlServer.Dts.Runtime.VariableDispenser;
+
+namespace SSISSFTPTask100
 {
     internal static class Keys
     {
@@ -28,12 +38,77 @@
 
         public const string SLEEP_ON_DISCONNECT = "SleepOnDisconnect";
         public const string SLEEP_SECONDS = "SleepSeconds";
+
+        public const string RecordsetEnabled = "RecordsetEnabled";
+        public const string RecordsetVariable = "RecordsetVariable";
+        public const string RecordsetColumnIndex = "RecordsetColumnIndex";
+        public const string ValueIsFullPath = "ValueIsFullPath";
     }
+
+
 
     internal static class ExceptionMessages
     {
         public const string SLEEP_SECONDS = "SleepSeconds";
     }
 
-}
 
+    public class RecordsetHandlerObject
+    {
+        public bool RecordsetEnabled { get; set; }
+        public string RecordsetVariable { get; set; }
+        public int RecordsetColumnIndex { get; set; }
+        public bool ValueIsFullPath { get; set; }
+        public string RootPath { get; set; }
+        public VariableDispenser VariableDispenser { get; set; }
+
+        /// <summary>
+        /// Get paths from Recordset
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<string> GetValues()
+        {
+            OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter();
+            DataTable dataTable = new DataTable();
+            oleDbDataAdapter.Fill(dataTable, EvaluateRecordsetVariable(RecordsetVariable, VariableDispenser));
+
+            return (from DataRow row in dataTable.Rows
+                    select (ValueIsFullPath)
+                                ? row[RecordsetColumnIndex].ToString()
+                                : string.Format("{0}{1}", RootPath, row[RecordsetColumnIndex])).ToList();
+        }
+
+        private static object EvaluateRecordsetVariable(string mappedParam, VariableDispenser variableDispenser)
+        {
+            try
+            {
+                var mappedParams = mappedParam.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
+
+                Variables variables = null;
+
+                foreach (string t in mappedParams)
+                {
+                    try
+                    {
+                        string param = t.Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)[1].Replace("[", string.Empty).Replace("]", string.Empty).Replace("@", string.Empty);
+                        variableDispenser.LockOneForRead(param, ref variables);
+                        object variableObject = variables[0].Value;
+                        return variableObject;
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new Exception(exception.Message);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
+
+            return null;
+        }
+    }
+
+
+}
