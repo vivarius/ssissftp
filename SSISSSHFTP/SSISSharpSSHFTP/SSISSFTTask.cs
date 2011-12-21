@@ -99,8 +99,13 @@ namespace SSISSFTPTask100.SSIS
         [Category("File Transfer"), Description("Overwrite local file (for the GetFile action)")]
         public string OverwriteLocalPath { get; set; }
 
+        [Category("File Transfer"), Description("Delete the file on Transfer Completed")]
+        public string DeleteFileOnTransferCompleted { get; set; }
+
 
         #endregion
+
+
 
         #endregion
 
@@ -302,6 +307,8 @@ namespace SSISSFTPTask100.SSIS
                                                                     VariableDispenser = variableDispenser,
                                                                     ValueIsFullPath = ValueIsFullPath
                                                                 };
+
+                Communication.DeleteFileOnTransferCompleted = DeleteFileOnTransferCompleted == Keys.TRUE;
 
                 if (!string.IsNullOrEmpty(LocalPath))
                 {

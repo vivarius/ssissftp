@@ -46,6 +46,8 @@ namespace Tamir.SharpSsh
         private bool cancelled = false;
         public IDTSComponentEvents ComponentEvents { get; set; }
         public static RecordsetHandlerObject RecordsetHandler { get; set; }
+        public static bool DeleteFileOnTransferCompleted { get; set; }
+
         bool _refire = false;
 
         public Sftp(string sftpHost, string user, string password)
@@ -105,6 +107,7 @@ namespace Tamir.SharpSsh
 
         public override void Get(string fromFilePath, string toFilePath)
         {
+            #region Recordset
             if (RecordsetHandler.RecordsetEnabled)
             {
 
@@ -139,6 +142,9 @@ namespace Tamir.SharpSsh
 
                         SftpChannel.get(from, to, m_monitor, ChannelSftp.OVERWRITE);
 
+                        if (DeleteFileOnTransferCompleted)
+                            Delete(from);
+
                         ComponentEvents.FireInformation(0, "SSISSFTTask",
                                     string.Format("File copied from {0} to {1}", from, to),
                                     string.Empty, 0, ref _refire);
@@ -151,6 +157,8 @@ namespace Tamir.SharpSsh
                                 string.Empty, 0, ref _refire);
                 }
             }
+            #endregion
+            #region File Mask
             else if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
             {
                 int lastSlashIndex = fromFilePath.LastIndexOf('/');
@@ -176,9 +184,7 @@ namespace Tamir.SharpSsh
 
                 foreach (var file in patternedList)
                 {
-                    string from = (dir.Length == 0)
-                                          ? file
-                                          : string.Format("{0}{1}", dir, file);
+                    string from = (dir.Length == 0) ? file : string.Format("{0}{1}", dir, file);
 
                     if (Directory.Exists(toFilePath))
                     {
@@ -192,6 +198,8 @@ namespace Tamir.SharpSsh
                     string to = string.Format("{0}{1}", toFilePath, file);
 
                     SftpChannel.get(from, to, m_monitor, ChannelSftp.OVERWRITE);
+                    if (DeleteFileOnTransferCompleted)
+                        Delete(from);
 
                     ComponentEvents.FireInformation(0, "SSISSFTTask",
                                 string.Format("File copied from {0} to {1}", from, to),
@@ -203,13 +211,18 @@ namespace Tamir.SharpSsh
                             string.Format("Total copied files {0}", fileCounter),
                             string.Empty, 0, ref _refire);
             }
+            #endregion
+            #region File Only
             else if (!RecordsetHandler.RecordsetEnabled && (!fromFilePath.Contains("*") || !fromFilePath.Contains("?")))
             {
                 SftpChannel.get(fromFilePath, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
+                if (DeleteFileOnTransferCompleted)
+                    Delete(fromFilePath);
                 ComponentEvents.FireInformation(0, "SSISSFTTask",
                                 string.Format("File copied from {0} to {1}: {0}", fromFilePath, toFilePath),
                                 string.Empty, 0, ref _refire);
             }
+            #endregion
         }
 
         //Put
@@ -237,6 +250,7 @@ namespace Tamir.SharpSsh
 
         public override void Put(string fromFilePath, string toFilePath)
         {
+            #region Recordset
             if (RecordsetHandler.RecordsetEnabled)
             {
 
@@ -253,6 +267,8 @@ namespace Tamir.SharpSsh
                     {
 
                         SftpChannel.put(file, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
+                        if (DeleteFileOnTransferCompleted)
+                            File.Delete(file);
 
                         ComponentEvents.FireInformation(0, "SSISSFTTask",
                                     string.Format("Send file from {0} to {1}", file, toFilePath),
@@ -266,6 +282,8 @@ namespace Tamir.SharpSsh
                                 string.Empty, 0, ref _refire);
                 }
             }
+            #endregion
+            #region FileMask
             else if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
             {
                 int lastBackSlashIndex = fromFilePath.LastIndexOf('\\');
@@ -297,6 +315,8 @@ namespace Tamir.SharpSsh
                                     fileDestination,
                                     m_monitor,
                                     ChannelSftp.OVERWRITE);
+                    if (DeleteFileOnTransferCompleted)
+                        File.Delete(filePath);
 
                     fileCounter++;
                 }
@@ -305,13 +325,18 @@ namespace Tamir.SharpSsh
                                 string.Format("Number of sended files: {0}", fileCounter),
                                 string.Empty, 0, ref _refire);
             }
+            #endregion
+            #region Only the file
             else if (!RecordsetHandler.RecordsetEnabled && (!fromFilePath.Contains("*") || !fromFilePath.Contains("?")))
             {
                 SftpChannel.put(fromFilePath, toFilePath, m_monitor, ChannelSftp.OVERWRITE);
+                if (DeleteFileOnTransferCompleted)
+                    File.Delete(fromFilePath);
                 ComponentEvents.FireInformation(0, "SSISSFTTask",
                                 string.Format("File sended  from {0} to {1}", fromFilePath, toFilePath),
                                 string.Empty, 0, ref _refire);
             }
+            #endregion
         }
 
         //MkDir
@@ -321,7 +346,7 @@ namespace Tamir.SharpSsh
             SftpChannel.mkdir(directory);
         }
 
-        //Ls
+        //Ls file
         public List<string> GetFileList(string path)
         {
 
@@ -352,6 +377,43 @@ namespace Tamir.SharpSsh
             {
                 retList = (from ChannelSftp.LsEntry entry in SftpChannel.ls(path)
                            where !entry.getAttrs().isDir()
+                           select entry.getFilename()).Select(f => (string)f).ToList();
+            }
+
+            return retList;
+        }
+
+        //Ls file
+        public List<string> GetDirectoryList(string path)
+        {
+
+            List<string> retList = new List<string>();
+
+            if (path.Contains("*") || path.Contains("?"))
+            {
+                int lastSlashIndex = path.LastIndexOf('/');
+
+                string dir = path.Substring(0, lastSlashIndex + 1);
+                string pattern = path.Substring(lastSlashIndex + 1, path.Length - lastSlashIndex - 1);
+
+                List<string> remoteFiles = (from ChannelSftp.LsEntry entry in SftpChannel.ls(dir)
+                                            where entry.getAttrs().isDir()
+                                            select entry.getFilename()).Select(f => (string)f).ToList();
+
+                var tmpRemoteFiles = new List<string>();
+
+                foreach (var remoteFile in remoteFiles)
+                {
+                    lastSlashIndex = remoteFile.LastIndexOf('/');
+                    tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
+                }
+
+                retList = StringExtensions.Like(tmpRemoteFiles, pattern);
+            }
+            else
+            {
+                retList = (from ChannelSftp.LsEntry entry in SftpChannel.ls(path)
+                           where entry.getAttrs().isDir()
                            select entry.getFilename()).Select(f => (string)f).ToList();
             }
 

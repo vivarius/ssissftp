@@ -16,6 +16,8 @@ namespace SSISSFTPTask100.SSIS
         public static string PrivatePassPhrase { get; set; }
         public static bool EncryptionTypeKey { get; set; }
         public static IDTSComponentEvents ComponentEvents { get; set; }
+        public static bool DeleteFileOnTransferCompleted { get; set; }
+
         public static int Port
         {
             get
@@ -77,12 +79,13 @@ namespace SSISSFTPTask100.SSIS
 
             sftp.ComponentEvents = ComponentEvents;
             Sftp.RecordsetHandler = RecordsetHandler;
-
+            Sftp.DeleteFileOnTransferCompleted = DeleteFileOnTransferCompleted;
             try
             {
                 sftp.NewPort = Port;
                 sftp.Connect();
                 sftp.Put(sourceFileName, outputFileName);
+
                 retVal = true;
             }
             catch (Exception exception)
@@ -155,6 +158,7 @@ namespace SSISSFTPTask100.SSIS
 
             sftp.ComponentEvents = ComponentEvents;
             Sftp.RecordsetHandler = RecordsetHandler;
+            Sftp.DeleteFileOnTransferCompleted = DeleteFileOnTransferCompleted;
 
             try
             {

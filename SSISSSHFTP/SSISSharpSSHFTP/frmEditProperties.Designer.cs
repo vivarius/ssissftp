@@ -73,6 +73,7 @@
             this.lbAction = new System.Windows.Forms.Label();
             this.cmbAction = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.domainUpDownIndex = new System.Windows.Forms.NumericUpDown();
             this.optFullPath = new System.Windows.Forms.RadioButton();
             this.optNameOnly = new System.Windows.Forms.RadioButton();
             this.label10 = new System.Windows.Forms.Label();
@@ -80,7 +81,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.cmbRecordset = new System.Windows.Forms.ComboBox();
             this.chkResultSetEnabled = new System.Windows.Forms.CheckBox();
-            this.domainUpDownIndex = new System.Windows.Forms.NumericUpDown();
+            this.chkDeleteFileOnTransferCompleted = new System.Windows.Forms.CheckBox();
             this.groupBoxConnection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).BeginInit();
             this.groupBoxEncryption.SuspendLayout();
@@ -91,7 +92,7 @@
             // 
             // btOK
             // 
-            this.btOK.Location = new System.Drawing.Point(756, 341);
+            this.btOK.Location = new System.Drawing.Point(756, 354);
             this.btOK.Name = "btOK";
             this.btOK.Size = new System.Drawing.Size(82, 26);
             this.btOK.TabIndex = 3;
@@ -102,7 +103,7 @@
             // btCancel
             // 
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(668, 341);
+            this.btCancel.Location = new System.Drawing.Point(668, 354);
             this.btCancel.Name = "btCancel";
             this.btCancel.Size = new System.Drawing.Size(82, 26);
             this.btCancel.TabIndex = 4;
@@ -126,7 +127,7 @@
             // linkLabelCodeplex
             // 
             this.linkLabelCodeplex.AutoSize = true;
-            this.linkLabelCodeplex.Location = new System.Drawing.Point(7, 348);
+            this.linkLabelCodeplex.Location = new System.Drawing.Point(7, 361);
             this.linkLabelCodeplex.Name = "linkLabelCodeplex";
             this.linkLabelCodeplex.Size = new System.Drawing.Size(141, 13);
             this.linkLabelCodeplex.TabIndex = 10;
@@ -378,6 +379,7 @@
             // 
             // groupbox
             // 
+            this.groupbox.Controls.Add(this.chkDeleteFileOnTransferCompleted);
             this.groupbox.Controls.Add(this.chkOverwrite);
             this.groupbox.Controls.Add(this.cmbRemote);
             this.groupbox.Controls.Add(this.optFileVariable);
@@ -393,7 +395,7 @@
             this.groupbox.Controls.Add(this.cmbAction);
             this.groupbox.Location = new System.Drawing.Point(10, 166);
             this.groupbox.Name = "groupbox";
-            this.groupbox.Size = new System.Drawing.Size(411, 163);
+            this.groupbox.Size = new System.Drawing.Size(411, 182);
             this.groupbox.TabIndex = 75;
             this.groupbox.TabStop = false;
             this.groupbox.Text = "Paths";
@@ -537,15 +539,29 @@
             this.groupBox1.Controls.Add(this.chkResultSetEnabled);
             this.groupBox1.Location = new System.Drawing.Point(427, 166);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(411, 163);
+            this.groupBox1.Size = new System.Drawing.Size(411, 182);
             this.groupBox1.TabIndex = 76;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Resultset";
             // 
+            // domainUpDownIndex
+            // 
+            this.domainUpDownIndex.Enabled = false;
+            this.domainUpDownIndex.Location = new System.Drawing.Point(169, 105);
+            this.domainUpDownIndex.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.domainUpDownIndex.Name = "domainUpDownIndex";
+            this.domainUpDownIndex.Size = new System.Drawing.Size(48, 20);
+            this.domainUpDownIndex.TabIndex = 91;
+            this.domainUpDownIndex.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
             // optFullPath
             // 
             this.optFullPath.AutoSize = true;
-            this.optFullPath.Location = new System.Drawing.Point(167, 140);
+            this.optFullPath.Location = new System.Drawing.Point(167, 157);
             this.optFullPath.Name = "optFullPath";
             this.optFullPath.Size = new System.Drawing.Size(84, 17);
             this.optFullPath.TabIndex = 8;
@@ -556,7 +572,7 @@
             // optNameOnly
             // 
             this.optNameOnly.AutoSize = true;
-            this.optNameOnly.Location = new System.Drawing.Point(9, 140);
+            this.optNameOnly.Location = new System.Drawing.Point(9, 157);
             this.optNameOnly.Name = "optNameOnly";
             this.optNameOnly.Size = new System.Drawing.Size(139, 17);
             this.optNameOnly.TabIndex = 7;
@@ -567,7 +583,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 126);
+            this.label10.Location = new System.Drawing.Point(6, 141);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(145, 13);
             this.label10.TabIndex = 6;
@@ -576,7 +592,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 99);
+            this.label9.Location = new System.Drawing.Point(6, 107);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(157, 13);
             this.label9.TabIndex = 3;
@@ -611,19 +627,15 @@
             this.chkResultSetEnabled.UseVisualStyleBackColor = true;
             this.chkResultSetEnabled.Click += new System.EventHandler(this.chkResultSetEnabled_Click);
             // 
-            // domainUpDownIndex
+            // chkDeleteFileOnTransferCompleted
             // 
-            this.domainUpDownIndex.Enabled = false;
-            this.domainUpDownIndex.Location = new System.Drawing.Point(169, 97);
-            this.domainUpDownIndex.Maximum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-            this.domainUpDownIndex.Name = "domainUpDownIndex";
-            this.domainUpDownIndex.Size = new System.Drawing.Size(48, 20);
-            this.domainUpDownIndex.TabIndex = 91;
-            this.domainUpDownIndex.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.chkDeleteFileOnTransferCompleted.AutoSize = true;
+            this.chkDeleteFileOnTransferCompleted.Location = new System.Drawing.Point(92, 154);
+            this.chkDeleteFileOnTransferCompleted.Name = "chkDeleteFileOnTransferCompleted";
+            this.chkDeleteFileOnTransferCompleted.Size = new System.Drawing.Size(188, 17);
+            this.chkDeleteFileOnTransferCompleted.TabIndex = 75;
+            this.chkDeleteFileOnTransferCompleted.Text = "Delete File On Transfer Completed";
+            this.chkDeleteFileOnTransferCompleted.UseVisualStyleBackColor = true;
             // 
             // frmEditProperties
             // 
@@ -631,7 +643,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btCancel;
-            this.ClientSize = new System.Drawing.Size(849, 376);
+            this.ClientSize = new System.Drawing.Size(849, 390);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupbox);
             this.Controls.Add(this.groupBoxEncryption);
@@ -715,5 +727,6 @@
         private System.Windows.Forms.RadioButton optNameOnly;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.NumericUpDown domainUpDownIndex;
+        private System.Windows.Forms.CheckBox chkDeleteFileOnTransferCompleted;
     }
 }

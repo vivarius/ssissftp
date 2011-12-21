@@ -43,6 +43,8 @@ namespace SSISSFTPTask100
         public const string RecordsetVariable = "RecordsetVariable";
         public const string RecordsetColumnIndex = "RecordsetColumnIndex";
         public const string ValueIsFullPath = "ValueIsFullPath";
+
+        public const string DeleteFileOnTransferCompleted = "DeleteFileOnTransferCompleted";
     }
 
 

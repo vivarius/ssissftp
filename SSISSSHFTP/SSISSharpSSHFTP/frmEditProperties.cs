@@ -100,9 +100,7 @@ namespace SSISSFTPTask100
 
             _taskHost.Properties[Keys.FTP_REMOTE_PATH].SetValue(_taskHost, cmbRemote.Text);
 
-            _taskHost.Properties[Keys.FTP_FILES_LIST].SetValue(_taskHost, cmbFilesList.Visible
-                                                                                    ? cmbFilesList.SelectedItem ?? string.Empty
-                                                                                    : string.Empty);
+            _taskHost.Properties[Keys.FTP_FILES_LIST].SetValue(_taskHost, cmbFilesList.Visible ? cmbFilesList.SelectedItem ?? string.Empty : string.Empty);
 
             _taskHost.Properties[Keys.SLEEP_ON_DISCONNECT].SetValue(_taskHost, chkSleep.Checked ? Keys.TRUE : Keys.FALSE);
             _taskHost.Properties[Keys.SLEEP_SECONDS].SetValue(_taskHost, numericUpDown.Text);
@@ -113,6 +111,7 @@ namespace SSISSFTPTask100
             _taskHost.Properties[Keys.RecordsetVariable].SetValue(_taskHost, cmbRecordset.Text);
             _taskHost.Properties[Keys.ValueIsFullPath].SetValue(_taskHost, optFullPath.Checked);
 
+            _taskHost.Properties[Keys.DeleteFileOnTransferCompleted].SetValue(_taskHost, chkDeleteFileOnTransferCompleted.Checked ? Keys.TRUE : Keys.FALSE);
 
             DialogResult = DialogResult.OK;
             Close();
@@ -436,6 +435,16 @@ namespace SSISSFTPTask100
                 else
                 {
                     chkOverwrite.Checked = true;
+                }
+
+
+                if (_taskHost.Properties[Keys.DeleteFileOnTransferCompleted].GetValue(_taskHost) != null)
+                {
+                    chkDeleteFileOnTransferCompleted.Checked = _taskHost.Properties[Keys.DeleteFileOnTransferCompleted].GetValue(_taskHost).ToString() == Keys.TRUE;
+                }
+                else
+                {
+                    chkDeleteFileOnTransferCompleted.Checked = false;
                 }
 
                 LoadRemoteVariables();

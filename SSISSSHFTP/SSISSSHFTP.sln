@@ -3,15 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSISSFTPTask", "SSISSharpSSHFTP\SSISSFTPTask.csproj", "{24846E69-0E96-4E98-A3AF-947ED2836606}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SSISSFTPSetup", "SSISSFTPSetup\SSISSFTPSetup.vdproj", "{E54471E3-8814-4F16-83E8-47FCAE1C8E09}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 2
+		SccNumberOfProjects = 3
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs15
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = SSISSharpSSHFTP\\SSISSFTPTask.csproj
 		SccProjectName1 = SSISSharpSSHFTP
 		SccLocalPath1 = SSISSharpSSHFTP
+		SccProjectUniqueName2 = SSISSFTPSetup\\SSISSFTPSetup.vdproj
+		SccProjectName2 = SSISSFTPSetup
+		SccLocalPath2 = SSISSFTPSetup
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +27,8 @@ Global
 		{24846E69-0E96-4E98-A3AF-947ED2836606}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24846E69-0E96-4E98-A3AF-947ED2836606}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24846E69-0E96-4E98-A3AF-947ED2836606}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E54471E3-8814-4F16-83E8-47FCAE1C8E09}.Debug|Any CPU.ActiveCfg = Debug
+		{E54471E3-8814-4F16-83E8-47FCAE1C8E09}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
