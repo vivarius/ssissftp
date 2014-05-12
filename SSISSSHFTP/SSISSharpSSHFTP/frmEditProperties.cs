@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using SSISSFTPTask100.SSIS;
+using SSISSFTPTask110.SSIS;
 using System.Linq;
 using System.Windows.Forms;
 using Microsoft.DataTransformationServices.Controls;
@@ -9,7 +9,7 @@ using Microsoft.SqlServer.Dts.Runtime;
 using TaskHost = Microsoft.SqlServer.Dts.Runtime.TaskHost;
 using Variable = Microsoft.SqlServer.Dts.Runtime.Variable;
 
-namespace SSISSFTPTask100
+namespace SSISSFTPTask110
 {
     public partial class frmEditProperties : Form
     {
@@ -113,6 +113,9 @@ namespace SSISSFTPTask100
 
             _taskHost.Properties[Keys.DeleteFileOnTransferCompleted].SetValue(_taskHost, chkDeleteFileOnTransferCompleted.Checked ? Keys.TRUE : Keys.FALSE);
 
+            _taskHost.Properties[Keys.RecursiveCopy].SetValue(_taskHost, chkRecursive.Checked);
+            _taskHost.Properties[Keys.RecursiveCopyDepth].SetValue(_taskHost, txDepth.Text);
+
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -214,6 +217,12 @@ namespace SSISSFTPTask100
         {
             EnableRecordsetControls(chkResultSetEnabled.Checked);
         }
+
+        private void chkRecursive_Click(object sender, EventArgs e)
+        {
+            txDepth.Enabled = chkRecursive.Checked;
+        }
+
         #endregion
 
         #region Methods
@@ -447,6 +456,8 @@ namespace SSISSFTPTask100
                     chkDeleteFileOnTransferCompleted.Checked = false;
                 }
 
+
+
                 LoadRemoteVariables();
 
                 foreach (var variable in (from Variable var in _variables
@@ -483,6 +494,20 @@ namespace SSISSFTPTask100
                     chkOverwrite.Checked = true;
                 }
 
+                if (_taskHost.Properties[Keys.RecursiveCopy].GetValue(_taskHost) != null)
+                {
+                    chkRecursive.Checked = (bool)_taskHost.Properties[Keys.RecursiveCopy].GetValue(_taskHost);
+                }
+                else
+                {
+                    chkRecursive.Checked = false;
+                }
+
+                if (_taskHost.Properties[Keys.RecursiveCopyDepth].GetValue(_taskHost) != null)
+                {
+                    txDepth.Value = (decimal)_taskHost.Properties[Keys.RecursiveCopyDepth].GetValue(_taskHost);
+                }
+
             }
             catch
             {
@@ -516,7 +541,5 @@ namespace SSISSFTPTask100
         }
 
         #endregion
-
-
     }
 }

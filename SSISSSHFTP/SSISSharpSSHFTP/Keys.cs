@@ -1,14 +1,12 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
 using System.Linq;
 using Microsoft.SqlServer.Dts.Runtime;
-using Microsoft.SqlServer.Dts.Runtime.Wrapper;
 using VariableDispenser = Microsoft.SqlServer.Dts.Runtime.VariableDispenser;
 
-namespace SSISSFTPTask100
+namespace SSISSFTPTask110
 {
     internal static class Keys
     {
@@ -44,6 +42,9 @@ namespace SSISSFTPTask100
         public const string RecordsetColumnIndex = "RecordsetColumnIndex";
         public const string ValueIsFullPath = "ValueIsFullPath";
 
+        public const string RecursiveCopy = "RecursiveCopy";
+        public const string RecursiveCopyDepth = "RecursiveCopyDepth";
+
         public const string DeleteFileOnTransferCompleted = "DeleteFileOnTransferCompleted";
     }
 
@@ -70,14 +71,18 @@ namespace SSISSFTPTask100
         /// <returns></returns>
         public IEnumerable<string> GetValues()
         {
-            OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter();
-            DataTable dataTable = new DataTable();
-            oleDbDataAdapter.Fill(dataTable, EvaluateRecordsetVariable(RecordsetVariable, VariableDispenser));
+            using (var oleDbDataAdapter = new OleDbDataAdapter())
+            {
+                using (var dataTable = new DataTable())
+                {
+                    oleDbDataAdapter.Fill(dataTable, EvaluateRecordsetVariable(RecordsetVariable, VariableDispenser));
 
-            return (from DataRow row in dataTable.Rows
-                    select (ValueIsFullPath)
-                                ? row[RecordsetColumnIndex].ToString()
-                                : string.Format("{0}{1}", RootPath, row[RecordsetColumnIndex])).ToList();
+                    return (from DataRow row in dataTable.Rows
+                        select (ValueIsFullPath)
+                            ? row[RecordsetColumnIndex].ToString()
+                            : string.Format("{0}{1}", RootPath, row[RecordsetColumnIndex])).ToList();
+                }
+            }
         }
 
         private static object EvaluateRecordsetVariable(string mappedParam, VariableDispenser variableDispenser)

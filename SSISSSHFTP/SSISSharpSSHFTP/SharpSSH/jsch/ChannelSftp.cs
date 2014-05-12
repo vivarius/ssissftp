@@ -264,7 +264,7 @@ namespace Tamir.SharpSsh.jsch
                 lcwd = path;
                 return;
             }
-            throw new SftpException(SSH_FX_NO_SUCH_FILE, "No such directory");
+            throw new SftpException(SSH_FX_NO_SUCH_FILE, string.Format("No such directory {0}", path));
         }
 
         /*
@@ -1097,7 +1097,7 @@ namespace Tamir.SharpSsh.jsch
                     {
                         goto BREAK;
                     }
-
+                    
                     buf.rewind();
                     fill(buf.buffer, 0, 4); length -= 4;
                     i = buf.getInt();   // length of data 
@@ -1429,6 +1429,107 @@ namespace Tamir.SharpSsh.jsch
             }
         }
 
+        public java.util.Vector lsDepth(String path, int depth)
+        { //throws SftpException{
+            try
+            {
+                path = remoteAbsolutePath(path);
+
+                String dir = path;
+                byte[] pattern = null;
+                SftpATTRS attr = null;
+                if (isPattern(dir) ||
+                    ((attr = stat(dir)) != null && !attr.isDir()))
+                {
+                    int foo = path.lastIndexOf('/');
+                    dir = path.substring(0, ((foo == 0) ? 1 : foo));
+                    pattern = path.substring(foo + 1).getBytes();
+                }
+
+                sendOPENDIR(dir.getBytes());
+
+                Header _header = new Header();
+                _header = header(buf, _header);
+                int length = _header.length;
+                int type = _header.type;
+                buf.rewind();
+                fill(buf.buffer, 0, length);
+
+                if (type != SSH_FXP_STATUS && type != SSH_FXP_HANDLE)
+                {
+                    throw new SftpException(SSH_FX_FAILURE, "");
+                }
+                if (type == SSH_FXP_STATUS)
+                {
+                    int i = buf.getInt();
+                    throwStatusError(buf, i);
+                }
+
+                byte[] handle = buf.getString();         // filename
+
+                java.util.Vector v = new java.util.Vector();
+                while (true)
+                {
+                    sendREADDIR(handle);
+
+                    _header = header(buf, _header);
+                    length = _header.length;
+                    type = _header.type;
+                    if (type != SSH_FXP_STATUS && type != SSH_FXP_NAME)
+                    {
+                        throw new SftpException(SSH_FX_FAILURE, "");
+                    }
+                    if (type == SSH_FXP_STATUS)
+                    {
+                        buf.rewind();
+                        fill(buf.buffer, 0, length);
+                        int i = buf.getInt();
+                        if (i == SSH_FX_EOF)
+                            break;
+                        throwStatusError(buf, i);
+                    }
+
+                    buf.rewind();
+                    fill(buf.buffer, 0, 4); length -= 4;
+                    int count = buf.getInt();
+
+                    byte[] str;
+                    int flags;
+
+                    buf.reset();
+                    while (count > 0)
+                    {
+                        if (length > 0)
+                        {
+                            buf.shift();
+                            int j = (buf.buffer.Length > (buf.index + length)) ? length : (buf.buffer.Length - buf.index);
+                            int i = fill(buf.buffer, buf.index, j);
+                            buf.index += i;
+                            length -= i;
+                        }
+                        byte[] filename = buf.getString();
+                        str = buf.getString();
+                        String longname = new String(str);
+
+                        SftpATTRS attrs = SftpATTRS.getATTR(buf);
+                        if (pattern == null || Util.glob(pattern, filename))
+                        {
+                            v.addElement(new LsEntry(new String(filename), longname, attrs));
+                        }
+
+                        count--;
+                    }
+                }
+                _sendCLOSE(handle, _header);
+                return v;
+            }
+            catch (Exception e)
+            {
+                if (e is SftpException) throw (SftpException)e;
+                throw new SftpException(SSH_FX_FAILURE, "");
+            }
+        }
+
         public String readlink(String path)
         {
             // throws SftpException{
@@ -1635,7 +1736,7 @@ namespace Tamir.SharpSsh.jsch
                 throw new SftpException(SSH_FX_FAILURE, "");
             }
         }
-        private bool isRemoteDir(String path)
+        public bool isRemoteDir(String path)
         {
             try
             {
@@ -1833,7 +1934,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, string.Format("Cannot create folder {0}", path));
             }
         }
 

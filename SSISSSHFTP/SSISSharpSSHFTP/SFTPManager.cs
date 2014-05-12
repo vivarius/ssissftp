@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.SqlServer.Dts.Runtime;
 using Tamir.SharpSsh;
 using Tamir.SharpSsh.jsch;
 
-namespace SSISSFTPTask100.SSIS
+namespace SSISSFTPTask110.SSIS
 {
     public static class Communication
     {
@@ -17,6 +16,8 @@ namespace SSISSFTPTask100.SSIS
         public static bool EncryptionTypeKey { get; set; }
         public static IDTSComponentEvents ComponentEvents { get; set; }
         public static bool DeleteFileOnTransferCompleted { get; set; }
+        public static bool RecursiveCopy { get; set; }
+        public static int RecursiveDepth { get; set; }
 
         public static int Port
         {
@@ -33,7 +34,7 @@ namespace SSISSFTPTask100.SSIS
             }
         }
 
-        public static List<string> ActionTask = new List<string>
+        public static readonly List<string> ActionTask = new List<string>
                              {
                                   "Send File",
                                   "Get File",
@@ -80,6 +81,9 @@ namespace SSISSFTPTask100.SSIS
             sftp.ComponentEvents = ComponentEvents;
             Sftp.RecordsetHandler = RecordsetHandler;
             Sftp.DeleteFileOnTransferCompleted = DeleteFileOnTransferCompleted;
+            Sftp.RecursiveCopy = RecursiveCopy;
+            Sftp.RecursiveDepth = RecursiveDepth;
+
             try
             {
                 sftp.NewPort = Port;
@@ -159,14 +163,13 @@ namespace SSISSFTPTask100.SSIS
             sftp.ComponentEvents = ComponentEvents;
             Sftp.RecordsetHandler = RecordsetHandler;
             Sftp.DeleteFileOnTransferCompleted = DeleteFileOnTransferCompleted;
+            Sftp.RecursiveCopy = RecursiveCopy;
+            Sftp.RecursiveDepth = RecursiveDepth;
 
             try
             {
                 sftp.NewPort = Port;
                 sftp.Connect();
-
-                if (!sourceFileName.Contains("*") && overwrite)
-                    File.Delete(outputFileName);
 
                 sftp.Get(sourceFileName, outputFileName);
 
@@ -302,7 +305,12 @@ namespace SSISSFTPTask100.SSIS
 
         public static List<string> GetFileListFromSFtp(string url, string login, string password, string folderPath)
         {
-            List<string> retVal = new List<string>();
+            return GetFileListDepthFromSFtp(url, login, password, folderPath, 1);
+        }
+
+        public static List<string> GetFileListDepthFromSFtp(string url, string login, string password, string folderPath, int depth)
+        {
+            var retVal = new List<string>();
 
             Sftp sftp;
 
@@ -322,7 +330,7 @@ namespace SSISSFTPTask100.SSIS
             {
                 sftp.NewPort = Port;
                 sftp.Connect();
-                retVal = sftp.GetFileList(folderPath);
+                retVal = Tools.SFTPTools.SFTPScanDirs(sftp, folderPath, depth);
             }
             catch (Exception exception)
             {

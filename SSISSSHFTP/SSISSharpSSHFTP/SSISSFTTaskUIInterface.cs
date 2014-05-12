@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using Microsoft.SqlServer.Dts.Runtime;
 using Microsoft.SqlServer.Dts.Runtime.Design;
 
-namespace SSISSFTPTask100
+namespace SSISSFTPTask110
 {
     class SSISSFTTaskUIInterface : IDtsTaskUI
     {

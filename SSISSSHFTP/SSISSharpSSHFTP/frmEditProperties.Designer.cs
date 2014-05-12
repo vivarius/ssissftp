@@ -1,4 +1,4 @@
-﻿namespace SSISSFTPTask100
+﻿namespace SSISSFTPTask110
 {
     partial class frmEditProperties
     {
@@ -34,6 +34,8 @@
             this.btCancel = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.chkSleep = new System.Windows.Forms.CheckBox();
+            this.chkOverwrite = new System.Windows.Forms.CheckBox();
+            this.chkRecursive = new System.Windows.Forms.CheckBox();
             this.linkLabelCodeplex = new System.Windows.Forms.LinkLabel();
             this.groupBoxConnection = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -59,7 +61,9 @@
             this.btKeyFileExpression = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.groupbox = new System.Windows.Forms.GroupBox();
-            this.chkOverwrite = new System.Windows.Forms.CheckBox();
+            this.lbDepth = new System.Windows.Forms.Label();
+            this.txDepth = new System.Windows.Forms.NumericUpDown();
+            this.chkDeleteFileOnTransferCompleted = new System.Windows.Forms.CheckBox();
             this.cmbRemote = new System.Windows.Forms.ComboBox();
             this.optFileVariable = new System.Windows.Forms.RadioButton();
             this.optFileConnection = new System.Windows.Forms.RadioButton();
@@ -81,18 +85,18 @@
             this.label8 = new System.Windows.Forms.Label();
             this.cmbRecordset = new System.Windows.Forms.ComboBox();
             this.chkResultSetEnabled = new System.Windows.Forms.CheckBox();
-            this.chkDeleteFileOnTransferCompleted = new System.Windows.Forms.CheckBox();
             this.groupBoxConnection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).BeginInit();
             this.groupBoxEncryption.SuspendLayout();
             this.groupbox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txDepth)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.domainUpDownIndex)).BeginInit();
             this.SuspendLayout();
             // 
             // btOK
             // 
-            this.btOK.Location = new System.Drawing.Point(756, 354);
+            this.btOK.Location = new System.Drawing.Point(756, 373);
             this.btOK.Name = "btOK";
             this.btOK.Size = new System.Drawing.Size(82, 26);
             this.btOK.TabIndex = 3;
@@ -103,7 +107,7 @@
             // btCancel
             // 
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(668, 354);
+            this.btCancel.Location = new System.Drawing.Point(668, 373);
             this.btCancel.Name = "btCancel";
             this.btCancel.Size = new System.Drawing.Size(82, 26);
             this.btCancel.TabIndex = 4;
@@ -124,10 +128,33 @@
             this.chkSleep.UseVisualStyleBackColor = true;
             this.chkSleep.Click += new System.EventHandler(this.chkSleep_Click);
             // 
+            // chkOverwrite
+            // 
+            this.chkOverwrite.AutoSize = true;
+            this.chkOverwrite.Location = new System.Drawing.Point(289, 80);
+            this.chkOverwrite.Name = "chkOverwrite";
+            this.chkOverwrite.Size = new System.Drawing.Size(112, 17);
+            this.chkOverwrite.TabIndex = 74;
+            this.chkOverwrite.Text = "Overwrite local file";
+            this.toolTip1.SetToolTip(this.chkOverwrite, "Available only for Remote to Local file copy");
+            this.chkOverwrite.UseVisualStyleBackColor = true;
+            // 
+            // chkRecursive
+            // 
+            this.chkRecursive.AutoSize = true;
+            this.chkRecursive.Location = new System.Drawing.Point(92, 178);
+            this.chkRecursive.Name = "chkRecursive";
+            this.chkRecursive.Size = new System.Drawing.Size(116, 17);
+            this.chkRecursive.TabIndex = 76;
+            this.chkRecursive.Text = "Recursive file copy";
+            this.toolTip1.SetToolTip(this.chkRecursive, "Explore subfolders");
+            this.chkRecursive.UseVisualStyleBackColor = true;
+            this.chkRecursive.Click += new System.EventHandler(this.chkRecursive_Click);
+            // 
             // linkLabelCodeplex
             // 
             this.linkLabelCodeplex.AutoSize = true;
-            this.linkLabelCodeplex.Location = new System.Drawing.Point(7, 361);
+            this.linkLabelCodeplex.Location = new System.Drawing.Point(7, 380);
             this.linkLabelCodeplex.Name = "linkLabelCodeplex";
             this.linkLabelCodeplex.Size = new System.Drawing.Size(141, 13);
             this.linkLabelCodeplex.TabIndex = 10;
@@ -162,7 +189,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(339, 124);
+            this.label3.Location = new System.Drawing.Point(339, 129);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(47, 13);
             this.label3.TabIndex = 91;
@@ -171,7 +198,7 @@
             // numericUpDown
             // 
             this.numericUpDown.Enabled = false;
-            this.numericUpDown.Location = new System.Drawing.Point(285, 122);
+            this.numericUpDown.Location = new System.Drawing.Point(285, 125);
             this.numericUpDown.Maximum = new decimal(new int[] {
             60,
             0,
@@ -185,7 +212,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(230, 127);
+            this.label2.Location = new System.Drawing.Point(230, 129);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(49, 13);
             this.label2.TabIndex = 89;
@@ -379,6 +406,9 @@
             // 
             // groupbox
             // 
+            this.groupbox.Controls.Add(this.lbDepth);
+            this.groupbox.Controls.Add(this.txDepth);
+            this.groupbox.Controls.Add(this.chkRecursive);
             this.groupbox.Controls.Add(this.chkDeleteFileOnTransferCompleted);
             this.groupbox.Controls.Add(this.chkOverwrite);
             this.groupbox.Controls.Add(this.cmbRemote);
@@ -395,20 +425,47 @@
             this.groupbox.Controls.Add(this.cmbAction);
             this.groupbox.Location = new System.Drawing.Point(10, 166);
             this.groupbox.Name = "groupbox";
-            this.groupbox.Size = new System.Drawing.Size(411, 182);
+            this.groupbox.Size = new System.Drawing.Size(411, 201);
             this.groupbox.TabIndex = 75;
             this.groupbox.TabStop = false;
             this.groupbox.Text = "Paths";
             // 
-            // chkOverwrite
+            // lbDepth
             // 
-            this.chkOverwrite.AutoSize = true;
-            this.chkOverwrite.Location = new System.Drawing.Point(289, 80);
-            this.chkOverwrite.Name = "chkOverwrite";
-            this.chkOverwrite.Size = new System.Drawing.Size(112, 17);
-            this.chkOverwrite.TabIndex = 74;
-            this.chkOverwrite.Text = "Overwrite local file";
-            this.chkOverwrite.UseVisualStyleBackColor = true;
+            this.lbDepth.AutoSize = true;
+            this.lbDepth.Location = new System.Drawing.Point(230, 180);
+            this.lbDepth.Name = "lbDepth";
+            this.lbDepth.Size = new System.Drawing.Size(36, 13);
+            this.lbDepth.TabIndex = 79;
+            this.lbDepth.Text = "Depth";
+            // 
+            // txDepth
+            // 
+            this.txDepth.Location = new System.Drawing.Point(287, 176);
+            this.txDepth.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.txDepth.Name = "txDepth";
+            this.txDepth.Size = new System.Drawing.Size(46, 20);
+            this.txDepth.TabIndex = 78;
+            this.txDepth.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txDepth.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // chkDeleteFileOnTransferCompleted
+            // 
+            this.chkDeleteFileOnTransferCompleted.AutoSize = true;
+            this.chkDeleteFileOnTransferCompleted.Location = new System.Drawing.Point(92, 154);
+            this.chkDeleteFileOnTransferCompleted.Name = "chkDeleteFileOnTransferCompleted";
+            this.chkDeleteFileOnTransferCompleted.Size = new System.Drawing.Size(224, 17);
+            this.chkDeleteFileOnTransferCompleted.TabIndex = 75;
+            this.chkDeleteFileOnTransferCompleted.Text = "Delete File On Transfer Completed (Move)";
+            this.chkDeleteFileOnTransferCompleted.UseVisualStyleBackColor = true;
             // 
             // cmbRemote
             // 
@@ -539,7 +596,7 @@
             this.groupBox1.Controls.Add(this.chkResultSetEnabled);
             this.groupBox1.Location = new System.Drawing.Point(427, 166);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(411, 182);
+            this.groupBox1.Size = new System.Drawing.Size(411, 201);
             this.groupBox1.TabIndex = 76;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Resultset";
@@ -621,21 +678,11 @@
             this.chkResultSetEnabled.AutoSize = true;
             this.chkResultSetEnabled.Location = new System.Drawing.Point(9, 28);
             this.chkResultSetEnabled.Name = "chkResultSetEnabled";
-            this.chkResultSetEnabled.Size = new System.Drawing.Size(390, 17);
+            this.chkResultSetEnabled.Size = new System.Drawing.Size(387, 17);
             this.chkResultSetEnabled.TabIndex = 0;
-            this.chkResultSetEnabled.Text = "The source file(s) for GET or PUT or DEL operations comes from a Recordset";
+            this.chkResultSetEnabled.Text = "The source file(s) for GET or PUT or DEL operations is filled  via a Recordset";
             this.chkResultSetEnabled.UseVisualStyleBackColor = true;
             this.chkResultSetEnabled.Click += new System.EventHandler(this.chkResultSetEnabled_Click);
-            // 
-            // chkDeleteFileOnTransferCompleted
-            // 
-            this.chkDeleteFileOnTransferCompleted.AutoSize = true;
-            this.chkDeleteFileOnTransferCompleted.Location = new System.Drawing.Point(92, 154);
-            this.chkDeleteFileOnTransferCompleted.Name = "chkDeleteFileOnTransferCompleted";
-            this.chkDeleteFileOnTransferCompleted.Size = new System.Drawing.Size(188, 17);
-            this.chkDeleteFileOnTransferCompleted.TabIndex = 75;
-            this.chkDeleteFileOnTransferCompleted.Text = "Delete File On Transfer Completed";
-            this.chkDeleteFileOnTransferCompleted.UseVisualStyleBackColor = true;
             // 
             // frmEditProperties
             // 
@@ -643,7 +690,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btCancel;
-            this.ClientSize = new System.Drawing.Size(849, 390);
+            this.ClientSize = new System.Drawing.Size(849, 408);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupbox);
             this.Controls.Add(this.groupBoxEncryption);
@@ -666,6 +713,7 @@
             this.groupBoxEncryption.PerformLayout();
             this.groupbox.ResumeLayout(false);
             this.groupbox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txDepth)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.domainUpDownIndex)).EndInit();
@@ -728,5 +776,8 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.NumericUpDown domainUpDownIndex;
         private System.Windows.Forms.CheckBox chkDeleteFileOnTransferCompleted;
+        private System.Windows.Forms.CheckBox chkRecursive;
+        private System.Windows.Forms.Label lbDepth;
+        private System.Windows.Forms.NumericUpDown txDepth;
     }
 }

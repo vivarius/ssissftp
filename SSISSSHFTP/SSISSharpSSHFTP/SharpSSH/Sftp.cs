@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.SqlServer.Dts.Runtime;
-using SSISSFTPTask100;
+using SSISSFTPTask110;
+using SSISSFTPTask110.Tools;
 using Tamir.SharpSsh.jsch;
 
 /* 
@@ -47,6 +47,8 @@ namespace Tamir.SharpSsh
         public IDTSComponentEvents ComponentEvents { get; set; }
         public static RecordsetHandlerObject RecordsetHandler { get; set; }
         public static bool DeleteFileOnTransferCompleted { get; set; }
+        public static bool RecursiveCopy { get; set; }
+        public static int RecursiveDepth { get; set; }
 
         bool _refire = false;
 
@@ -158,25 +160,16 @@ namespace Tamir.SharpSsh
                 }
             }
             #endregion
+
             #region File Mask
             else if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
             {
-                int lastSlashIndex = fromFilePath.LastIndexOf('/');
-
-                string dir = fromFilePath.Substring(0, lastSlashIndex + 1);
-                string pattern = fromFilePath.Substring(lastSlashIndex + 1, fromFilePath.Length - lastSlashIndex - 1);
-
-                List<string> remoteFiles = GetFileList(fromFilePath);
-                var tmpRemoteFiles = new List<string>();
-
-                foreach (var remoteFile in remoteFiles)
-                {
-                    lastSlashIndex = remoteFile.LastIndexOf('/');
-                    tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
-                }
-
-                var patternedList = StringExtensions.Like(tmpRemoteFiles, pattern);
+                var patternedList = SFTPTools.SFTPScanDirs(this, fromFilePath, RecursiveDepth);
                 int fileCounter = 0;
+
+                int lastBackSlashIndex = fromFilePath.LastIndexOf('/');
+
+                string dir = fromFilePath.Substring(0, lastBackSlashIndex + 1);
 
                 ComponentEvents.FireInformation(0, "SSISSFTTask",
                                                 string.Format("Preparing to copy {0} files", patternedList.Count),
@@ -184,25 +177,25 @@ namespace Tamir.SharpSsh
 
                 foreach (var file in patternedList)
                 {
-                    string from = (dir.Length == 0) ? file : string.Format("{0}{1}", dir, file);
+                    //if (Directory.Exists(toFilePath))
+                    //{
+                    //    toFilePath = (toFilePath[toFilePath.Length - 1] != '\\') ? toFilePath + "\\" : toFilePath;
+                    //}
+                    //else if (File.Exists(toFilePath))
+                    //{
+                    //    toFilePath = string.Format("{0}\\", new FileInfo(toFilePath).Directory.FullName);
+                    //}
 
-                    if (Directory.Exists(toFilePath))
-                    {
-                        toFilePath = (toFilePath[toFilePath.Length - 1] != '\\') ? toFilePath + "\\" : toFilePath;
-                    }
-                    else if (File.Exists(toFilePath))
-                    {
-                        toFilePath = string.Format("{0}\\", new FileInfo(toFilePath).Directory.FullName);
-                    }
+                    string to = string.Empty;
 
-                    string to = string.Format("{0}{1}", toFilePath, file);
+                    SFTPTools.CreateTreeFolderFromLocal(toFilePath, dir, file, ref to);
 
-                    SftpChannel.get(from, to, m_monitor, ChannelSftp.OVERWRITE);
+                    SftpChannel.get(file, to, m_monitor, ChannelSftp.OVERWRITE);
                     if (DeleteFileOnTransferCompleted)
-                        Delete(from);
+                        Delete(file);
 
                     ComponentEvents.FireInformation(0, "SSISSFTTask",
-                                string.Format("File copied from {0} to {1}", from, to),
+                                string.Format("File copied from {0} to {1}", file, to),
                                 string.Empty, 0, ref _refire);
                     fileCounter++;
                 }
@@ -212,6 +205,7 @@ namespace Tamir.SharpSsh
                             string.Empty, 0, ref _refire);
             }
             #endregion
+
             #region File Only
             else if (!RecordsetHandler.RecordsetEnabled && (!fromFilePath.Contains("*") || !fromFilePath.Contains("?")))
             {
@@ -283,6 +277,7 @@ namespace Tamir.SharpSsh
                 }
             }
             #endregion
+
             #region FileMask
             else if (fromFilePath.Contains("*") || fromFilePath.Contains("?"))
             {
@@ -291,21 +286,27 @@ namespace Tamir.SharpSsh
                 string dir = fromFilePath.Substring(0, lastBackSlashIndex + 1);
                 string pattern = fromFilePath.Substring(lastBackSlashIndex + 1, fromFilePath.Length - lastBackSlashIndex - 1);
 
-                string[] filePaths = Directory.GetFiles(dir, pattern);
+                var filePaths = new List<string>();
+
+                DirectoryInfo initialDir = new DirectoryInfo(dir);
+
+
+                SFTPTools.LocalScanDirs(initialDir, pattern, RecursiveCopy ? RecursiveDepth : 0, ref filePaths);
 
                 int fileCounter = 0;
 
                 ComponentEvents.FireInformation(0, "SSISSFTTask",
-                                string.Format("Preparing to copy {0} files", filePaths.Length),
+                                string.Format("Preparing to copy {0} files", filePaths.Count),
                                 string.Empty, 0, ref _refire);
 
                 foreach (var filePath in filePaths)
                 {
-                    FileInfo fileInfo = new FileInfo(filePath);
+                    string fileDestination = string.Empty;
+                    SFTPTools.CreateTreeFolderFromSFTP(SftpChannel, toFilePath, dir, filePath, ref fileDestination);
 
-                    string fileDestination = (toFilePath[toFilePath.Length - 1] == '/')
+                    /*string fileDestination = (toFilePath[toFilePath.Length - 1] == '/')
                                                  ? toFilePath + fileInfo.Name
-                                                 : toFilePath + '/' + fileInfo.Name;
+                                                 : toFilePath + '/' + fileInfo.Name;*/
 
                     ComponentEvents.FireInformation(0, "SSISSFTTask",
                                                     string.Format("Send file from {0} to {1}", filePath, fileDestination),
@@ -315,6 +316,7 @@ namespace Tamir.SharpSsh
                                     fileDestination,
                                     m_monitor,
                                     ChannelSftp.OVERWRITE);
+
                     if (DeleteFileOnTransferCompleted)
                         File.Delete(filePath);
 
@@ -322,10 +324,11 @@ namespace Tamir.SharpSsh
                 }
 
                 ComponentEvents.FireInformation(0, "SSISSFTTask",
-                                string.Format("Number of sended files: {0}", fileCounter),
+                                string.Format("Number of sent files: {0}", fileCounter),
                                 string.Empty, 0, ref _refire);
             }
             #endregion
+
             #region Only the file
             else if (!RecordsetHandler.RecordsetEnabled && (!fromFilePath.Contains("*") || !fromFilePath.Contains("?")))
             {
@@ -333,7 +336,7 @@ namespace Tamir.SharpSsh
                 if (DeleteFileOnTransferCompleted)
                     File.Delete(fromFilePath);
                 ComponentEvents.FireInformation(0, "SSISSFTTask",
-                                string.Format("File sended  from {0} to {1}", fromFilePath, toFilePath),
+                                string.Format("File sent from {0} to {1}", fromFilePath, toFilePath),
                                 string.Empty, 0, ref _refire);
             }
             #endregion
@@ -376,6 +379,43 @@ namespace Tamir.SharpSsh
             else
             {
                 retList = (from ChannelSftp.LsEntry entry in SftpChannel.ls(path)
+                           where !entry.getAttrs().isLink()
+                           select entry.getFilename()).Select(f => (string)f).ToList();
+            }
+
+            return retList;
+        }
+
+        //Ls file
+        public List<string> GetFileListDepth(string path, int depth)
+        {
+
+            List<string> retList = new List<string>();
+
+            if (path.Contains("*") || path.Contains("?"))
+            {
+                int lastSlashIndex = path.LastIndexOf('/');
+
+                string dir = path.Substring(0, lastSlashIndex + 1);
+                string pattern = path.Substring(lastSlashIndex + 1, path.Length - lastSlashIndex - 1);
+
+                List<string> remoteFiles = (from ChannelSftp.LsEntry entry in SftpChannel.lsDepth(dir, depth)
+                                            where !entry.getAttrs().isDir()
+                                            select entry.getFilename()).Select(f => (string)f).ToList();
+
+                var tmpRemoteFiles = new List<string>();
+
+                foreach (var remoteFile in remoteFiles)
+                {
+                    lastSlashIndex = remoteFile.LastIndexOf('/');
+                    tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
+                }
+
+                retList = StringExtensions.Like(tmpRemoteFiles, pattern);
+            }
+            else
+            {
+                retList = (from ChannelSftp.LsEntry entry in SftpChannel.lsDepth(path, depth)
                            where !entry.getAttrs().isDir()
                            select entry.getFilename()).Select(f => (string)f).ToList();
             }
@@ -386,7 +426,6 @@ namespace Tamir.SharpSsh
         //Ls file
         public List<string> GetDirectoryList(string path)
         {
-
             List<string> retList = new List<string>();
 
             if (path.Contains("*") || path.Contains("?"))
@@ -579,12 +618,5 @@ namespace Tamir.SharpSsh
         #endregion ProgressMonitor Implementation
     }
 
-    public static class StringExtensions
-    {
-        public static List<string> Like(List<string> strSource, string wildcard)
-        {
-            var regex = new Regex("^" + Regex.Escape(wildcard).Replace(@"\*", ".*").Replace(@"\?", ".") + "$", RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            return strSource.Where(s => regex.IsMatch(s)).ToList();
-        }
-    }
+
 }
