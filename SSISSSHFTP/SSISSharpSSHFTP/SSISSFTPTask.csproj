@@ -51,7 +51,7 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -300,6 +300,7 @@
   <ItemGroup>
     <EmbeddedResource Include="frmEditProperties.resx">
       <DependentUpon>frmEditProperties.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Org.Mentalis.Security\Resources\SecurityServicesMessages.resx" />
     <EmbeddedResource Include="Org.Mentalis.Security\Smartcard\UI\InputPinForm.resx">
@@ -307,6 +308,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Org.Mentalis.Security\Smartcard\UI\SelectReaderForm.resx">
       <DependentUpon>SelectReaderForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

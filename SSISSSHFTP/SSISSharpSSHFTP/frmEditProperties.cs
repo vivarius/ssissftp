@@ -114,7 +114,11 @@ namespace SSISSFTPTask110
             _taskHost.Properties[Keys.DeleteFileOnTransferCompleted].SetValue(_taskHost, chkDeleteFileOnTransferCompleted.Checked ? Keys.TRUE : Keys.FALSE);
 
             _taskHost.Properties[Keys.RecursiveCopy].SetValue(_taskHost, chkRecursive.Checked);
-            _taskHost.Properties[Keys.RecursiveCopyDepth].SetValue(_taskHost, txDepth.Text);
+
+            int depth = 1;
+            Int32.TryParse(txDepth.Text, out depth);
+
+            _taskHost.Properties[Keys.RecursiveCopyDepth].SetValue(_taskHost, depth);
 
             DialogResult = DialogResult.OK;
             Close();
@@ -505,7 +509,14 @@ namespace SSISSFTPTask110
 
                 if (_taskHost.Properties[Keys.RecursiveCopyDepth].GetValue(_taskHost) != null)
                 {
-                    txDepth.Value = (decimal)_taskHost.Properties[Keys.RecursiveCopyDepth].GetValue(_taskHost);
+                    Int32 depth = 0;
+
+                    txDepth.Value = Int32.TryParse(_taskHost.Properties[Keys.RecursiveCopyDepth].GetValue(_taskHost).ToString(),
+                                                             NumberStyles.Integer,
+                                                             CultureInfo.CreateSpecificCulture("en-GB"),
+                                                             out depth)
+                                                    ? depth
+                                                    : 0;
                 }
 
             }

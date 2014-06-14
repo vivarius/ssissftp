@@ -374,7 +374,7 @@ namespace Tamir.SharpSsh
                     tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
                 }
 
-                retList = StringExtensions.Like(tmpRemoteFiles, pattern);
+                retList = tmpRemoteFiles.LikeDir(pattern);
             }
             else
             {
@@ -411,7 +411,7 @@ namespace Tamir.SharpSsh
                     tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
                 }
 
-                retList = StringExtensions.Like(tmpRemoteFiles, pattern);
+                retList = tmpRemoteFiles.LikeDir(pattern);
             }
             else
             {
@@ -447,13 +447,27 @@ namespace Tamir.SharpSsh
                     tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
                 }
 
-                retList = StringExtensions.Like(tmpRemoteFiles, pattern);
+                retList = tmpRemoteFiles.LikeDir(pattern);
             }
             else
             {
-                retList = (from ChannelSftp.LsEntry entry in SftpChannel.ls(path)
+
+                foreach (ChannelSftp.LsEntry entry in SftpChannel.ls(path))
+                {
+                    if (entry.getAttrs().isDir())
+                    {
+                        if (entry.getFilename() == "..")
+                            retList.Add("/");
+                        else
+                        {
+                            retList.Add(entry.getFilename());
+                        }
+                    }
+                }
+
+                /*retList = (from ChannelSftp.LsEntry entry in SftpChannel.ls(path)
                            where entry.getAttrs().isDir()
-                           select entry.getFilename()).Select(f => (string)f).ToList();
+                           select entry.getFilename()).Select(f => (string)f).ToList();*/
             }
 
             return retList;
@@ -506,7 +520,7 @@ namespace Tamir.SharpSsh
                     tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
                 }
 
-                var patternedList = StringExtensions.Like(tmpRemoteFiles, pattern);
+                var patternedList = tmpRemoteFiles.LikeDir(pattern);
 
                 ComponentEvents.FireInformation(0, "SSISSFTTask",
                                 string.Format("Number of files to delete {0}", patternedList.Count),

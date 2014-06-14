@@ -18,7 +18,7 @@ namespace SSISSFTPTask110.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask110.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask110," +
-        "Version=2.0.0.0," +
+        "Version=2.0.0.7," +
         "Culture=Neutral," +
         "PublicKeyToken=f7871de73e053501",
         IconResource = "SSISSFTPTask110.sftp.ico",
@@ -102,7 +102,7 @@ namespace SSISSFTPTask110.SSIS
         [Category("File Transfer"), Description("Indicates if the copy will be recursive")]
         public bool RecursiveCopy { get; set; }
 
-        [Category("File Transfer"), Description("If RecursiveCopy is TRUE, please indicate de depth...")]
+        [Category("File Transfer"), Description("If RecursiveCopy is TRUE, please indicate de depth...(0 = current folder)")]
         public int RecursiveCopyDepth { get; set; }
 
         #endregion
@@ -287,14 +287,14 @@ namespace SSISSFTPTask110.SSIS
             var dtExecuteResult = DTSExecResult.Failure;
             componentEvents.FireInformation(0, "SSISSFTTask", "START SFTP Task", string.Empty, 0, ref refire);
             System.Threading.Tasks.Task task = System.Threading.Tasks.Task.Factory.StartNew(() =>
-                                                {
-                                                    dtExecuteResult = ExecutesSFTPCommands(componentEvents, 
-                                                                         refire, 
-                                                                         variableDispenser, 
-                                                                         connections, 
-                                                                         log, 
-                                                                         transaction);
-                                                });
+            {
+                dtExecuteResult = ExecutesSFTPCommands(componentEvents,
+                                     refire,
+                                     variableDispenser,
+                                     connections,
+                                     log,
+                                     transaction);
+            });
 
             System.Threading.Tasks.Task.WaitAll(task);
 
@@ -315,13 +315,13 @@ namespace SSISSFTPTask110.SSIS
                 #region Initilization
 
                 Communication.RecordsetHandler = new RecordsetHandlerObject
-                                                                {
-                                                                    RecordsetColumnIndex = RecordsetColumnIndex,
-                                                                    RecordsetEnabled = RecordsetEnabled,
-                                                                    RecordsetVariable = RecordsetVariable,
-                                                                    VariableDispenser = variableDispenser,
-                                                                    ValueIsFullPath = ValueIsFullPath
-                                                                };
+                {
+                    RecordsetColumnIndex = RecordsetColumnIndex,
+                    RecordsetEnabled = RecordsetEnabled,
+                    RecordsetVariable = RecordsetVariable,
+                    VariableDispenser = variableDispenser,
+                    ValueIsFullPath = ValueIsFullPath
+                };
 
                 Communication.DeleteFileOnTransferCompleted = DeleteFileOnTransferCompleted == Keys.TRUE;
 
@@ -669,7 +669,7 @@ namespace SSISSFTPTask110.SSIS
                                                           ResolveRemotePathEx(EvaluateExpression(RemotePath, variableDispenser).ToString()),
                                                           Communication.RecursiveDepth);
 
-                    componentEvents.FireInformation(0, "SSISSFTTask", retValue.Count + " file(s) founded:", string.Empty,
+                    componentEvents.FireInformation(0, "SSISSFTTask", retValue.Count + " file(s) found:", string.Empty,
                                                     0, ref refire);
                     foreach (var file in retValue)
                     {
@@ -955,8 +955,13 @@ namespace SSISSFTPTask110.SSIS
 
                 stringBuilder.Append(path);
 
-                if (!path.EndsWith(slash))
-                    stringBuilder.Append(slash);
+                if (path.Contains("*") || path.Contains("?"))
+                {
+
+                }
+                else
+                    if (!path.EndsWith(slash))
+                        stringBuilder.Append(slash);
 
                 retVal = stringBuilder.ToString().Trim();
             }
@@ -1116,6 +1121,9 @@ namespace SSISSFTPTask110.SSIS
 
                 RecursiveCopy = Convert.ToBoolean(node.Attributes.GetNamedItem(Keys.RecursiveCopy).Value);
                 RecursiveCopyDepth = Convert.ToInt32(node.Attributes.GetNamedItem(Keys.RecursiveCopyDepth).Value);
+
+                //if (RecursiveCopyDepth == 0)
+                //    RecursiveCopyDepth = 1;
 
                 RecordsetColumnIndex = Convert.ToInt32(node.Attributes.GetNamedItem(Keys.RecordsetColumnIndex).Value);
                 RecordsetVariable = node.Attributes.GetNamedItem(Keys.RecordsetVariable).Value;
