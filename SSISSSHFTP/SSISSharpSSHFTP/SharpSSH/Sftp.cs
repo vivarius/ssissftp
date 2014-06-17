@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using Microsoft.SqlServer.Dts.Runtime;
 using SSISSFTPTask110;
 using SSISSFTPTask110.Tools;
@@ -386,10 +387,51 @@ namespace Tamir.SharpSsh
             return retList;
         }
 
+
+        public IEnumerable<ChannelSftp.LsEntry> GetFileListEx(string path)
+        {
+
+            IEnumerable<ChannelSftp.LsEntry> retList = new List<ChannelSftp.LsEntry>();
+
+            if (path.Contains("*") || path.Contains("?"))
+            {
+                int lastSlashIndex = path.LastIndexOf('/');
+
+                string dir = path.Substring(0, lastSlashIndex + 1);
+                string pattern = path.Substring(lastSlashIndex + 1, path.Length - lastSlashIndex - 1);
+
+                var remoteFiles = (from ChannelSftp.LsEntry entry in SftpChannel.ls(dir)
+                                   where !entry.getAttrs().isDir()
+                                   select entry).ToList();
+
+                var tmpRemoteFiles = new List<string>();
+
+                foreach (var remoteFile in remoteFiles)
+                {
+                    string fileName = remoteFile.getFilename();
+
+                    lastSlashIndex = fileName.LastIndexOf('/');
+                    tmpRemoteFiles.Add(fileName.Substring(lastSlashIndex + 1, fileName.Length - lastSlashIndex - 1));
+                }
+
+                retList = from i in tmpRemoteFiles.LikeDir(pattern)
+                          from j in remoteFiles
+                          where j.getLongname().Equals(i)
+                          select j;
+            }
+            else
+            {
+                retList = (from ChannelSftp.LsEntry entry in SftpChannel.ls(path)
+                           where !entry.getAttrs().isLink()
+                           select entry).ToList();
+            }
+
+            return retList;
+        }
+
         //Ls file
         public List<string> GetFileListDepth(string path, int depth)
         {
-
             List<string> retList = new List<string>();
 
             if (path.Contains("*") || path.Contains("?"))
@@ -506,47 +548,23 @@ namespace Tamir.SharpSsh
             }
             else if (filePath.Contains("*") || filePath.Contains("?"))
             {
-                int lastSlashIndex = filePath.LastIndexOf('/');
-
-                string dir = filePath.Substring(0, lastSlashIndex + 1);
-                string pattern = filePath.Substring(lastSlashIndex + 1, filePath.Length - lastSlashIndex - 1);
-
-                List<string> remoteFiles = GetFileList(filePath);
-                var tmpRemoteFiles = new List<string>();
-
-                foreach (var remoteFile in remoteFiles)
-                {
-                    lastSlashIndex = remoteFile.LastIndexOf('/');
-                    tmpRemoteFiles.Add(remoteFile.Substring(lastSlashIndex + 1, remoteFile.Length - lastSlashIndex - 1));
-                }
-
-                var patternedList = tmpRemoteFiles.LikeDir(pattern);
+                var patternList = SFTPTools.SFTPScanDirs(this, filePath, RecursiveDepth);
 
                 ComponentEvents.FireInformation(0, "SSISSFTTask",
-                                string.Format("Number of files to delete {0}", patternedList.Count),
+                                string.Format("Number of files to delete {0}", patternList.Count),
                                 string.Empty, 0, ref _refire);
 
                 int fileCounter = 0;
 
-                foreach (var file in patternedList)
+                foreach (var file in patternList)
                 {
-                    string from = (dir.Length == 0)
-                                          ? file
-                                          : string.Format("{0}{1}", dir, file);
-
-
-                    ComponentEvents.FireInformation(0, "SSISSFTTask",
-                                    string.Format("Deleting file: {0}", from),
-                                    string.Empty, 0, ref _refire);
-
-                    SftpChannel.rm(from);
+                    ComponentEvents.FireInformation(0, "SSISSFTTask", string.Format("Deleting file: {0}", file), string.Empty, 0, ref _refire);
+                    SftpChannel.rm(file);
 
                     fileCounter++;
                 }
 
-                ComponentEvents.FireInformation(0, "SSISSFTTask",
-                                string.Format("Deleted files: {0}", fileCounter),
-                                string.Empty, 0, ref _refire);
+                ComponentEvents.FireInformation(0, "SSISSFTTask", string.Format("Number of deleted files: {0}", fileCounter), string.Empty, 0, ref _refire);
             }
             else if (!RecordsetHandler.RecordsetEnabled && (!filePath.Contains("*") || !filePath.Contains("?")))
             {

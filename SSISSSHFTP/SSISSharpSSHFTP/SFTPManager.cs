@@ -206,6 +206,7 @@ namespace SSISSFTPTask110.SSIS
 
             sftp.ComponentEvents = ComponentEvents;
             Sftp.RecordsetHandler = RecordsetHandler;
+            Sftp.RecursiveDepth = RecursiveDepth;
 
             try
             {

@@ -605,17 +605,13 @@ namespace SSISSFTPTask110.SSIS
                                                        ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())))
                     {
                         if (RecordsetEnabled)
-                            componentEvents.FireInformation(0, "SSISSFTTask", "ENd of the DELETE operation within a Recordset", string.Empty, 0, ref refire);
+                            componentEvents.FireInformation(0, "SSISSFTTask", "END of DELETE operation within a Recordset", string.Empty, 0, ref refire);
                         else
-                            componentEvents.FireInformation(0, "SSISSFTTask",
-                                                            string.Format("The remote file {0} has been deleted",
-                                                                          ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
+                            componentEvents.FireInformation(0, "SSISSFTTask", string.Format("The remote file(s) {0} has been deleted", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0, ref refire);
                     }
                     else
                     {
-                        componentEvents.FireError(0, "SSISSFTTask",
-                                                  string.Format("The remote file {0} has not been deleted",
-                                                                ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0);
+                        componentEvents.FireError(0, "SSISSFTTask", string.Format("The remote file {0} has not been deleted", ResolveRemotePath(EvaluateExpression(RemotePath, variableDispenser).ToString())), string.Empty, 0);
                     }
                 }
 

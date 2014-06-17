@@ -302,9 +302,12 @@
       <DependentUpon>frmEditProperties.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Org.Mentalis.Security\Resources\SecurityServicesMessages.resx" />
+    <EmbeddedResource Include="Org.Mentalis.Security\Resources\SecurityServicesMessages.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Org.Mentalis.Security\Smartcard\UI\InputPinForm.resx">
       <DependentUpon>InputPinForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Org.Mentalis.Security\Smartcard\UI\SelectReaderForm.resx">
       <DependentUpon>SelectReaderForm.cs</DependentUpon>
