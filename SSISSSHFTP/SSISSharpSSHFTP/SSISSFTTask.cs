@@ -18,7 +18,7 @@ namespace SSISSFTPTask110.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask110.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask110," +
-        "Version=2.0.0.7," +
+        "Version=2.0.0.10," +
         "Culture=Neutral," +
         "PublicKeyToken=f7871de73e053501",
         IconResource = "SSISSFTPTask110.sftp.ico",
