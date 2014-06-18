@@ -332,7 +332,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
 
@@ -714,10 +714,13 @@ namespace Tamir.SharpSsh.jsch
                 SftpATTRS attr = SftpATTRS.getATTR(buf);
                 return attr;
             }
+            catch (SftpException e)
+            {
+                throw new SftpException(e.id, e.Message, e);
+            }
             catch (Exception e)
             {
-                if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
             //return null;
         }
@@ -875,7 +878,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
 
@@ -984,7 +987,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
         public void get(String src, OutputStream dst)
@@ -1024,7 +1027,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
 
@@ -1097,7 +1100,7 @@ namespace Tamir.SharpSsh.jsch
                     {
                         goto BREAK;
                     }
-                    
+
                     buf.rewind();
                     fill(buf.buffer, 0, 4); length -= 4;
                     i = buf.getInt();   // length of data 
@@ -1148,7 +1151,7 @@ namespace Tamir.SharpSsh.jsch
             {
                 //System.Console.WriteLine(e);
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
 
@@ -1324,7 +1327,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
 
@@ -1425,7 +1428,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
 
@@ -1526,7 +1529,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
 
@@ -1577,7 +1580,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
             return null;
         }
@@ -1633,7 +1636,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
         public void rename(String oldpath, String newpath)
@@ -1695,7 +1698,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
         public void rm(String path)
@@ -1733,7 +1736,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
         public bool isRemoteDir(String path)
@@ -1787,7 +1790,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
         public void chown(int uid, String path)
@@ -1812,7 +1815,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
         public void chmod(int permissions, String path)
@@ -1837,7 +1840,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
         public void setMtime(String path, int mtime)
@@ -1862,7 +1865,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
         public void rmdir(String path)
@@ -1902,7 +1905,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
 
@@ -1956,7 +1959,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
             //return null;
         }
@@ -1979,7 +1982,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
 
@@ -2012,7 +2015,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
 
@@ -2034,7 +2037,7 @@ namespace Tamir.SharpSsh.jsch
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
         private void _setStat(String path, SftpATTRS attr)
@@ -2061,10 +2064,14 @@ namespace Tamir.SharpSsh.jsch
                     throwStatusError(buf, i);
                 }
             }
+            catch (SftpException e)
+            {
+                throw new SftpException(e.id, e.Message, e);
+            }
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, e.Message + "\r\n" + e.StackTrace, e);
             }
         }
 
