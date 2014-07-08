@@ -12,8 +12,10 @@ namespace SSISSFTPTask110.Tools
     {
         public static void LocalScanDirs(DirectoryInfo dir, string pattern, int recursionLevel, ref List<string> outListFiles)
         {
-            if (recursionLevel <= 0)
+            if (recursionLevel < 0)
                 return;
+
+            outListFiles.AddRange(dir.GetFiles(pattern).Select(iInfo => iInfo.FullName));
 
             foreach (DirectoryInfo directoryInfo in dir.GetDirectories())
             {
