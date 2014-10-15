@@ -89,7 +89,6 @@ namespace SSISSFTPTask110.SSIS
                 sftp.NewPort = Port;
                 sftp.Connect();
                 sftp.Put(sourceFileName, outputFileName);
-
                 retVal = true;
             }
             catch (Exception exception)

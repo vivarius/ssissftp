@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 using SSISSFTPTask110.SSIS;
 using System.Linq;
 using System.Windows.Forms;
@@ -36,6 +38,15 @@ namespace SSISSFTPTask110
             FillConnectionInfoPanel();
             FillDetailsPanel();
             FillRecordSetElements();
+            GetAssemblyVersion();
+        }
+
+        private void GetAssemblyVersion()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = fvi.FileVersion;
+            linkLabelCodeplex.Text = string.Format("v. {0}", version);
         }
 
 
@@ -192,7 +203,7 @@ namespace SSISSFTPTask110
 
         private void linkLabelCodeplex_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start(linkLabelCodeplex.Text);
+            Process.Start("http://ssissftp.codeplex.com/releases/");
         }
 
         private void cmbAction_SelectedIndexChanged(object sender, EventArgs e)

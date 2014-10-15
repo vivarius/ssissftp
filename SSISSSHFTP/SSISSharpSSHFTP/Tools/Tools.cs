@@ -98,6 +98,8 @@ namespace SSISSFTPTask110.Tools
             var outListFiles = new List<string>();
             var pathElements = initialPath.Split('/');
             var dirpath = initialPath.Substring(0, initialPath.LastIndexOf('/'));
+            if (string.IsNullOrWhiteSpace(dirpath))
+                dirpath += "/";
             var pattern = pathElements[pathElements.Length - 1];
 
             var bHasPattern = pattern.Contains("*") || pattern.Contains("?");

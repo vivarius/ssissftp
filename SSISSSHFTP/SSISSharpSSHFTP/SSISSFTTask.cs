@@ -18,7 +18,7 @@ namespace SSISSFTPTask110.SSIS
         DisplayName = "SFTP Task",
         UITypeName = "SSISSFTPTask110.SSISSFTTaskUIInterface" +
         ",SSISSFTPTask110," +
-        "Version=2.0.0.20," +
+        "Version=2.0.0.30," +
         "Culture=Neutral," +
         "PublicKeyToken=f7871de73e053501",
         IconResource = "SSISSFTPTask110.sftp.ico",
@@ -1021,6 +1021,9 @@ namespace SSISSFTPTask110.SSIS
             XmlAttribute overWriteLocalPath = doc.CreateAttribute(string.Empty, Keys.FTP_LOCAL_PATH_OVERWRITE, string.Empty);
             overWriteLocalPath.Value = OverwriteLocalPath;
 
+            XmlAttribute deleteFileOnTransferCompleted = doc.CreateAttribute(string.Empty, Keys.DeleteFileOnTransferCompleted, string.Empty);
+            deleteFileOnTransferCompleted.Value = DeleteFileOnTransferCompleted;
+
             XmlAttribute sleepSeconds = doc.CreateAttribute(string.Empty, Keys.SLEEP_SECONDS, string.Empty);
             sleepSeconds.Value = SleepSeconds;
 
@@ -1070,6 +1073,7 @@ namespace SSISSFTPTask110.SSIS
             taskElement.Attributes.Append(sftpSourceFile);
             taskElement.Attributes.Append(sftpSourceFileType);
             taskElement.Attributes.Append(overWriteLocalPath);
+            taskElement.Attributes.Append(deleteFileOnTransferCompleted);
             taskElement.Attributes.Append(sftpDestinationFile);
             taskElement.Attributes.Append(sftpActionLists);
             taskElement.Attributes.Append(sftpFileLists);
@@ -1110,6 +1114,7 @@ namespace SSISSFTPTask110.SSIS
                 LocalPath = node.Attributes.GetNamedItem(Keys.FTP_LOCAL_PATH).Value;
                 LocalPathIsConnectionFileType = node.Attributes.GetNamedItem(Keys.FTP_LOCAL_PATH_SOURCE_TYPE).Value;
                 OverwriteLocalPath = node.Attributes.GetNamedItem(Keys.FTP_LOCAL_PATH_OVERWRITE).Value;
+                DeleteFileOnTransferCompleted = node.Attributes.GetNamedItem(Keys.DeleteFileOnTransferCompleted).Value;
                 RemotePath = node.Attributes.GetNamedItem(Keys.FTP_REMOTE_PATH).Value;
                 FilesList = node.Attributes.GetNamedItem(Keys.FTP_FILES_LIST).Value;
                 SleepOnDisconnect = node.Attributes.GetNamedItem(Keys.SLEEP_ON_DISCONNECT).Value;
